@@ -4,23 +4,25 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   return (
-    <div>
+    <div className="min-h-screen text-white">
       <div className="relative">
         <img
           src="/banner.svg"
           alt="Logo"
-          className="sticky object-cover w-full h-80"
+          className="w-full h-40 sm:h-60 md:h-80 object-cover"
         />
-        <div className="absolute bottom-0 left-0 w-full h-30 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-full h-30 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
       </div>
-      <div className="text-6xl font-bold text-center uppercase mt-40">
+
+      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center uppercase mt-12 sm:mt-20 md:mt-32 px-4">
         Book your{" "}
-        <span className="relative">
+        <span className="relative inline-block">
           flight
           <svg
             viewBox="0 0 572 146"
             fill="none"
             className="absolute -left-2 -right-2 -top-2 bottom-0 translate-y-1 scale-125"
+            aria-hidden="true"
           >
             <motion.path
               initial={{ pathLength: 0 }}
@@ -35,9 +37,13 @@ export default function Home() {
             />
           </svg>
         </span>
+        <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl text-gray-400 mt-8 lowercase w-full text-center">
+          Enter your trip details below to search for flights
+        </p>
       </div>
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] mt-96">
-        <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
+        <main>
           <MainForm />
         </main>
       </div>

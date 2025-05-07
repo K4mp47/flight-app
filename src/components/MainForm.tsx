@@ -45,7 +45,7 @@ const FormSchema = z.object({
     required_error: "A class is required.",
   }),
   terms: z.boolean().default(false).optional(),
-  adults: z.number().int().min(0, "A number of adults is required."),
+  adults: z.number().int().min(1, "A number of adults is required."),
   children: z.number().int().min(0, "A number of children is required."),
   infants: z.number().int().min(0, "A number of infants is required."),
 });

@@ -1,6 +1,6 @@
-import { Plane } from "lucide-react"
+import { Plane } from "lucide-react";
 
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
   return (
@@ -22,11 +22,11 @@ export default function LoginPage() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <img
-          src="/banner.svg"
+          src="/banner2.png"
           alt="Image"
-          className="absolute inset-0 h-full w-full object-cover object-center dark:brightness-[0.2] dark:grayscale"
+          className="absolute inset-0 h-full w-full object-cover object-center dark:brightness-[0.2]"
         />
       </div>
     </div>
-  )
+  );
 }

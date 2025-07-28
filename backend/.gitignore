@@ -1,1 +1,6 @@
-/venv
+# This file is part of the Flight App project.
+# don't push this file into the repository
+venv/
+__pycache__/
+*.pyc
+.env

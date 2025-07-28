@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, DateTime, ForeignKey
 
 class Airport(Base):
-    __table__ = "airports"
+    __tablename__ = "airports"
 
     iata_code:Mapped[str] = mapped_column(String, primary_key=True)
     id_city: Mapped[int] = mapped_column(ForeignKey("city.id_city"))

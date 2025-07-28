@@ -22,3 +22,16 @@ body {
 
 restituisce il token
 
+3) /user/profile methods=["GET"]
+
+passi il token jwt dell'utente ottenito con il login e ti restituisce:
+name,
+lastname,
+email,
+
+
+
+4) /user/logout  methods=["POST"]
+passi il token jwt dell'utente e lo distrugge
+
+

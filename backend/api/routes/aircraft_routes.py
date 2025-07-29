@@ -18,3 +18,4 @@ def get_all_aircraft_by_manufacturer(id_manufacturer):
     aircraft = all_aircraft_by_manufacturer(id_manufacturer)
     return jsonify(aircraft), 200
 
+

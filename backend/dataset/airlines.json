@@ -1,0 +1,2462 @@
+[
+    {
+        "iata_code": "SR",
+        "name": "Sundair"
+    },
+    {
+        "iata_code": "WR",
+        "name": "WestJet Encore"
+    },
+    {
+        "iata_code": "CY",
+        "name": "Cyprus Airways"
+    },
+    {
+        "iata_code": "JY",
+        "name": "interCaribbean Airways"
+    },
+    {
+        "iata_code": "UU",
+        "name": "Air Austral"
+    },
+    {
+        "iata_code": "QV",
+        "name": "Lao Airlines"
+    },
+    {
+        "iata_code": "AH",
+        "name": "Air Algerie"
+    },
+    {
+        "iata_code": "TQ",
+        "name": "Tandem Aero"
+    },
+    {
+        "iata_code": "RM",
+        "name": "Armenia Aircompany"
+    },
+    {
+        "iata_code": "JG",
+        "name": "JetGo"
+    },
+    {
+        "iata_code": "GU",
+        "name": "Avianca Guatemala"
+    },
+    {
+        "iata_code": "XW",
+        "name": "NokScoot"
+    },
+    {
+        "iata_code": "UA",
+        "name": "United Airlines"
+    },
+    {
+        "iata_code": "ND",
+        "name": "FMI Air"
+    },
+    {
+        "iata_code": "XX",
+        "name": "Greenfly"
+    },
+    {
+        "iata_code": "XJ",
+        "name": "Thai AirAsia X"
+    },
+    {
+        "iata_code": "CU",
+        "name": "Cubana de Aviación"
+    },
+    {
+        "iata_code": "VV",
+        "name": "Viva Air"
+    },
+    {
+        "iata_code": "PQ",
+        "name": "SkyUp Airlines"
+    },
+    {
+        "iata_code": "PE",
+        "name": "People's Viennaline PE"
+    },
+    {
+        "iata_code": "YD",
+        "name": "Gomelavia"
+    },
+    {
+        "iata_code": "GJ",
+        "name": "Loong Air"
+    },
+    {
+        "iata_code": "AD",
+        "name": "Azul"
+    },
+    {
+        "iata_code": "VT",
+        "name": "Air Tahiti"
+    },
+    {
+        "iata_code": "KS",
+        "name": "Peninsula Airways"
+    },
+    {
+        "iata_code": "KB",
+        "name": "Druk Air"
+    },
+    {
+        "iata_code": "SX",
+        "name": "SkyWork Airlines"
+    },
+    {
+        "iata_code": "OV",
+        "name": "SalamAir"
+    },
+    {
+        "iata_code": "JI",
+        "name": "Meraj Air"
+    },
+    {
+        "iata_code": "QA",
+        "name": "Click (Mexicana)"
+    },
+    {
+        "iata_code": "SF",
+        "name": "Tassili Airlines"
+    },
+    {
+        "iata_code": "XU",
+        "name": "African Express"
+    },
+    {
+        "iata_code": "CD",
+        "name": "Corendon Dutch Airlines B.V."
+    },
+    {
+        "iata_code": "LQ",
+        "name": "Lanmei Airlines"
+    },
+    {
+        "iata_code": "SV",
+        "name": "Saudi Arabian Airlines"
+    },
+    {
+        "iata_code": "LH",
+        "name": "Lufthansa"
+    },
+    {
+        "iata_code": "LA",
+        "name": "LATAM Airlines"
+    },
+    {
+        "iata_code": "QF",
+        "name": "Qantas"
+    },
+    {
+        "iata_code": "MV",
+        "name": "Air Mediterranean"
+    },
+    {
+        "iata_code": "DI",
+        "name": "Norwegian Air UK"
+    },
+    {
+        "iata_code": "RT",
+        "name": "JSC UVT Aero"
+    },
+    {
+        "iata_code": "YW",
+        "name": "Air Nostrum"
+    },
+    {
+        "iata_code": "NT",
+        "name": "Binter Canarias"
+    },
+    {
+        "iata_code": "LT",
+        "name": "LongJiang Airlines"
+    },
+    {
+        "iata_code": "XM",
+        "name": "Alitalia Express"
+    },
+    {
+        "iata_code": "FK",
+        "name": "Africa West"
+    },
+    {
+        "iata_code": "GG",
+        "name": "Air Guyane"
+    },
+    {
+        "iata_code": "FL",
+        "name": "AirTran Airways"
+    },
+    {
+        "iata_code": "TE",
+        "name": "FlyLal"
+    },
+    {
+        "iata_code": "SE",
+        "name": "XL Airways France"
+    },
+    {
+        "iata_code": "WF",
+        "name": "Widerøe"
+    },
+    {
+        "iata_code": "II",
+        "name": "LSM International "
+    },
+    {
+        "iata_code": "HN",
+        "name": "Hankook Airline"
+    },
+    {
+        "iata_code": "NP",
+        "name": "Nile Air"
+    },
+    {
+        "iata_code": "WI",
+        "name": "White Airways"
+    },
+    {
+        "iata_code": "NY",
+        "name": "Air Iceland Connect"
+    },
+    {
+        "iata_code": "PT",
+        "name": "Red Jet Andes"
+    },
+    {
+        "iata_code": "ZE",
+        "name": "Eastar Jet"
+    },
+    {
+        "iata_code": "MI",
+        "name": "SilkAir"
+    },
+    {
+        "iata_code": "QR",
+        "name": "Qatar Airways"
+    },
+    {
+        "iata_code": "HG",
+        "name": "Niki"
+    },
+    {
+        "iata_code": "RJ",
+        "name": "Royal Jordanian"
+    },
+    {
+        "iata_code": "NN",
+        "name": "VIM Airlines"
+    },
+    {
+        "iata_code": "XQ",
+        "name": "SunExpress"
+    },
+    {
+        "iata_code": "PM",
+        "name": "Canary Fly"
+    },
+    {
+        "iata_code": "GK",
+        "name": "Jetstar Japan"
+    },
+    {
+        "iata_code": "IN",
+        "name": "Nam Air"
+    },
+    {
+        "iata_code": "OO",
+        "name": "SkyWest"
+    },
+    {
+        "iata_code": "DJ",
+        "name": "AirAsia Japan"
+    },
+    {
+        "iata_code": "OA",
+        "name": "Olympic Air"
+    },
+    {
+        "iata_code": "ZM",
+        "name": "Air Manas"
+    },
+    {
+        "iata_code": "LS",
+        "name": "Jet2"
+    },
+    {
+        "iata_code": "PP",
+        "name": "Air Indus"
+    },
+    {
+        "iata_code": "ZT",
+        "name": "Titan Airways"
+    },
+    {
+        "iata_code": "QH",
+        "name": "Bamboo Airways"
+    },
+    {
+        "iata_code": "KO",
+        "name": "Komiaviatrans"
+    },
+    {
+        "iata_code": "PJ",
+        "name": "Air Saint Pierre"
+    },
+    {
+        "iata_code": "IQ",
+        "name": "Qazaq Air"
+    },
+    {
+        "iata_code": "VL",
+        "name": "Med-View Airline"
+    },
+    {
+        "iata_code": "KJ",
+        "name": "British Mediterranean Airways"
+    },
+    {
+        "iata_code": "BN",
+        "name": "Horizon Airlines"
+    },
+    {
+        "iata_code": "LG",
+        "name": "Luxair"
+    },
+    {
+        "iata_code": "QT",
+        "name": "TAMPA"
+    },
+    {
+        "iata_code": "MK",
+        "name": "Air Mauritius"
+    },
+    {
+        "iata_code": "AP",
+        "name": "AlbaStar"
+    },
+    {
+        "iata_code": "MU",
+        "name": "China Eastern Airlines"
+    },
+    {
+        "iata_code": "CT",
+        "name": "Alitalia Cityliner"
+    },
+    {
+        "iata_code": "OF",
+        "name": "Overland Airways"
+    },
+    {
+        "iata_code": "WZ",
+        "name": "Red Wings"
+    },
+    {
+        "iata_code": "LI",
+        "name": "Leeward Islands Air Transport"
+    },
+    {
+        "iata_code": "ZH",
+        "name": "Shenzhen Airlines"
+    },
+    {
+        "iata_code": "NE",
+        "name": "Nesma Air"
+    },
+    {
+        "iata_code": "UI",
+        "name": "Auric Air"
+    },
+    {
+        "iata_code": "PK",
+        "name": "Pakistan International Airlines"
+    },
+    {
+        "iata_code": "EI",
+        "name": "Aer Lingus"
+    },
+    {
+        "iata_code": "LP",
+        "name": "LATAM Peru"
+    },
+    {
+        "iata_code": "TC",
+        "name": "Air Tanzania"
+    },
+    {
+        "iata_code": "WO",
+        "name": "Swoop"
+    },
+    {
+        "iata_code": "RC",
+        "name": "Atlantic Airways"
+    },
+    {
+        "iata_code": "VU",
+        "name": "Air Ivoire"
+    },
+    {
+        "iata_code": "UM",
+        "name": "Air Zimbabwe"
+    },
+    {
+        "iata_code": "NM",
+        "name": "Air Madrid"
+    },
+    {
+        "iata_code": "FJ",
+        "name": "Fiji Airways"
+    },
+    {
+        "iata_code": "JS",
+        "name": "Air Koryo"
+    },
+    {
+        "iata_code": "MD",
+        "name": "Air Madagascar"
+    },
+    {
+        "iata_code": "OT",
+        "name": "Aeropelican Air Services"
+    },
+    {
+        "iata_code": "RE",
+        "name": "Stobart Air"
+    },
+    {
+        "iata_code": "EC",
+        "name": "Avialeasing Aviation Company"
+    },
+    {
+        "iata_code": "ZL",
+        "name": "Regional Express"
+    },
+    {
+        "iata_code": "IO",
+        "name": "IrAero"
+    },
+    {
+        "iata_code": "AS",
+        "name": "Alaska Airlines"
+    },
+    {
+        "iata_code": "FB",
+        "name": "Bulgaria Air"
+    },
+    {
+        "iata_code": "OI",
+        "name": "Orchid Airlines"
+    },
+    {
+        "iata_code": "EO",
+        "name": "Pegas Fly"
+    },
+    {
+        "iata_code": "LV",
+        "name": "Level"
+    },
+    {
+        "iata_code": "QI",
+        "name": "Cimber Air"
+    },
+    {
+        "iata_code": "AC",
+        "name": "Air Canada"
+    },
+    {
+        "iata_code": "LU",
+        "name": "LAN Express"
+    },
+    {
+        "iata_code": "SY",
+        "name": "Sun Country Airlines"
+    },
+    {
+        "iata_code": "WX",
+        "name": "CityJet"
+    },
+    {
+        "iata_code": "BD",
+        "name": "Cambodia Bayon Airlines"
+    },
+    {
+        "iata_code": "MS",
+        "name": "Egyptair"
+    },
+    {
+        "iata_code": "PD",
+        "name": "Porter Airlines"
+    },
+    {
+        "iata_code": "PS",
+        "name": "Ukraine International Airlines"
+    },
+    {
+        "iata_code": "FV",
+        "name": "Rossiya-Russian Airlines"
+    },
+    {
+        "iata_code": "KR",
+        "name": "Cambodia Airways"
+    },
+    {
+        "iata_code": "LR",
+        "name": "Avianca Costa Rica"
+    },
+    {
+        "iata_code": "JJ",
+        "name": "LATAM Brasil"
+    },
+    {
+        "iata_code": "NF",
+        "name": "Air Vanuatu"
+    },
+    {
+        "iata_code": "GS",
+        "name": "Tianjin Airlines"
+    },
+    {
+        "iata_code": "EN",
+        "name": "Air Dolomiti"
+    },
+    {
+        "iata_code": "AJ",
+        "name": "Aero Contractors"
+    },
+    {
+        "iata_code": "BS",
+        "name": "British International Helicopters"
+    },
+    {
+        "iata_code": "CH",
+        "name": "Bemidji Airlines"
+    },
+    {
+        "iata_code": "FE",
+        "name": "Far Eastern Air Transport"
+    },
+    {
+        "iata_code": "DQ",
+        "name": "Coastal Air"
+    },
+    {
+        "iata_code": "SS",
+        "name": "Corsair International"
+    },
+    {
+        "iata_code": "YK",
+        "name": "Avia Traffic Airline"
+    },
+    {
+        "iata_code": "DO",
+        "name": "Dominicana de Aviaci"
+    },
+    {
+        "iata_code": "UZ",
+        "name": "El-Buraq Air Transport"
+    },
+    {
+        "iata_code": "EA",
+        "name": "European Air Express"
+    },
+    {
+        "iata_code": "GF",
+        "name": "Gulf Air Bahrain"
+    },
+    {
+        "iata_code": "TY",
+        "name": "Air Caledonie"
+    },
+    {
+        "iata_code": "XK",
+        "name": "Air Corsica"
+    },
+    {
+        "iata_code": "FW",
+        "name": "Ibex Airlines"
+    },
+    {
+        "iata_code": "LO",
+        "name": "LOT Polish Airlines"
+    },
+    {
+        "iata_code": "TS",
+        "name": "Air Transat"
+    },
+    {
+        "iata_code": "OU",
+        "name": "Croatia Airlines"
+    },
+    {
+        "iata_code": "VX",
+        "name": "Virgin America"
+    },
+    {
+        "iata_code": "KF",
+        "name": "Air Belgium"
+    },
+    {
+        "iata_code": "JN",
+        "name": "JOON"
+    },
+    {
+        "iata_code": "EH",
+        "name": "ANA Wings"
+    },
+    {
+        "iata_code": "XT",
+        "name": "Indonesia AirAsia X"
+    },
+    {
+        "iata_code": "TA",
+        "name": "Avianca El Salvador"
+    },
+    {
+        "iata_code": "UD",
+        "name": "Hex'Air"
+    },
+    {
+        "iata_code": "RZ",
+        "name": "Sansa Air"
+    },
+    {
+        "iata_code": "IC",
+        "name": "Indian Airlines"
+    },
+    {
+        "iata_code": "KV",
+        "name": "Kavminvodyavia"
+    },
+    {
+        "iata_code": "GW",
+        "name": "Kuban Airlines"
+    },
+    {
+        "iata_code": "NG",
+        "name": "Lauda Air"
+    },
+    {
+        "iata_code": "LN",
+        "name": "Libyan Arab Airlines"
+    },
+    {
+        "iata_code": "MP",
+        "name": "Martinair"
+    },
+    {
+        "iata_code": "MZ",
+        "name": "Merpati Nusantara Airlines"
+    },
+    {
+        "iata_code": "YV",
+        "name": "Mesa Airlines"
+    },
+    {
+        "iata_code": "MX",
+        "name": "Mexicana de Aviaci"
+    },
+    {
+        "iata_code": "MY",
+        "name": "Midwest Airlines (Egypt)"
+    },
+    {
+        "iata_code": "NC",
+        "name": "National Jet Systems"
+    },
+    {
+        "iata_code": "RL",
+        "name": "Royal Falcon"
+    },
+    {
+        "iata_code": "BU",
+        "name": "Baikotovitchestrian Airlines "
+    },
+    {
+        "iata_code": "PI",
+        "name": "Polar Airlines"
+    },
+    {
+        "iata_code": "MQ",
+        "name": "Envoy Air as American Eagle"
+    },
+    {
+        "iata_code": "PH",
+        "name": "Polynesian Airlines"
+    },
+    {
+        "iata_code": "EY",
+        "name": "Etihad Airways"
+    },
+    {
+        "iata_code": "WY",
+        "name": "Oman Air"
+    },
+    {
+        "iata_code": "SZ",
+        "name": "Somon Air"
+    },
+    {
+        "iata_code": "OK",
+        "name": "Czech Airlines"
+    },
+    {
+        "iata_code": "AY",
+        "name": "Finnair"
+    },
+    {
+        "iata_code": "RQ",
+        "name": "Kam Air"
+    },
+    {
+        "iata_code": "GZ",
+        "name": "Air Rarotonga"
+    },
+    {
+        "iata_code": "YX",
+        "name": "Republic Airline"
+    },
+    {
+        "iata_code": "ON",
+        "name": "Nauru Air Corporation"
+    },
+    {
+        "iata_code": "QB",
+        "name": "Qeshm Air"
+    },
+    {
+        "iata_code": "RH",
+        "name": "Republic Express Airlines"
+    },
+    {
+        "iata_code": "RA",
+        "name": "Nepal Airlines"
+    },
+    {
+        "iata_code": "KE",
+        "name": "Korean Air"
+    },
+    {
+        "iata_code": "CG",
+        "name": "PNG Air"
+    },
+    {
+        "iata_code": "EJ",
+        "name": "New England Airlines"
+    },
+    {
+        "iata_code": "PV",
+        "name": "PAN Air"
+    },
+    {
+        "iata_code": "PU",
+        "name": "Plus Ultra Lineas Aereas"
+    },
+    {
+        "iata_code": "LZ",
+        "name": "belleair"
+    },
+    {
+        "iata_code": "JH",
+        "name": "Fuji Dream Airlines"
+    },
+    {
+        "iata_code": "QQ",
+        "name": "Alliance Airlines"
+    },
+    {
+        "iata_code": "MN",
+        "name": "Kulula"
+    },
+    {
+        "iata_code": "NU",
+        "name": "Japan Transocean Air"
+    },
+    {
+        "iata_code": "EK",
+        "name": "Emirates"
+    },
+    {
+        "iata_code": "OY",
+        "name": "Andes Líneas Aéreas"
+    },
+    {
+        "iata_code": "BB",
+        "name": "Seaborne Airlines"
+    },
+    {
+        "iata_code": "CX",
+        "name": "Cathay Pacific"
+    },
+    {
+        "iata_code": "GM",
+        "name": "Chair Airlines"
+    },
+    {
+        "iata_code": "PZ",
+        "name": "LATAM Paraguay"
+    },
+    {
+        "iata_code": "BK",
+        "name": "Okay Airways"
+    },
+    {
+        "iata_code": "ZS",
+        "name": "Sama Airlines"
+    },
+    {
+        "iata_code": "FT",
+        "name": "FlyEgypt FT"
+    },
+    {
+        "iata_code": "FS",
+        "name": "Servicios de Transportes A"
+    },
+    {
+        "iata_code": "SD",
+        "name": "Sudan Airways"
+    },
+    {
+        "iata_code": "RB",
+        "name": "Syrian Arab Airlines"
+    },
+    {
+        "iata_code": "GE",
+        "name": "TransAsia Airways"
+    },
+    {
+        "iata_code": "VR",
+        "name": "TACV"
+    },
+    {
+        "iata_code": "HK",
+        "name": "Yangon Airways"
+    },
+    {
+        "iata_code": "XZ",
+        "name": "Congo Express"
+    },
+    {
+        "iata_code": "BY",
+        "name": "TUI Airways"
+    },
+    {
+        "iata_code": "IY",
+        "name": "Yemenia"
+    },
+    {
+        "iata_code": "KW",
+        "name": "Carnival Air Lines"
+    },
+    {
+        "iata_code": "AX",
+        "name": "Trans States Airlines"
+    },
+    {
+        "iata_code": "UF",
+        "name": "UM Airlines"
+    },
+    {
+        "iata_code": "US",
+        "name": "US Airways"
+    },
+    {
+        "iata_code": "TV",
+        "name": "Tibet Airlines"
+    },
+    {
+        "iata_code": "IV",
+        "name": "Wind Jet"
+    },
+    {
+        "iata_code": "MF",
+        "name": "Xiamen Airlines"
+    },
+    {
+        "iata_code": "ZF",
+        "name": "Azur Air"
+    },
+    {
+        "iata_code": "JR",
+        "name": "Joy Air"
+    },
+    {
+        "iata_code": "UR",
+        "name": "Azur Air Germany"
+    },
+    {
+        "iata_code": "TI",
+        "name": "Tailwind Airlines"
+    },
+    {
+        "iata_code": "KT",
+        "name": "VickJet"
+    },
+    {
+        "iata_code": "VG",
+        "name": "VLM Airlines"
+    },
+    {
+        "iata_code": "NB",
+        "name": "Sterling Airlines"
+    },
+    {
+        "iata_code": "OC",
+        "name": "Oriental Air Bridge"
+    },
+    {
+        "iata_code": "TD",
+        "name": "Atlantis European Airways"
+    },
+    {
+        "iata_code": "NO",
+        "name": "Neos Air"
+    },
+    {
+        "iata_code": "YM",
+        "name": "Montenegro Airlines"
+    },
+    {
+        "iata_code": "DT",
+        "name": "TAAG Angola Airlines"
+    },
+    {
+        "iata_code": "VK",
+        "name": "LEVEL operated by ANISEC"
+    },
+    {
+        "iata_code": "DZ",
+        "name": "Donghai Airlines"
+    },
+    {
+        "iata_code": "YQ",
+        "name": "TAR Aerolineas"
+    },
+    {
+        "iata_code": "IA",
+        "name": "Iraqi Airways"
+    },
+    {
+        "iata_code": "XO",
+        "name": "LTE International Airways"
+    },
+    {
+        "iata_code": "CE",
+        "name": "Chalair"
+    },
+    {
+        "iata_code": "JK",
+        "name": "Spanair"
+    },
+    {
+        "iata_code": "UH",
+        "name": "AtlasGlobal Ukraine"
+    },
+    {
+        "iata_code": "VI",
+        "name": "Volga-Dnepr Airlines"
+    },
+    {
+        "iata_code": "GY",
+        "name": "Colorful Guizhou Airlines"
+    },
+    {
+        "iata_code": "QD",
+        "name": "JC International Airlines"
+    },
+    {
+        "iata_code": "QM",
+        "name": "Air Malawi"
+    },
+    {
+        "iata_code": "XV",
+        "name": "BVI Airways"
+    },
+    {
+        "iata_code": "DX",
+        "name": "DAT Danish Air Transport"
+    },
+    {
+        "iata_code": "HC",
+        "name": "Air Senegal"
+    },
+    {
+        "iata_code": "HT",
+        "name": "Hellenic Imperial Airways"
+    },
+    {
+        "iata_code": "SB",
+        "name": "Aircalin"
+    },
+    {
+        "iata_code": "YO",
+        "name": "TransHolding System"
+    },
+    {
+        "iata_code": "MB",
+        "name": "MNG Airlines"
+    },
+    {
+        "iata_code": "ZN",
+        "name": "Zenith International Airline"
+    },
+    {
+        "iata_code": "NX",
+        "name": "Air Macau"
+    },
+    {
+        "iata_code": "QJ",
+        "name": "Jet Airways"
+    },
+    {
+        "iata_code": "EV",
+        "name": "ExpressJet"
+    },
+    {
+        "iata_code": "VO",
+        "name": "FlyVLM"
+    },
+    {
+        "iata_code": "FM",
+        "name": "Shanghai Airlines"
+    },
+    {
+        "iata_code": "WJ",
+        "name": "JetSMART Argentina"
+    },
+    {
+        "iata_code": "AU",
+        "name": "Austral Lineas Aereas"
+    },
+    {
+        "iata_code": "HF",
+        "name": "Air Cote d'Ivoire"
+    },
+    {
+        "iata_code": "ZA",
+        "name": "Sky Angkor Airlines"
+    },
+    {
+        "iata_code": "JF",
+        "name": "Jetairfly"
+    },
+    {
+        "iata_code": "WA",
+        "name": "KLM Cityhopper"
+    },
+    {
+        "iata_code": "GO",
+        "name": "Kuzu Airlines Cargo"
+    },
+    {
+        "iata_code": "HE",
+        "name": "Luftfahrtgesellschaft Walter"
+    },
+    {
+        "iata_code": "DM",
+        "name": "Maersk"
+    },
+    {
+        "iata_code": "NW",
+        "name": "Northwest Airlines"
+    },
+    {
+        "iata_code": "QO",
+        "name": "Origin Pacific Airways"
+    },
+    {
+        "iata_code": "NI",
+        "name": "Portugalia"
+    },
+    {
+        "iata_code": "RD",
+        "name": "Ryan International Airlines"
+    },
+    {
+        "iata_code": "YS",
+        "name": "Régional"
+    },
+    {
+        "iata_code": "AL",
+        "name": "Skywalk Airlines"
+    },
+    {
+        "iata_code": "ZG",
+        "name": "Grozny Avia"
+    },
+    {
+        "iata_code": "CV",
+        "name": "Air Chathams"
+    },
+    {
+        "iata_code": "SP",
+        "name": "SATA Air Acores"
+    },
+    {
+        "iata_code": "LF",
+        "name": "Contour Airlines"
+    },
+    {
+        "iata_code": "WQ",
+        "name": "Swiftair"
+    },
+    {
+        "iata_code": "YL",
+        "name": "Yamal Airlines"
+    },
+    {
+        "iata_code": "JB",
+        "name": "Helijet"
+    },
+    {
+        "iata_code": "ZX",
+        "name": "Japan Regio"
+    },
+    {
+        "iata_code": "CQ",
+        "name": "Coastal Aviation"
+    },
+    {
+        "iata_code": "BQ",
+        "name": "Buquebus Líneas Aéreas"
+    },
+    {
+        "iata_code": "HI",
+        "name": "Papillon Grand Canyon Helicopters"
+    },
+    {
+        "iata_code": "YR",
+        "name": "SENIC AIRLINES"
+    },
+    {
+        "iata_code": "AN",
+        "name": "Ansett Australia"
+    },
+    {
+        "iata_code": "MR",
+        "name": "Hunnu Air"
+    },
+    {
+        "iata_code": "YY",
+        "name": "Virginwings"
+    },
+    {
+        "iata_code": "QC",
+        "name": "Camair-co"
+    },
+    {
+        "iata_code": "OG",
+        "name": "AirOnix"
+    },
+    {
+        "iata_code": "FG",
+        "name": "Ariana Afghan Airlines"
+    },
+    {
+        "iata_code": "GV",
+        "name": "Grant Aviation"
+    },
+    {
+        "iata_code": "BH",
+        "name": "Hawkair"
+    },
+    {
+        "iata_code": "CL",
+        "name": "Lufthansa CityLine"
+    },
+    {
+        "iata_code": "GH",
+        "name": "Globus"
+    },
+    {
+        "iata_code": "WU",
+        "name": "Jetways Airlines Limited"
+    },
+    {
+        "iata_code": "FU",
+        "name": "Fuzhou Airlines"
+    },
+    {
+        "iata_code": "HW",
+        "name": "Hello"
+    },
+    {
+        "iata_code": "OM",
+        "name": "MIAT Mongolian Airlines"
+    },
+    {
+        "iata_code": "MA",
+        "name": "Malév"
+    },
+    {
+        "iata_code": "VP",
+        "name": "VASP"
+    },
+    {
+        "iata_code": "SO",
+        "name": "Salsa d\\\\'Haiti"
+    },
+    {
+        "iata_code": "ZC",
+        "name": "Korongo Airlines"
+    },
+    {
+        "iata_code": "WH",
+        "name": "China Northwest Airlines (WH)"
+    },
+    {
+        "iata_code": "KG",
+        "name": "Royal Airways"
+    },
+    {
+        "iata_code": "YH",
+        "name": "Yangon Airways Ltd."
+    },
+    {
+        "iata_code": "CB",
+        "name": "CCML Airlines"
+    },
+    {
+        "iata_code": "GB",
+        "name": "BRAZIL AIR"
+    },
+    {
+        "iata_code": "OP",
+        "name": "PassionAir"
+    },
+    {
+        "iata_code": "QU",
+        "name": "Azur Air Ukraine"
+    },
+    {
+        "iata_code": "EZ",
+        "name": "Evergreen International Airlines"
+    },
+    {
+        "iata_code": "ZY",
+        "name": "Ada Air"
+    },
+    {
+        "iata_code": "EM",
+        "name": "Empire Airlines"
+    },
+    {
+        "iata_code": "CS",
+        "name": "Continental Micronesia"
+    },
+    {
+        "iata_code": "DK",
+        "name": "Eastland Air"
+    },
+    {
+        "iata_code": "RF",
+        "name": "Florida West International Airways"
+    },
+    {
+        "iata_code": "TU",
+        "name": "Tunisair"
+    },
+    {
+        "iata_code": "VA",
+        "name": "Virgin Australia Airlines"
+    },
+    {
+        "iata_code": "ZQ",
+        "name": "Locair"
+    },
+    {
+        "iata_code": "OQ",
+        "name": "Chongqing Airlines"
+    },
+    {
+        "iata_code": "PA",
+        "name": "Airblue"
+    },
+    {
+        "iata_code": "RG",
+        "name": "Rotana Jet"
+    },
+    {
+        "iata_code": "TJ",
+        "name": "Tradewind Aviation"
+    },
+    {
+        "iata_code": "DN",
+        "name": "Norwegian Air Argentina"
+    },
+    {
+        "iata_code": "NS",
+        "name": "Hebei Airlines"
+    },
+    {
+        "iata_code": "VF",
+        "name": "Valuair"
+    },
+    {
+        "iata_code": "HM",
+        "name": "Air Seychelles"
+    },
+    {
+        "iata_code": "KN",
+        "name": "China United"
+    },
+    {
+        "iata_code": "TH",
+        "name": "TransBrasil Airlines"
+    },
+    {
+        "iata_code": "XB",
+        "name": "NEXT Brasil"
+    },
+    {
+        "iata_code": "GN",
+        "name": "GNB Linhas Aereas"
+    },
+    {
+        "iata_code": "QY",
+        "name": "Red Jet Canada"
+    },
+    {
+        "iata_code": "FH",
+        "name": "Freebird Airlines"
+    },
+    {
+        "iata_code": "HQ",
+        "name": "Thomas Cook Belgium"
+    },
+    {
+        "iata_code": "DA",
+        "name": "Aerolinea de Antioquia"
+    },
+    {
+        "iata_code": "BG",
+        "name": "Biman Bangladesh Airlines"
+    },
+    {
+        "iata_code": "WV",
+        "name": "Aero VIP"
+    },
+    {
+        "iata_code": "TX",
+        "name": "Air Caraïbes"
+    },
+    {
+        "iata_code": "VC",
+        "name": "Via Air"
+    },
+    {
+        "iata_code": "IR",
+        "name": "Iran Air"
+    },
+    {
+        "iata_code": "ZZ",
+        "name": "Zz"
+    },
+    {
+        "iata_code": "JM",
+        "name": "Jambojet"
+    },
+    {
+        "iata_code": "IZ",
+        "name": "Arkia"
+    },
+    {
+        "iata_code": "HD",
+        "name": "Air Do"
+    },
+    {
+        "iata_code": "CI",
+        "name": "China Airlines"
+    },
+    {
+        "iata_code": "QG",
+        "name": "Citilink"
+    },
+    {
+        "iata_code": "LB",
+        "name": "Air Costa"
+    },
+    {
+        "iata_code": "AE",
+        "name": "Mandarin Airlines"
+    },
+    {
+        "iata_code": "DG",
+        "name": "CebGo"
+    },
+    {
+        "iata_code": "OE",
+        "name": "LaudaMotion"
+    },
+    {
+        "iata_code": "IW",
+        "name": "Wings Air"
+    },
+    {
+        "iata_code": "CZ",
+        "name": "China Southern Airlines"
+    },
+    {
+        "iata_code": "EE",
+        "name": "RegionalJet"
+    },
+    {
+        "iata_code": "YE",
+        "name": "Yan Air"
+    },
+    {
+        "iata_code": "AA",
+        "name": "American Airlines"
+    },
+    {
+        "iata_code": "RO",
+        "name": "Tarom"
+    },
+    {
+        "iata_code": "TN",
+        "name": "Air Tahiti Nui"
+    },
+    {
+        "iata_code": "AO",
+        "name": "Avianova (Russia)"
+    },
+    {
+        "iata_code": "CC",
+        "name": "CM Airlines"
+    },
+    {
+        "iata_code": "KM",
+        "name": "Air Malta"
+    },
+    {
+        "iata_code": "GR",
+        "name": "Aurigny Air Services"
+    },
+    {
+        "iata_code": "RK",
+        "name": "Air Afrique"
+    },
+    {
+        "iata_code": "QL",
+        "name": "Laser Air"
+    },
+    {
+        "iata_code": "CJ",
+        "name": "BA CityFlyer"
+    },
+    {
+        "iata_code": "OH",
+        "name": "Comair"
+    },
+    {
+        "iata_code": "JE",
+        "name": "Mango"
+    },
+    {
+        "iata_code": "TG",
+        "name": "Thai Airways International"
+    },
+    {
+        "iata_code": "VN",
+        "name": "Vietnam Airlines"
+    },
+    {
+        "iata_code": "OB",
+        "name": "Boliviana de Aviación"
+    },
+    {
+        "iata_code": "OS",
+        "name": "Austrian Airlines"
+    },
+    {
+        "iata_code": "VB",
+        "name": "VivaAerobus"
+    },
+    {
+        "iata_code": "UX",
+        "name": "Air Europa"
+    },
+    {
+        "iata_code": "FR",
+        "name": "Ryanair"
+    },
+    {
+        "iata_code": "SW",
+        "name": "Air Namibia"
+    },
+    {
+        "iata_code": "WW",
+        "name": "WOW air"
+    },
+    {
+        "iata_code": "QX",
+        "name": "Horizon Air"
+    },
+    {
+        "iata_code": "SA",
+        "name": "South African Airways"
+    },
+    {
+        "iata_code": "YU",
+        "name": "EuroAtlantic Airways"
+    },
+    {
+        "iata_code": "NJ",
+        "name": "Nordic Global Airlines"
+    },
+    {
+        "iata_code": "EF",
+        "name": "EasyFly"
+    },
+    {
+        "iata_code": "KI",
+        "name": "KrasAvia"
+    },
+    {
+        "iata_code": "XL",
+        "name": "LATAM Ecuador"
+    },
+    {
+        "iata_code": "ES",
+        "name": "Estelar Latinoamerica"
+    },
+    {
+        "iata_code": "WK",
+        "name": "Edelweiss Air"
+    },
+    {
+        "iata_code": "WN",
+        "name": "Southwest Airlines"
+    },
+    {
+        "iata_code": "NK",
+        "name": "Spirit Airlines"
+    },
+    {
+        "iata_code": "SM",
+        "name": "Air Cairo"
+    },
+    {
+        "iata_code": "KY",
+        "name": "Kunming Airlines"
+    },
+    {
+        "iata_code": "RY",
+        "name": "Air Jiangxi"
+    },
+    {
+        "iata_code": "OW",
+        "name": "Skyward Express Limited"
+    },
+    {
+        "iata_code": "BZ",
+        "name": "Blue Bird Airways"
+    },
+    {
+        "iata_code": "BP",
+        "name": "Air Botswana"
+    },
+    {
+        "iata_code": "BI",
+        "name": "Royal Brunei Airlines"
+    },
+    {
+        "iata_code": "CW",
+        "name": "Air Marshall Islands"
+    },
+    {
+        "iata_code": "ZJ",
+        "name": "Zambezi Airlines (ZMA)"
+    },
+    {
+        "iata_code": "GP",
+        "name": "APG Airlines"
+    },
+    {
+        "iata_code": "MW",
+        "name": "Mokulele Flight Service"
+    },
+    {
+        "iata_code": "IG",
+        "name": "Air Italy"
+    },
+    {
+        "iata_code": "ZP",
+        "name": "Amaszonas del Paraguay S.A. Lineas Aereas"
+    },
+    {
+        "iata_code": "RV",
+        "name": "Caspian Airlines"
+    },
+    {
+        "iata_code": "YT",
+        "name": "Yeti Airways"
+    },
+    {
+        "iata_code": "WT",
+        "name": "Wasaya Airways"
+    },
+    {
+        "iata_code": "QN",
+        "name": "Skytrans"
+    },
+    {
+        "iata_code": "IS",
+        "name": "Fly Ais Airlines"
+    },
+    {
+        "iata_code": "FI",
+        "name": "Icelandair"
+    },
+    {
+        "iata_code": "FP",
+        "name": "Pelican Airlines"
+    },
+    {
+        "iata_code": "IF",
+        "name": "Fly Baghdad Airlines"
+    },
+    {
+        "iata_code": "SC",
+        "name": "Shandong Airlines"
+    },
+    {
+        "iata_code": "RW",
+        "name": "Republic Airlines"
+    },
+    {
+        "iata_code": "JZ",
+        "name": "Skyways Express"
+    },
+    {
+        "iata_code": "DF",
+        "name": "Michael Airlines"
+    },
+    {
+        "iata_code": "NQ",
+        "name": "Air Japan"
+    },
+    {
+        "iata_code": "EP",
+        "name": "Iran Aseman Airlines"
+    },
+    {
+        "iata_code": "IE",
+        "name": "Solomon Airlines"
+    },
+    {
+        "iata_code": "SH",
+        "name": "Sharp Airlines"
+    },
+    {
+        "iata_code": "XF",
+        "name": "Vladivostok Air"
+    },
+    {
+        "iata_code": "LC",
+        "name": "Varig Log"
+    },
+    {
+        "iata_code": "KP",
+        "name": "ASKY Airlines"
+    },
+    {
+        "iata_code": "EG",
+        "name": "Ernest Airlines"
+    },
+    {
+        "iata_code": "HP",
+        "name": "America West Airlines"
+    },
+    {
+        "iata_code": "TZ",
+        "name": "Scoot - old"
+    },
+    {
+        "iata_code": "WC",
+        "name": "Avianca Honduras"
+    },
+    {
+        "iata_code": "MT",
+        "name": "Thomas Cook Airlines"
+    },
+    {
+        "iata_code": "ID",
+        "name": "Batik Air"
+    },
+    {
+        "iata_code": "VZ",
+        "name": "Thai Vietjet"
+    },
+    {
+        "iata_code": "HY",
+        "name": "Uzbekistan Airways"
+    },
+    {
+        "iata_code": "ZW",
+        "name": "Air Wisconsin"
+    },
+    {
+        "iata_code": "GI",
+        "name": "Itek Air"
+    },
+    {
+        "iata_code": "JD",
+        "name": "Beijing Capital Airlines"
+    },
+    {
+        "iata_code": "ZV",
+        "name": "V Air"
+    },
+    {
+        "iata_code": "JC",
+        "name": "JAL Express"
+    },
+    {
+        "iata_code": "UB",
+        "name": "Myanmar National Airlines"
+    },
+    {
+        "iata_code": "DS",
+        "name": "EasyJet (DS)"
+    },
+    {
+        "iata_code": "YN",
+        "name": "Air Creebec"
+    },
+    {
+        "iata_code": "TM",
+        "name": "LAM Mozambique Airlines"
+    },
+    {
+        "iata_code": "VD",
+        "name": "Air Libert"
+    },
+    {
+        "iata_code": "JO",
+        "name": "JALways"
+    },
+    {
+        "iata_code": "PB",
+        "name": "Provincial Airlines"
+    },
+    {
+        "iata_code": "PX",
+        "name": "Air Niugini"
+    },
+    {
+        "iata_code": "ZD",
+        "name": "EWA Air"
+    },
+    {
+        "iata_code": "ML",
+        "name": "Air Mediterranee"
+    },
+    {
+        "iata_code": "TO",
+        "name": "Transavia France"
+    },
+    {
+        "iata_code": "JA",
+        "name": "JetSMART"
+    },
+    {
+        "iata_code": "TT",
+        "name": "Tiger Airways Australia"
+    },
+    {
+        "iata_code": "AV",
+        "name": "Avianca"
+    },
+    {
+        "iata_code": "ST",
+        "name": "Germania"
+    },
+    {
+        "iata_code": "DB",
+        "name": "Brit Air"
+    },
+    {
+        "iata_code": "JU",
+        "name": "Air Serbia"
+    },
+    {
+        "iata_code": "UL",
+        "name": "SriLankan Airlines"
+    },
+    {
+        "iata_code": "PN",
+        "name": "West Air China"
+    },
+    {
+        "iata_code": "HX",
+        "name": "Hong Kong Airlines"
+    },
+    {
+        "iata_code": "AW",
+        "name": "Africa World Airlines"
+    },
+    {
+        "iata_code": "EL",
+        "name": "Ellinair"
+    },
+    {
+        "iata_code": "DR",
+        "name": "Ruili Airlines"
+    },
+    {
+        "iata_code": "OR",
+        "name": "TUI Airlines Netherlands"
+    },
+    {
+        "iata_code": "EB",
+        "name": "Wamos Air"
+    },
+    {
+        "iata_code": "WS",
+        "name": "WestJet"
+    },
+    {
+        "iata_code": "YC",
+        "name": "Yamal Air"
+    },
+    {
+        "iata_code": "SG",
+        "name": "Spicejet"
+    },
+    {
+        "iata_code": "XY",
+        "name": "flynas"
+    },
+    {
+        "iata_code": "DV",
+        "name": "Scat Airlines"
+    },
+    {
+        "iata_code": "GT",
+        "name": "Air Guilin"
+    },
+    {
+        "iata_code": "AB",
+        "name": "Air Berlin"
+    },
+    {
+        "iata_code": "MJ",
+        "name": "Myway Airlines"
+    },
+    {
+        "iata_code": "VJ",
+        "name": "VietJet Air"
+    },
+    {
+        "iata_code": "YZ",
+        "name": "Alas Uruguay"
+    },
+    {
+        "iata_code": "NL",
+        "name": "Shaheen Air International"
+    },
+    {
+        "iata_code": "FA",
+        "name": "Fly Safair"
+    },
+    {
+        "iata_code": "BM",
+        "name": "flybmi"
+    },
+    {
+        "iata_code": "PF",
+        "name": "Primera Air"
+    },
+    {
+        "iata_code": "JV",
+        "name": "Perimeter Aviation"
+    },
+    {
+        "iata_code": "LJ",
+        "name": "Jin Air"
+    },
+    {
+        "iata_code": "OD",
+        "name": "Malindo Air"
+    },
+    {
+        "iata_code": "KK",
+        "name": "AtlasGlobal"
+    },
+    {
+        "iata_code": "BC",
+        "name": "Skymark Airlines"
+    },
+    {
+        "iata_code": "KQ",
+        "name": "Kenya Airways"
+    },
+    {
+        "iata_code": "KL",
+        "name": "KLM Royal Dutch Airlines"
+    },
+    {
+        "iata_code": "IX",
+        "name": "Air India Express"
+    },
+    {
+        "iata_code": "ZI",
+        "name": "Aigle Azur"
+    },
+    {
+        "iata_code": "LX",
+        "name": "Swiss International Air Lines"
+    },
+    {
+        "iata_code": "XN",
+        "name": "Xpressair"
+    },
+    {
+        "iata_code": "CA",
+        "name": "Air China"
+    },
+    {
+        "iata_code": "MO",
+        "name": "Calm Air"
+    },
+    {
+        "iata_code": "NZ",
+        "name": "Air New Zealand"
+    },
+    {
+        "iata_code": "VQ",
+        "name": "Novoair"
+    },
+    {
+        "iata_code": "KX",
+        "name": "Cayman Airways"
+    },
+    {
+        "iata_code": "CO",
+        "name": "Cobalt Air"
+    },
+    {
+        "iata_code": "WB",
+        "name": "Rwandair Express"
+    },
+    {
+        "iata_code": "SI",
+        "name": "Blue Islands"
+    },
+    {
+        "iata_code": "YJ",
+        "name": "Asian Wings Air"
+    },
+    {
+        "iata_code": "RX",
+        "name": "Regent Airways"
+    },
+    {
+        "iata_code": "JW",
+        "name": "Vanilla Air"
+    },
+    {
+        "iata_code": "BX",
+        "name": "Air Busan"
+    },
+    {
+        "iata_code": "DP",
+        "name": "Pobeda"
+    },
+    {
+        "iata_code": "PW",
+        "name": "Precision Air"
+    },
+    {
+        "iata_code": "JQ",
+        "name": "Jetstar Airways"
+    },
+    {
+        "iata_code": "BJ",
+        "name": "NouvelAir"
+    },
+    {
+        "iata_code": "CM",
+        "name": "Copa Airlines"
+    },
+    {
+        "iata_code": "ME",
+        "name": "Middle East Airlines"
+    },
+    {
+        "iata_code": "OZ",
+        "name": "Asiana Airlines"
+    },
+    {
+        "iata_code": "KU",
+        "name": "Kuwait Airways"
+    },
+    {
+        "iata_code": "OJ",
+        "name": "Fly Jamaica Airways"
+    },
+    {
+        "iata_code": "TL",
+        "name": "Airnorth"
+    },
+    {
+        "iata_code": "QK",
+        "name": "Air Canada Jazz"
+    },
+    {
+        "iata_code": "VW",
+        "name": "Aeromar"
+    },
+    {
+        "iata_code": "QW",
+        "name": "Qingdao Airlines"
+    },
+    {
+        "iata_code": "WP",
+        "name": "Island Air"
+    },
+    {
+        "iata_code": "CF",
+        "name": "City Airline"
+    },
+    {
+        "iata_code": "HO",
+        "name": "Juneyao Airlines"
+    },
+    {
+        "iata_code": "KD",
+        "name": "Kalstar Aviation"
+    },
+    {
+        "iata_code": "QS",
+        "name": "SmartWings"
+    },
+    {
+        "iata_code": "TR",
+        "name": "Scoot"
+    },
+    {
+        "iata_code": "IP",
+        "name": "Island Spirit"
+    },
+    {
+        "iata_code": "UK",
+        "name": "Air Vistara"
+    },
+    {
+        "iata_code": "AQ",
+        "name": "9 Air"
+    },
+    {
+        "iata_code": "SK",
+        "name": "SAS"
+    },
+    {
+        "iata_code": "DY",
+        "name": "Norwegian"
+    },
+    {
+        "iata_code": "UO",
+        "name": "Hong Kong Express Airways"
+    },
+    {
+        "iata_code": "AF",
+        "name": "Air France"
+    },
+    {
+        "iata_code": "TP",
+        "name": "TAP Portugal"
+    },
+    {
+        "iata_code": "AI",
+        "name": "Air India Limited"
+    },
+    {
+        "iata_code": "VY",
+        "name": "Vueling"
+    },
+    {
+        "iata_code": "JL",
+        "name": "Japan Airlines"
+    },
+    {
+        "iata_code": "KC",
+        "name": "Air Astana"
+    },
+    {
+        "iata_code": "SN",
+        "name": "Brussels Airlines"
+    },
+    {
+        "iata_code": "FC",
+        "name": "Fly Corporate"
+    },
+    {
+        "iata_code": "TF",
+        "name": "Braathens Regional Aviation"
+    },
+    {
+        "iata_code": "TB",
+        "name": "tuifly.be"
+    },
+    {
+        "iata_code": "EW",
+        "name": "Eurowings"
+    },
+    {
+        "iata_code": "IB",
+        "name": "Iberia Airlines"
+    },
+    {
+        "iata_code": "FO",
+        "name": "Flybondi"
+    },
+    {
+        "iata_code": "CP",
+        "name": "Compass Airlines"
+    },
+    {
+        "iata_code": "FD",
+        "name": "Thai AirAsia"
+    },
+    {
+        "iata_code": "FZ",
+        "name": "Fly Dubai"
+    },
+    {
+        "iata_code": "TK",
+        "name": "Turkish Airlines"
+    },
+    {
+        "iata_code": "JP",
+        "name": "Adria Airways"
+    },
+    {
+        "iata_code": "CN",
+        "name": "Canadian National Airways"
+    },
+    {
+        "iata_code": "WM",
+        "name": "Windward Islands Airways"
+    },
+    {
+        "iata_code": "PC",
+        "name": "Pegasus"
+    },
+    {
+        "iata_code": "LK",
+        "name": "Lao Skyway"
+    },
+    {
+        "iata_code": "RP",
+        "name": "Chautauqua Airlines"
+    },
+    {
+        "iata_code": "LY",
+        "name": "El Al Israel Airlines"
+    },
+    {
+        "iata_code": "UE",
+        "name": "Nasair"
+    },
+    {
+        "iata_code": "DH",
+        "name": "Dennis Sky"
+    },
+    {
+        "iata_code": "TW",
+        "name": "Tway Airlines"
+    },
+    {
+        "iata_code": "PG",
+        "name": "Bangkok Airways"
+    },
+    {
+        "iata_code": "DD",
+        "name": "Nok Air"
+    },
+    {
+        "iata_code": "FY",
+        "name": "Firefly"
+    },
+    {
+        "iata_code": "FN",
+        "name": "Fastjet"
+    },
+    {
+        "iata_code": "JT",
+        "name": "Lion Air"
+    },
+    {
+        "iata_code": "YB",
+        "name": "BoraJet"
+    },
+    {
+        "iata_code": "SL",
+        "name": "Thai Lion Air"
+    },
+    {
+        "iata_code": "AZ",
+        "name": "Alitalia"
+    },
+    {
+        "iata_code": "AR",
+        "name": "Aerolineas Argentinas"
+    },
+    {
+        "iata_code": "AM",
+        "name": "AeroMéxico"
+    },
+    {
+        "iata_code": "BV",
+        "name": "Blue Panorama"
+    },
+    {
+        "iata_code": "DE",
+        "name": "Condor"
+    },
+    {
+        "iata_code": "QZ",
+        "name": "Indonesia AirAsia"
+    },
+    {
+        "iata_code": "DL",
+        "name": "Delta Air Lines"
+    },
+    {
+        "iata_code": "UT",
+        "name": "UTair"
+    },
+    {
+        "iata_code": "HA",
+        "name": "Hawaiian Airlines"
+    },
+    {
+        "iata_code": "WG",
+        "name": "Sunwing"
+    },
+    {
+        "iata_code": "UN",
+        "name": "Transaero Airlines"
+    },
+    {
+        "iata_code": "AK",
+        "name": "AirAsia"
+    },
+    {
+        "iata_code": "SJ",
+        "name": "Sriwijaya Air"
+    },
+    {
+        "iata_code": "SQ",
+        "name": "Singapore Airlines"
+    },
+    {
+        "iata_code": "UP",
+        "name": "Bahamasair"
+    },
+    {
+        "iata_code": "BA",
+        "name": "British Airways"
+    },
+    {
+        "iata_code": "SU",
+        "name": "Aeroflot Russian Airlines"
+    },
+    {
+        "iata_code": "EQ",
+        "name": "TAME"
+    },
+    {
+        "iata_code": "BW",
+        "name": "Caribbean Airlines"
+    },
+    {
+        "iata_code": "GA",
+        "name": "Garuda Indonesia"
+    },
+    {
+        "iata_code": "ET",
+        "name": "Ethiopian Airlines"
+    },
+    {
+        "iata_code": "HV",
+        "name": "Transavia"
+    },
+    {
+        "iata_code": "UJ",
+        "name": "AlMasria Universal Airlines"
+    },
+    {
+        "iata_code": "BF",
+        "name": "French Bee"
+    },
+    {
+        "iata_code": "EU",
+        "name": "Chengdu Airlines"
+    },
+    {
+        "iata_code": "KA",
+        "name": "Cathay Dragon"
+    },
+    {
+        "iata_code": "XR",
+        "name": "Corendon Airlines Europe"
+    },
+    {
+        "iata_code": "DC",
+        "name": "Braathens Regional Airways"
+    },
+    {
+        "iata_code": "ZO",
+        "name": "Zagros Airlines"
+    },
+    {
+        "iata_code": "BT",
+        "name": "airBaltic"
+    },
+    {
+        "iata_code": "HZ",
+        "name": "Aurora Airlines"
+    },
+    {
+        "iata_code": "MM",
+        "name": "Peach Aviation"
+    },
+    {
+        "iata_code": "HH",
+        "name": "Taban Airlines"
+    },
+    {
+        "iata_code": "OL",
+        "name": "Samoa Airways"
+    },
+    {
+        "iata_code": "GL",
+        "name": "Air Greenland"
+    },
+    {
+        "iata_code": "LM",
+        "name": "LoganAir LM"
+    },
+    {
+        "iata_code": "BL",
+        "name": "Jetstar Pacific"
+    },
+    {
+        "iata_code": "IJ",
+        "name": "Spring Airlines Japan"
+    },
+    {
+        "iata_code": "BE",
+        "name": "flybe"
+    },
+    {
+        "iata_code": "AG",
+        "name": "Aruba Airlines"
+    },
+    {
+        "iata_code": "GX",
+        "name": "GX airlines"
+    },
+    {
+        "iata_code": "PR",
+        "name": "Philippine Airlines"
+    },
+    {
+        "iata_code": "UQ",
+        "name": "Urumqi Airlines"
+    },
+    {
+        "iata_code": "UG",
+        "name": "TunisAir Express"
+    },
+    {
+        "iata_code": "VE",
+        "name": "VE"
+    },
+    {
+        "iata_code": "IT",
+        "name": "Tigerair Taiwan"
+    },
+    {
+        "iata_code": "ZK",
+        "name": "Great Lakes Airlines"
+    },
+    {
+        "iata_code": "HR",
+        "name": "Hahn Airlines"
+    },
+    {
+        "iata_code": "HU",
+        "name": "Hainan Airlines"
+    },
+    {
+        "iata_code": "PY",
+        "name": "Surinam Airways"
+    },
+    {
+        "iata_code": "LW",
+        "name": "Latin American Wings"
+    },
+    {
+        "iata_code": "RI",
+        "name": "Mandala Airlines"
+    },
+    {
+        "iata_code": "XC",
+        "name": "Corendon"
+    },
+    {
+        "iata_code": "WE",
+        "name": "Thai Smile"
+    },
+    {
+        "iata_code": "PL",
+        "name": "Southern Air Charter"
+    },
+    {
+        "iata_code": "AT",
+        "name": "Royal Air Maroc"
+    },
+    {
+        "iata_code": "BR",
+        "name": "EVA Air"
+    },
+    {
+        "iata_code": "MH",
+        "name": "Malaysia Airlines"
+    },
+    {
+        "iata_code": "OX",
+        "name": "Orient Thai Airlines"
+    },
+    {
+        "iata_code": "VS",
+        "name": "Virgin Atlantic Airways"
+    },
+    {
+        "iata_code": "GQ",
+        "name": "Sky Express"
+    },
+    {
+        "iata_code": "NH",
+        "name": "All Nippon Airways"
+    },
+    {
+        "iata_code": "WD",
+        "name": "Amsterdam Airlines"
+    },
+    {
+        "iata_code": "ZB",
+        "name": "Air Albania"
+    },
+    {
+        "iata_code": "RS",
+        "name": "Air Seoul"
+    }
+]

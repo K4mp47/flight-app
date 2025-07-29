@@ -1,3 +1,5 @@
+from typing import List
+
 from .base import Base
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -11,6 +13,10 @@ class Aircraft(Base):
 
     id_manufacturer: Mapped[int] = mapped_column(ForeignKey("manufacturers.id_manufacturer"), nullable=False)
     manufacturer: Mapped["Manufacturer"] = relationship("Manufacturer", back_populates='aircraft')
+
+    airline_aircraft : Mapped[List["Aircraft_airline"]] = relationship(
+        back_populates="aircraft",
+    )
 
     max_economy_seats: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)

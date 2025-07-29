@@ -314,3 +314,93 @@ risposta 200
 ]
 
 ------------------------------------------------------------------------------------------------------------------
+
+10) /airline/ methods=["GET"]
+
+API che ti permette di ottenere tutte le compagnie aeree presenti sul db in frormato JSON
+
+Ruoli -> Admin
+
+Authorization Bearer token_utente
+
+risposta 200
+
+[
+    {
+        "iata_code": "SR",
+        "name": "Sundair"
+    },
+    {
+        "iata_code": "WR",
+        "name": "WestJet Encore"
+    },
+    {
+        "iata_code": "CY",
+        "name": "Cyprus Airways"
+    },
+    {
+        "iata_code": "JY",
+        "name": "interCaribbean Airways"
+    }
+]
+
+------------------------------------------------------------------------------------------------------------------
+
+11) /airline/new methods=["POST"]
+
+API che inserisce una nuova compagnia aerea sul db
+
+Ruoli -> Admin
+
+Authorization Bearer token_utente
+
+body {
+   "iata_code" : "S9",
+   "name" : "Straw-hats Airline"
+}
+
+iata_code è formato solo da 2 caratteri
+
+risposta 200
+
+{
+    "airline": {
+        "iata_code": "S9",
+        "name": "Straw-hats Airline"
+    },
+    "message": "airline inserted"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+12) /airline/add/aircraft/<int:id_aircraft> methods=["POST"]
+
+API che permette di aggiungere un aereo alla flotta di una compagnia aerea.
+<int:id_aircraft> -> id dell'aereo che si vuole aggiungere alla flotta
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+body {
+    "airline_code" : "AZ",
+    "current_position" : "VCE"
+}
+
+current_position -> rappresenta l'areoporto dove il nuovo aereo si troverà
+
+risposta 200
+
+{
+    "aircraft": {
+        "double_deck": false,
+        "id_aircraft": 7,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 480,
+        "name": "A350-1000"
+    },
+    "message": "aircraft inserted successfully"
+}

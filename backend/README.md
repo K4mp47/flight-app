@@ -2,17 +2,6 @@
 
 ## Getting Started
 
-If you haven't already installed it, install virtualenv.
-```bash
-#i use arch btw
-sudo pacman -S python-virtualenv
-```
-Now move to the backend folder and type the command:
-```bash
-virtualenv venv
-```
-This will create the venv folder. Once this is done, we are ready to begin.
-
 First, Activate the virtual environment:
 
 ```bash
@@ -30,5 +19,5 @@ Third, launch the application.
 python app.py
 ```
 
-[http://localhost:5000] is active, This will activate the APIs.
+Open [http://localhost:5000](http://localhost:3000) with your browser to see the result.
 

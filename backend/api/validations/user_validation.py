@@ -1,19 +1,21 @@
 import re
 from enum import Enum
+from typing import Annotated
 
-from pydantic import BaseModel, EmailStr, validator, constr
+from pydantic import BaseModel, EmailStr, validator, constr, StringConstraints
+
 
 class User_login_Schema(BaseModel):
     email: EmailStr
-    pwd: constr(min_length=8)
+    pwd: Annotated[str, StringConstraints(min_length=8)]
 
 
 class User_Register_Schema(BaseModel):
-    name:constr(min_length=1)
-    lastname:constr(min_length=1)
+    name:Annotated[str, StringConstraints(min_length=1)]
+    lastname:Annotated[str, StringConstraints(min_length=1)]
     email:EmailStr
-    pwd:constr(min_length=8)
-    pwd2:constr(min_length=8)
+    pwd:Annotated[str, StringConstraints(min_length=8)]
+    pwd2:Annotated[str, StringConstraints(min_length=8)]
 
     @validator('pwd')
     def password_complexity(cls, v):

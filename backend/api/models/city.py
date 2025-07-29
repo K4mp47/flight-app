@@ -20,3 +20,8 @@ class City(Base):
 
     def __repr__(self):
         return f"City(id_state={self.id_city}, name={self.name})"
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+        }

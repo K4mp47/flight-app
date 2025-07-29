@@ -6,3 +6,4 @@ from .city import City
 from .airport import Airport
 from .manufacturer import Manufacturer
 from .aircraft import Aircraft
+from .airline import Airline

@@ -4,3 +4,5 @@ from .country import Country
 from .state import State
 from .city import City
 from .airport import Airport
+from .manufacturer import Manufacturer
+from .aircraft import Aircraft

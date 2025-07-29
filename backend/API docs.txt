@@ -1,37 +1,316 @@
-1)User API
+User con ruoli, per spiegazione dei ruoli andare ad API 6) users/<int:user_id>/change-role
+id 2 email mario.rossi@example.com Ruolo -> Admain
+id 7 email Monkey.D.Rufy@gmail.com Ruolo -> Airline-Admin
 
-/user/register  methods=["POST"]
+
+------------------------------------------------------------------------------------------------------------------
+1) /users/register  methods=["POST"]
+
+API che serve per creare un utente e aggiungerlo sul db e in caso di sucesso restituisce il token.
+
+Parametri:
+
 body {
-  "name": "Mario",
-  "lastname": "Rossi",
-  "email": "mario.rossi@example.com",
+  "name": "Rufy",
+  "lastname": "Monkey D. ",
+  "email": "Monkey.D.Rufy@gmail.com",
   "pwd": "Password123!",
   "pwd2": "Password123!"
 }
 
+Vincoli sui Parametri:
 la password deve avere almeno 1 lettera maiuscola, 1 numero e 1 carattere speciale.
 la password deve essere almeno lunga 8 caratteri.
 
 
-/user/login methods=["POST"]
+risposta 200
+
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1Mzc0OTIxOSwianRpIjoiNWEwNjBlMmEtMDkxYy00NWYwLTkyZDItYjQ1MDkzZTFiY2U4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEwIiwibmJmIjoxNzUzNzQ5MjE5LCJjc3JmIjoiMjRlOWU5ZmItNTJhYy00ZmY3LWJlMWEtNTRlYzI4MTgwNDExIiwiZXhwIjoxNzUzNzUwMTE5LCJyb2xlIjoiVXNlciJ9.xGYux7jTXegf38-mL9VQU6MuzlLpC9ytVBgnzHhQ5oc",
+    "message": "User registered"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+
+2) /users/login methods=["POST"]
+
+API che serve per autenticare un utente e restituisce il token
 
 body {
-  "email": "mario.rossi@example.com",
+  "email": "Zoro.Roronoa@gmail.com",
   "pwd": "Password123!"
 }
 
-restituisce il token
+risposta 200
 
-3) /user/profile methods=["GET"]
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1Mzc0OTYzNywianRpIjoiYTE1ZTdkYTAtYTk1Yy00NWNmLWJiYTUtZmI2NjI2MmE1NjY2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEwIiwibmJmIjoxNzUzNzQ5NjM3LCJjc3JmIjoiYmY0OTljY2ItNDY4Mi00MDhlLWI4N2MtYTIwY2VlMmZiYjQzIiwiZXhwIjoxNzUzNzUwNTM3LCJyb2xlIjoiVXNlciJ9.bJL7wMq0SfZA1EbScTpx2ypl0YXvk0Ao5V7Fc3VitvA"
+}
 
-passi il token jwt dell'utente ottenito con il login e ti restituisce:
-name,
-lastname,
-email,
-
+------------------------------------------------------------------------------------------------------------------
 
 
-4) /user/logout  methods=["POST"]
-passi il token jwt dell'utente e lo distrugge
+3) /users/me methods=["GET"]
+
+API che restituisce le informazioni base di un utente, per accederci bisogna essere autenticati.
+
+Authorization Bearer token_utente
+
+risposta 200
+
+{
+    "email": "Sanji.Vinsmoke@gmail.com",
+    "lastname": "Vinsmoke",
+    "name": "Sanji"
+}
 
 
+------------------------------------------------------------------------------------------------------------------
+
+4) /users/logout  methods=["POST"]
+
+API che elimina il token jwt che gli viene passato
+
+Authorization Bearer token_utente
+
+risposta 200
+
+{
+    "msg": "Logout successful"
+}
+
+
+------------------------------------------------------------------------------------------------------------------
+
+5) /users/ methods=["GET"]
+
+API che ritorna tutti gli users presenti sul db in formato JSON, per usarla bisogna avere ruolo Admin, per spiegazioni ruoli guardare API 6.
+
+Ruoli -> Admin
+
+Authorization Bearer token_utente
+
+risposta 200
+
+[
+    {
+        "email": "mario.rossi@example.com",
+        "id_user": 2,
+        "lastname": "Rossi",
+        "name": "Mario",
+        "role": {
+            "id_role": 1,
+            "name": "Admin"
+        }
+    },
+    {
+        "email": "il.rossi@sssssssss.com",
+        "id_user": 4,
+        "lastname": "Fiedorov",
+        "name": "Oscar",
+        "role": {
+            "id_role": 3,
+            "name": "Airline-Admin"
+        }
+    },
+    {
+        "email": "Zoro.Roronoa@gmail.com",
+        "id_user": 8,
+        "lastname": "Roronoa",
+        "name": "Zoro",
+        "role": {
+            "id_role": 2,
+            "name": "User"
+        }
+    },
+    {
+        "email": "Nico.Robin@gmail.com",
+        "id_user": 9,
+        "lastname": "Robin",
+        "name": "Nico",
+        "role": {
+            "id_role": 2,
+            "name": "User"
+        }
+    },
+    {
+        "email": "Sanji.Vinsmoke@gmail.com",
+        "id_user": 10,
+        "lastname": "Vinsmoke",
+        "name": "Sanji",
+        "role": {
+            "id_role": 2,
+            "name": "User"
+        }
+    },
+    {
+        "email": "Monkey.D.Rufy@gmail.com",
+        "id_user": 7,
+        "lastname": "Monkey D. ",
+        "name": "Rufy",
+        "role": {
+            "id_role": 2,
+            "name": "User"
+        }
+    }
+]
+
+
+------------------------------------------------------------------------------------------------------------------
+
+6) users/<int:user_id>/change-role methods=["PUT"]
+
+API serve a modificare il ruolo di un utente.
+
+Ruoli -> Admin
+
+Quali sono i ruoli possibili?
+
+Admin          id : 1
+User           id : 2
+Airline-Admin  id : 3
+
+il ruolo è inserito dentro i token così da impedire che gli utenti possono usare tutte le API
+
+<int:user_id> -> numero id dell' utente, se si vogliono cambiare i permessi all' utente 123 -> users/123/change-role
+
+Authorization Bearer token_utente
+
+body {
+  "new_role": "Airline-Admin"
+}
+
+Attenzione:
+new_role acetta solo SOLO: Admin, User, Airline-Admin
+
+risposta 200
+
+{
+    "message": "Role changed"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+7) aircraft/  methods=["GET"]
+
+API che permette di ottenere i dati di tutti gli aerei disponibili sul db in formato JSON. Guardare API numero 9 per aerei filtrati tramite produttore.
+
+Ruoli -> Admin, Airline-Admin
+
+Authorization Bearer token_utente
+
+risposta 200
+
+[
+     {
+        "double_deck": false,
+        "id_aircraft": 1,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 180,
+        "name": "A320"
+    },
+    {
+        "double_deck": false,
+        "id_aircraft": 2,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 160,
+        "name": "A319"
+    },
+    {
+        "double_deck": false,
+        "id_aircraft": 3,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 244,
+        "name": "A321"
+    }
+]
+
+Spiegazione dati:
+
+double_deck -> indica se l'aereo ha doppio piano oppure new_role 
+max_economy_seats -> indica il massimo di sedili classe economy può avere. Perchè questo dato è importante?
+Ogni classe economy, first, business, ecc... hanno un tipo di sedili diversi per dimensione a quelli economy (un business equivale a 4 economy). Il costruttore indica quindi il massiomo numero consentito di sedili economy poi la compagnia aerea deciderà come organizzarsi.
+
+------------------------------------------------------------------------------------------------------------------
+
+8) /manufacturer/  methods=["GET"]
+
+API che permette di ottenere i dati di tutti i costruttori disponibili sul db in formato JSON. 
+
+Ruoli -> Admin, Airline-Admin
+
+Authorization Bearer token_utente
+
+risposta 200
+
+[
+    {
+        "id_manufacturer": 1,
+        "name": "Airbus"
+    },
+    {
+        "id_manufacturer": 2,
+        "name": "Boeing"
+    },
+    {
+        "id_manufacturer": 3,
+        "name": "Embraer"
+    },
+    {
+        "id_manufacturer": 4,
+        "name": "Bombardier"
+    },
+    {
+        "id_manufacturer": 5,
+        "name": "Comac"
+    }
+]
+
+------------------------------------------------------------------------------------------------------------------
+
+9) aircraft/manufacturer/<int:id_manufacturer> methods=["GET"]
+
+API che permette di ottenere i dati di tutti gli aerei disponibili ma solo di un produttore, passato con il suo id. Si può vedere come API numero 7 ma filtrata 
+
+API che permette di ottenere i dati di tutti i costruttori disponibili sul db in formato JSON. 
+
+Ruoli -> Admin, Airline-Admin
+
+Authorization Bearer token_utente
+
+risposta 200
+
+[
+
+    {
+        "double_deck": false,
+        "id_aircraft": 1,
+        "max_economy_seats": 180,
+        "name": "A320"
+    },
+    {
+        "double_deck": false,
+        "id_aircraft": 2,
+        "max_economy_seats": 160,
+        "name": "A319"
+    },
+    {
+        "double_deck": false,
+        "id_aircraft": 3,
+        "max_economy_seats": 244,
+        "name": "A321"
+    }
+
+]
+
+------------------------------------------------------------------------------------------------------------------

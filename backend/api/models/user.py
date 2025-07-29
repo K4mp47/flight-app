@@ -20,3 +20,12 @@ class User(Base):
 
     def __repr__(self):
         return f"<Role(id_role={self.id_user}, name={self.name}, lastname={self.lastname}, email={self.email})>"
+
+    def to_dict(self):
+        return {
+            "id_user": self.id_user,
+            "role": self.role.to_dict(),
+            "name": self.name,
+            "lastname": self.lastname,
+            "email": self.email,
+        }

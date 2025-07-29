@@ -17,3 +17,9 @@ class Role(Base):
 
     def __repr__(self):
         return f"<Role(id_role={self.id_role}, name={self.name})>"
+
+    def to_dict(self):
+        return {
+            "id_role": self.id_role,
+            "name": self.name,
+        }

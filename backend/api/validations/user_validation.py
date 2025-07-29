@@ -1,4 +1,6 @@
 import re
+from enum import Enum
+
 from pydantic import BaseModel, EmailStr, validator, constr
 
 class User_login_Schema(BaseModel):
@@ -28,3 +30,13 @@ class User_Register_Schema(BaseModel):
         if 'pwd' in values and v != values['pwd']:
             raise ValueError("Passwords don't match")
         return v
+
+class User_role(str, Enum):
+    admin = "Admin"
+    user = "User"
+    airline_admin = "Airline-Admin"
+
+class User_new_role_Schema(BaseModel):
+    new_role: User_role
+
+

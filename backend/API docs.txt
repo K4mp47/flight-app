@@ -393,14 +393,107 @@ risposta 200
 
 {
     "aircraft": {
-        "double_deck": false,
-        "id_aircraft": 7,
-        "manufacturer": {
-            "id_manufacturer": 1,
-            "name": "Airbus"
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 1,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 180,
+            "name": "A320"
         },
-        "max_economy_seats": 480,
-        "name": "A350-1000"
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "MXP",
+        "flying_towards": null,
+        "id_aircraft_airline": 5
     },
     "message": "aircraft inserted successfully"
 }
+
+------------------------------------------------------------------------------------------------------------------
+
+13) /airline/fleet methods=["GET"]
+
+API che permette di ricevere  gli aerei di una flotta di una airline.
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+body {
+    "airline_code" : "AZ"
+}
+
+risposta 200
+
+{
+    "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 7,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 480,
+            "name": "A350-1000"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 1
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 8,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 189,
+            "name": "737-800"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 2
+    }
+}
+
+In caso di nessun aereo nella flotta restituisce []
+
+------------------------------------------------------------------------------------------------------------------
+
+14) /airline/delete/aircraft/<int:id_aircraft_airline>
+
+API che elimina un aereo dalla flotta della compagnia
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+body {
+    "airline_code" : "AZ"
+}
+
+risposta 200
+
+{
+    "message": "aircraft deleted from the fleet successfully"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+
+
+

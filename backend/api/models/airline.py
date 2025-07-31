@@ -15,7 +15,7 @@ class Airline(Base):
         cascade="all, delete-orphan"
     )
 
-    name : Mapped[str] = mapped_column(String, nullable=False)
+    name : Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):

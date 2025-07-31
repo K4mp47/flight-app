@@ -1,3 +1,5 @@
+from typing import List
+
 from .base import Base
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -20,6 +22,11 @@ class Aircraft_airline(Base):
 
     flying_towards: Mapped[str|None] = mapped_column(ForeignKey("airports.iata_code", ondelete="SET NULL"), nullable=True)
     flying_towards_airport: Mapped["Airport"] = relationship("Airport", foreign_keys=[flying_towards],  back_populates="aircraft_airline_flying_towards")
+
+    aircraft_compositions: Mapped[List["Aircraft_composition"]] = relationship(
+        back_populates="aircraft",
+        cascade="all, delete-orphan"
+    )
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 

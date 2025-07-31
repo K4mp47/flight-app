@@ -1,0 +1,97 @@
+[
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 7,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 480,
+            "name": "A350-1000"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 1
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 8,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 189,
+            "name": "737-800"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 2
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 1,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 180,
+            "name": "A320"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 3
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 1,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 180,
+            "name": "A320"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "FCO",
+        "flying_towards": null,
+        "id_aircraft_airline": 4
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 1,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 180,
+            "name": "A320"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "MXP",
+        "flying_towards": null,
+        "id_aircraft_airline": 5
+    }
+]

@@ -1,4 +1,3 @@
-from flask import session
 from sqlalchemy import select
 from ..models.user import User
 from db import SessionLocal

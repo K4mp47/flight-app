@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import List
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String,DateTime, ForeignKey
+from sqlalchemy import Integer, String, DateTime, ForeignKey, Boolean
+
 
 class Cell(Base):
     __tablename__ = 'cells'
@@ -15,6 +16,7 @@ class Cell(Base):
 
     x: Mapped[int] = mapped_column(Integer, nullable=False)
     y: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_seat: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -25,4 +27,5 @@ class Cell(Base):
             "id_cell": self.id_cell,
             "x": self.x,
             "y": self.y,
+            "is_seat": self.is_seat,
         }

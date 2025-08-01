@@ -14,7 +14,8 @@ user_bp = Blueprint("user_bp", __name__)
 @user_bp.route("/", methods=["GET"])
 @role_required("Admin")
 def get_all_users():
-    users = all_users()
+    session = SessionLocal()
+    users = all_users(session)
     return jsonify(users), 200
 
 

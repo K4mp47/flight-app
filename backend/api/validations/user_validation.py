@@ -2,7 +2,7 @@ import re
 from enum import Enum
 from typing import Annotated
 
-from pydantic import BaseModel, EmailStr, validator, constr, StringConstraints
+from pydantic import BaseModel, EmailStr, field_validator, constr, StringConstraints
 
 
 class User_login_Schema(BaseModel):
@@ -17,19 +17,22 @@ class User_Register_Schema(BaseModel):
     pwd:Annotated[str, StringConstraints(min_length=8)]
     pwd2:Annotated[str, StringConstraints(min_length=8)]
 
-    @validator('pwd')
-    def password_complexity(cls, v):
+    @field_validator("pwd")
+    @classmethod
+    def password_complexity(cls, v: str) -> str:
         if not re.search(r'[A-Z]', v):
             raise ValueError('The password must contain at least one uppercase letter.')
         if not re.search(r'[0-9]', v):
-            raise ValueError('The password must contain at least one number')
+            raise ValueError('The password must contain at least one number.')
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError('The password must contain at least one special character.')
         return v
 
-    @validator("pwd2")
-    def passwords_match(cls, v, values):
-        if 'pwd' in values and v != values['pwd']:
+    @field_validator("pwd2")
+    @classmethod
+    def passwords_match(cls, v: str, values: dict) -> str:
+        pwd = values.data.get("pwd")
+        if pwd and v != pwd:
             raise ValueError("Passwords don't match")
         return v
 

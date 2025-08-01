@@ -16,7 +16,7 @@ class User_controller:
 
 
     def register_user(self, data:dict):
-        if get_user_by_email(data['email']):
+        if get_user_by_email(self.session,data['email']):
             return {"message": "Email already registered"}, 400
 
         hashed_password = generate_password_hash(data['password'])
@@ -33,7 +33,7 @@ class User_controller:
         self.session.commit()
         self.session.refresh(new_user)
 
-        user = get_user_by_email(data['email'])
+        user = get_user_by_email(self.session,data['email'])
         access_token = create_access_token(identity=str(user.id_user), additional_claims={"role": user.role.name})
         return {"message": "User registered", "access_token": access_token}, 201
 

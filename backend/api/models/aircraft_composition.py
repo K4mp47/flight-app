@@ -9,7 +9,7 @@ from sqlalchemy import Integer, String, DateTime, ForeignKey, Float
 class Aircraft_composition(Base):
     __tablename__ = "aircraft_composition"
 
-    id_cell_block: Mapped[int] = mapped_column(ForeignKey("cells_block.cells_block"), primary_key=True)
+    id_cell_block: Mapped[int] = mapped_column(ForeignKey("cells_block.id_cell_block"), primary_key=True)
     cell_block: Mapped["Cells_block"] = relationship("Cells_block", back_populates="aircraft_compositions")
 
     id_aircraft_airline: Mapped[int] = mapped_column(ForeignKey("aircraft_airlines.id_aircraft_airline"), primary_key=True)

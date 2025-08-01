@@ -20,6 +20,7 @@ class Aircraft(Base):
 
     max_economy_seats: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
+    cabin_max_cols: Mapped[int] = mapped_column(Integer, nullable=False)
     double_deck: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
@@ -32,6 +33,7 @@ class Aircraft(Base):
             "manufacturer": self.manufacturer.to_dict(),
             "name": self.name,
             "max_economy_seats": self.max_economy_seats,
+            "cabin_max_cols": self.cabin_max_cols,
             "double_deck": self.double_deck,
         }
 
@@ -39,6 +41,7 @@ class Aircraft(Base):
         return {
             "id_aircraft": self.id_aircraft,
             "name": self.name,
+            "cabin_max_cols": self.cabin_max_cols,
             "max_economy_seats": self.max_economy_seats,
             "double_deck": self.double_deck,
         }

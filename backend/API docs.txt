@@ -203,7 +203,8 @@ Authorization Bearer token_utente
 risposta 200
 
 [
-     {
+      {
+        "cabin_max_cols": 7,
         "double_deck": false,
         "id_aircraft": 1,
         "manufacturer": {
@@ -214,6 +215,7 @@ risposta 200
         "name": "A320"
     },
     {
+        "cabin_max_cols": 7,
         "double_deck": false,
         "id_aircraft": 2,
         "manufacturer": {
@@ -224,6 +226,7 @@ risposta 200
         "name": "A319"
     },
     {
+        "cabin_max_cols": 7,
         "double_deck": false,
         "id_aircraft": 3,
         "manufacturer": {
@@ -474,7 +477,7 @@ In caso di nessun aereo nella flotta restituisce []
 
 ------------------------------------------------------------------------------------------------------------------
 
-14) /airline/delete/aircraft/<int:id_aircraft_airline>
+14) /airline/delete/aircraft/<int:id_aircraft_airline> methods=["DELETE"]
 
 API che elimina un aereo dalla flotta della compagnia
 
@@ -494,6 +497,118 @@ risposta 200
 
 ------------------------------------------------------------------------------------------------------------------
 
+15) /airline/add/block/aircraft/<int:id_aircraft_airline> methods=["POST"]
 
+API che serve per creare un blocco di posti in un aerea dell'aereo.
+Dato che gli aerei sono divisi in classi, noi faremo lo stesso con il nostro aereo che selezioniamo tramite id_aircraft_airline.
 
+Ruoli -> Airline-Admin
 
+Authorization Bearer token_utente
+
+body {
+    "matrix" : [
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true],
+    [true, true, true,false,true, true, true]
+  ],
+  "proportion_economy_seat": 1,
+  "id_class": 4
+
+}
+
+la matrice rappresenta i posti del blocco dove true stà per posto mentre false per il corridoio.
+Come faccio a sapere quanto grande fare la matrice?
+Ogni aereo ha una dimensione massima di colonne, che sulle tabella pernde il nome di: cabin_max_cols
+
+Esempio, A321 ha cabin_max_cols = 7
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 3,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 244,
+        "name": "A321"
+    }
+
+guardare API numero 7 oppure aircraft.json in dataset per più esempi.
+
+Perchè proprio il valore 7?
+A321 è il classico aereo per voli brevi quindi ha una composizione di questo modo:
+
+sedile-sedile-sedile-corridoio-sedile-sedile-sedile
+
+ATTENZIONE-> si tiene in conto anche dei corridoi, infatti cabin_max_cols = 7 e non a 6.
+
+per quanto riguarda la dimensione delle righe quella è illimitata, ma non deve mai superare il max_economy_seats (guardare esempio dell'A321)
+ovvio però che i posti vengono sommati tra i blocchi. Non sarà possiblile creare un blocco con 244 e poi crearne altri.
+
+proportion_economy_seat invece serve a indicare quanto grandi sono i sedili delle altre classi.
+Se abbiamo un blocco in Business, logicamente i sedili saranno più grandi mettiamo per esempio che sono 3 volte più grandi.
+Allora poniamo proportion_economy_seat = 3.
+ATTENZIONE -> adesso un sedile vale 3 celle quindi al riga della matrice:
+[true,false,true] occupa 6 posti in economy che vanno a sottrarsi a max_economy_seats e occupano 7 colonne.
+
+id_class indica id alla classe, la classe economy ha id 4, se si pone id_class = 4 allora  proportion_economy_seat deve essere uguale a 1
+
+risposta 200
+
+{
+    "message": "Block inserted successfully"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+/airline/aircraft/<int:id_aircraft_airline>/seat_map methods=["GET"]
+
+restituisce la seat_map dell'aereo della flotta con id = aircraft_airline
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+per vedere la risposta completa andare nella cartella dataset/seat_map.json
+
+{
+"additional_seats_remaining": 40.0,
+"seats_number": 140.0
+"seat_map": [
+        {
+            "class_name": "First",
+            "cols": 3,
+            "id_cell_block": 5,
+            "id_class": 1,
+            "proportion_economy_seat": 3.0,
+            "rows": 5
+             "cells": [
+             {
+                    "id_cell": 1,
+                    "is_seat": true,
+                    "x": 0,
+                    "y": 0
+             },
+             {
+                    "id_cell": 2,
+                    "is_seat": false,
+                    "x": 1,
+                    "y": 0
+             },
+             {Tutte le altre celle},
+             ]
+
+        },
+    {Tutti gli altri blocchi},
+]
+}
+
+------------------------------------------------------------------------------------------------------------------

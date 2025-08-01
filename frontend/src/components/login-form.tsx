@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import React from "react"
 
 function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-  fetch("http://localhost:5000/user/login", {
+  fetch("http://localhost:5000/users/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -40,7 +40,7 @@ function handleLogin(event: React.FormEvent<HTMLFormElement>) {
 }
 
 function handleSignup(event: React.FormEvent<HTMLFormElement>) {
-  fetch("http://localhost:5000/user/register", {
+  fetch("http://localhost:5000/users/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

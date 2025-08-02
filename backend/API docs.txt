@@ -569,7 +569,7 @@ risposta 200
 
 ------------------------------------------------------------------------------------------------------------------
 
-/airline/aircraft/<int:id_aircraft_airline>/seat_map methods=["GET"]
+16) /airline/aircraft/<int:id_aircraft_airline>/seat_map methods=["GET"]
 
 restituisce la seat_map dell'aereo della flotta con id = aircraft_airline
 
@@ -612,3 +612,59 @@ per vedere la risposta completa andare nella cartella dataset/seat_map.json
 }
 
 ------------------------------------------------------------------------------------------------------------------
+
+17) /airline/aircraft/clone-seatmap methods=["POST"]
+
+ATTENZIONE questa API utilizza delle query non ottimizzate poichè nel db non sono ancora stati inseriti indici, è possibile che possa richiedere più di 15 sec.
+tempo per eliminare 150 record -> 12.24 sec
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che permette di copiare la disposizione dei blocchi e posizione sedili da un aereo ad un altro.
+Praticamente se ho 2 aerei A e B dove:
+A = source
+B = target
+
+B compierà la seat_map di A senza dover usare API 15 ovvero: /airline/add/block/aircraft/<int:id_aircraft_airline>
+
+ATTENZIONE se è già presente una configurazione dei posti di target, essa verà cancellata e sostituita con quella di A.
+
+body {
+  "source_id" : 4,
+  "target_id" : 3
+
+}
+
+risposta 201
+
+{
+    "message": "Operation successful 3 copied blocks"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+18) /route/add  methods=["POST"]
+
+Ruoli -> Airline-Admin, Admin
+
+Authorization Bearer token_utente
+
+API che permette di aggiungere le tratte di una rotta
+
+body {
+  "departure_airport": "IST",
+  "arrival_airport": "HND"
+}
+
+risposta 200
+
+{
+    "message": "route inserted successfully",
+    "route": {
+        "code_arrival_airport": "HND",
+        "code_departure_airport": "IST",
+        "id_routes_section": 2
+    }
+}

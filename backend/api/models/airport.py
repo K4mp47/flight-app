@@ -1,10 +1,10 @@
 from typing import List
-
 from . import City, city
 from .base import Base
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, DateTime, ForeignKey
+from sqlalchemy import String, DateTime, ForeignKey, Float
+
 
 class Airport(Base):
     __tablename__ = "airports"
@@ -24,8 +24,20 @@ class Airport(Base):
         foreign_keys="[Aircraft_airline.flying_towards]"
     )
 
+    routes_departure: Mapped[List["Route_section"]] = relationship(
+        back_populates="departure_airport",
+        foreign_keys="[Route_section.code_departure_airport]"
+    )
+
+    routes_arrival: Mapped[List["Route_section"]] = relationship(
+        back_populates="arrival_airport",
+        foreign_keys="[Route_section.code_departure_airport]"
+    )
+
 
     name: Mapped[str] = mapped_column(String, nullable=False)
+    latitude: Mapped[float] = mapped_column(Float, nullable=False)
+    longitude: Mapped[float] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -36,4 +48,6 @@ class Airport(Base):
             "iata_code": self.iata_code,
             "city": city.to_dict(),
             "name": self.name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
         }

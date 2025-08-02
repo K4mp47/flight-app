@@ -15,6 +15,11 @@ class Airline(Base):
         cascade="all, delete-orphan"
     )
 
+    routes: Mapped[List["Route"]] = relationship(
+        back_populates= "airline",
+        cascade="all, delete-orphan"
+    )
+
     name : Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 

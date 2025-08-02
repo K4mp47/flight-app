@@ -19,6 +19,7 @@ class Aircraft(Base):
     )
 
     max_economy_seats: Mapped[int] = mapped_column(Integer, nullable=False)
+    cruise_speed_kmh: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     cabin_max_cols: Mapped[int] = mapped_column(Integer, nullable=False)
     double_deck: Mapped[bool] = mapped_column(Boolean, default=False)

@@ -1,6 +1,6 @@
 from flask_sqlalchemy.session import Session
 from sqlalchemy import select, func
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from ..models.airline import Airline
 from ..models.aircraft_airlines import Aircraft_airline
 from ..models.cells_block import Cells_block
@@ -69,6 +69,16 @@ def get_max_cols_aircraft(session: Session,id_aircraft_airline: int) -> int:
     )
     return session.scalar(stmt)
 
+def aircraft_exists_composition(session: Session, id_aircraft_airline: int)-> bool:
+    stmt = (
+        select(Aircraft_composition.id_cell_block)
+        .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
+        .limit(1)
+    )
+    return session.execute(stmt).first() is not None
+
+
+
 def insert_block_seat_map(session: Session, matrix: list[list[bool]], id_aircraft_airline: int, id_class: int, proportion_economy_seat: float):
     rows = len(matrix)
     cols = len(matrix[0])
@@ -111,8 +121,22 @@ def get_aircraft_seat_map(session: Session, id_aircraft_airline: int):
         .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
         .options(
             joinedload(Cells_block.cells),
+            joinedload(Cells_block.aircraft_compositions)
+        )
+    )
+    return session.execute(stmt).unique().scalars().all()
+
+
+
+def get_aircraft_seat_map_JSON(session: Session, id_aircraft_airline: int):
+    stmt = (
+        select(Cells_block)
+        .join(Aircraft_composition)
+        .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
+        .options(
+            joinedload(Cells_block.cells),
             joinedload(Cells_block.aircraft_compositions).joinedload(Aircraft_composition.class_block)
-        )  # eager loading delle celle
+        )
     )
 
     result = session.execute(stmt).unique().scalars().all()
@@ -125,7 +149,7 @@ def get_aircraft_seat_map(session: Session, id_aircraft_airline: int):
             "rows": block.rows,
             "cols": block.cols,
             "id_class": composition.id_class,
-            "class_name": composition.class_block.name,  # o class_.class_name, dipende dal tuo modello
+            "class_name": composition.class_block.name,
             "proportion_economy_seat": composition.proportion_economy_seat,
             "cells": [
                 {
@@ -139,4 +163,22 @@ def get_aircraft_seat_map(session: Session, id_aircraft_airline: int):
         })
 
     return seat_map
+
+def delete_aircraft_composition(session: Session, id_aircraft_airline: int):
+    stmt = (
+        select(Aircraft_composition)
+        .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
+        .options(joinedload(Aircraft_composition.cell_block).joinedload(Cells_block.cells))
+    )
+    compositions = session.execute(stmt).unique().scalars().all()
+
+    for comp in compositions:
+        session.delete(comp)
+
+        if comp.cell_block:
+            session.delete(comp.cell_block)
+
+    session.commit()
+
+
 

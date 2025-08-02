@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
 from pydantic import ValidationError
 from db import SessionLocal
-from ..query.airline_query import all_airline, get_aircraft_seat_map, number_seat_aircraft,get_max_economy_seats, get_fleet_aircraft_by_id
+from ..query.airline_query import all_airline, get_aircraft_seat_map_JSON, number_seat_aircraft,get_max_economy_seats, get_fleet_aircraft_by_id
 from ..utils.role_checking import role_required
 from ..validations.airline_validation import Airline_schema, Airline_aircraft_schema, Airline_aircraft_block_schema, Clone_aircraft_seat_mao_schema
 from ..controllers.airline_controller import Airline_controller
+from ..models.aircraft_airlines import Aircraft_airline
 
 airline_bp = Blueprint("airline_bp", __name__)
 
@@ -55,44 +56,59 @@ def get_fleet():
 #@role_required("Airline-Admin")
 def delete_aircraft(id_aircraft_airline: int):
     session = SessionLocal()
-    data = request.get_json()
-    controller = Airline_controller(session)
-    response, status = controller.dalete_fleet_aircraft(data.get("airline_code"), id_aircraft_airline)
-    return jsonify(response), status
+    if (session.get(Aircraft_airline, id_aircraft_airline) is None):
+        return jsonify({"message": "id_aircraft_airline not found"}), 404
+    else:
+        data = request.get_json()
+        controller = Airline_controller(session)
+        response, status = controller.dalete_fleet_aircraft(data.get("airline_code"), id_aircraft_airline)
+        return jsonify(response), status
+
+
 
 @airline_bp.route("/add/block/aircraft/<int:id_aircraft_airline>", methods=["POST"])
 #@role_required("Airline-Admin")
 def new_block(id_aircraft_airline: int):
     session = SessionLocal()
-    try:
-        data = Airline_aircraft_block_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
+    if (session.get(Aircraft_airline, id_aircraft_airline) is None):
+        return jsonify({"message": "id_aircraft_airline not found"}), 404
+    else:
+        try:
+            data = Airline_aircraft_block_schema(**request.get_json())
+        except ValidationError as e:
+            session.close()
+            return jsonify({"message": str(e)}), 400
 
-    try:
-        controller = Airline_controller(session)
-        response, status = controller.insert_block(
-            data.matrix,
-            data.proportion_economy_seat,
-            data.id_class,
-            id_aircraft_airline
-        )
-        return jsonify(response), status
-    except Exception as e:
-        session.rollback()
-        return jsonify({"error": str(e)}), 500
-    finally:
-        session.close()
+        try:
+            controller = Airline_controller(session)
+            response, status = controller.insert_block(
+                data.matrix,
+                data.proportion_economy_seat,
+                data.id_class,
+                id_aircraft_airline
+            )
+            return jsonify(response), status
+        except Exception as e:
+            session.rollback()
+            return jsonify({"error": str(e)}), 500
+        finally:
+            session.close()
+
+
 
 @airline_bp.route("/aircraft/<int:id_aircraft_airline>/seat_map", methods=["GET"])
 #@role_required("Airline-Admin")
 def get_seat_map(id_aircraft_airline: int):
     session = SessionLocal()
-    seat_map = get_aircraft_seat_map(session, id_aircraft_airline)
-    seats_number = number_seat_aircraft(session, id_aircraft_airline)
-    seats_remaining = get_max_economy_seats(session, id_aircraft_airline) - seats_number
-    return jsonify({"additional_seats_remaining": seats_remaining, "seats_number":seats_number, "seat_map": seat_map}), 200
+    if (session.get(Aircraft_airline, id_aircraft_airline) is None):
+        return jsonify({"message": "id_aircraft_airline not found"}), 404
+    else:
+        seat_map = get_aircraft_seat_map_JSON(session, id_aircraft_airline)
+        seats_number = number_seat_aircraft(session, id_aircraft_airline)
+        seats_remaining = get_max_economy_seats(session, id_aircraft_airline) - seats_number
+        return jsonify(
+            {"additional_seats_remaining": seats_remaining, "seats_number": seats_number, "seat_map": seat_map}), 200
+
 
 @airline_bp.route("/aircraft/clone-seatmap", methods=["POST"])
 #@role_required("Airline-Admin")
@@ -103,8 +119,11 @@ def clone_seatmap():
     except ValidationError as e:
         session.close()
         return jsonify({"message": str(e)}), 400
+    controller = Airline_controller(session)
+    response, status = controller.clone_aircraft_seat_map(data.source_id, data.target_id)
+    session.close()
+    return jsonify(response), status
 
-    return {"Dario Moccia"}, 200
 
 
 

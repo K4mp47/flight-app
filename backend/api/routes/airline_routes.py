@@ -1,11 +1,15 @@
 from flask import Blueprint, request, jsonify
 from pydantic import ValidationError
 from db import SessionLocal
-from ..query.airline_query import all_airline, get_aircraft_seat_map_JSON, number_seat_aircraft,get_max_economy_seats, get_fleet_aircraft_by_id
-from ..utils.role_checking import role_required
-from ..validations.airline_validation import Airline_schema, Airline_aircraft_schema, Airline_aircraft_block_schema, Clone_aircraft_seat_mao_schema
-from ..controllers.airline_controller import Airline_controller
+
+from ..models import Route
 from ..models.aircraft_airlines import Aircraft_airline
+from ..models.airline import Airline
+from ..query.airline_query import all_airline, get_aircraft_seat_map_JSON, number_seat_aircraft,get_max_economy_seats, get_fleet_aircraft_by_id
+from ..query.route_query import get_all_route_airline
+from ..utils.role_checking import role_required
+from ..validations.airline_validation import Airline_schema, Airline_aircraft_schema, Airline_aircraft_block_schema, Clone_aircraft_seat_mao_schema, Route_airline_schema, Route_deadline_schema
+from ..controllers.airline_controller import Airline_controller
 
 airline_bp = Blueprint("airline_bp", __name__)
 
@@ -119,18 +123,62 @@ def clone_seatmap():
     except ValidationError as e:
         session.close()
         return jsonify({"message": str(e)}), 400
-    controller = Airline_controller(session)
-    response, status = controller.clone_aircraft_seat_map(data.source_id, data.target_id)
-    session.close()
+    try:
+        with session.begin():
+            controller = Airline_controller(session)
+            response, status = controller.clone_aircraft_seat_map(data.source_id, data.target_id)
+    except Exception as e:
+        response, status = {"message": str(e)}, 500
+    finally:
+        session.close()
+
     return jsonify(response), status
 
+@airline_bp.route("/add/route", methods=["POST"])
+#@role_required("Airline-Admin")
+def add_route():
+    session = SessionLocal()
+    try:
+        data = Route_airline_schema(**request.get_json())
+    except ValidationError as e:
+        session.close()
+        return jsonify({"message": str(e)}), 400
 
+    try:
+        with session.begin():
+            controller = Airline_controller(session)
+            response, status = controller.insert_new_route(data.airline_code, data.number_route, data.start_date,data.end_date, data.section)
+    except Exception as e:
+        response, status = {"message": str(e)}, 500
+    finally:
+        session.close()
 
+    return jsonify(response), status
 
+@airline_bp.route("/route/<code>/change-deadline", methods=["PUT"])
+#@role_required("Airline-Admin")
+def change_route_deadline(code: str):
+    session = SessionLocal()
+    try:
+        data = Route_deadline_schema(**request.get_json())
+    except ValidationError as e:
+        session.close()
+        return jsonify({"message": str(e)}), 400
 
+    controller = Airline_controller(session)
+    response, status = controller.change_deadline(code, data.end_date)
 
+    return jsonify(response), status
 
-
+@airline_bp.route("/route/", methods=["GET"])
+#@role_required("Airline-Admin")
+def get_route():
+    session = SessionLocal()
+    data = request.get_json()
+    if session.get(Airline, data.get("airline_code")) is None:
+        return jsonify({"message": "airline_code not found"}), 404
+    route = get_all_route_airline(session,data.get("airline_code"))
+    return jsonify({"routes": route}), 200
 
 
 

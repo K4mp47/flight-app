@@ -668,3 +668,214 @@ risposta 200
         "id_routes_section": 2
     }
 }
+
+------------------------------------------------------------------------------------------------------------------
+
+19) /airline/add/route methods=["POST"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che permette di creare le rotte per le compagnie aeree.
+
+Prima vedediamo l'esempio inserendo una rotta senza scalo
+
+{
+  "airline_code": "AZ",
+  "number_route": 1,
+  "start_date": "2025-08-10",
+  "end_date": "2025-08-12",
+  "section": {
+    "departure_time": "09:00",
+    "departure_airport": "FCO",
+    "arrival_airport": "GYD",
+    "next_session": null
+  }
+}
+
+chiariamo subito cosa significano questi dati:
+number_route è il numero della route sommato al codice della compagnia formerà il codice della route in queto caso AZ1. Il numero deve essere compreso tra 1 e 9999
+
+start_date indica quando inizia il contratto delle rotta
+end_date indica quando finisce il contratto delle rotta
+
+section indica invece i dettagli della rotte, si noti che basta solo inserire la departure_time poichè l'orario d'arrivo viene calcolato dinamicamente in base alle coordinate dei vari airport
+"next_session" indice se la route è composta da più segmenti.
+
+Guardare quest'altro esempio che spiega invece la creazione di una rotta con scalo
+
+{
+ "airline_code": "AZ",
+  "number_route": 1930,
+  "start_date": "2025-08-10",
+  "end_date": "2025-08-12",
+  "section": {
+    "departure_time": "08:30",
+    "departure_airport": "FCO",
+    "arrival_airport": "JFK",
+    "next_session": {
+      "waiting_time": 180,
+      "departure_airport": "JFK",
+      "arrival_airport": "MIA",
+      "next_session": null
+    }
+  }
+}
+
+volendo si può andare avanti all'infinito ad inserire scali basta che alla fine si inserisca "next_session": null
+
+ogni volta che c'è uno scalo invece di departure_time ci sarà waiting_time che rappresenta il tempo d'attesa dello scalo espresso in minuti.
+Questo perchè?
+
+immaginiamo di prendere il volo FCO -> JFK
+si arriva a New York alle 16:35, dobbiamo avere il tempo di prendere il volo per Miami. In questo caso il volo JFK -> MIA partirà alle 19:35
+
+ATTENZIONE  il waiting_time deve essere sempre maggiore o uguale alle 2 ora
+
+
+Inoltre oltre a creare  una route in questo caso AZ1930 FCO -> JFK -> MIA
+API crea anche la sua route inversa: AZ1931 MIA -> JFK -> FCO
+
+ATTENZIONE il codice della rotta inversa è sempre quello della route di partenza +1 oppure -1 infatti:
+andata: AZ1930
+ritorno: AZ1931
+
+verrà segnalato errore se non si potrà avere la vicinanza diretta delle 2 route.
+
+Infine la route di ritorno avrà come departure_time la stessa della partenza ma 2 ore avanti (questo serve per 'assegnazione degli aerei')
+
+
+risposta 200
+
+{
+    "message": "Route AZ1 and return AZ2 created successfully"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+20) /airline/route/<code>/change-deadline   methods=["PUT"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che permette di aggiornare la data di scadenza di una route, per indicare la route da aggiornare passare il suo codice.
+ATTENZIONE modificare una route modificherà anche la route inversa se esiste. Non ha alcuna importanza quale codice di roue inserite.
+
+Body {
+  "end_date": "2027-09-12"
+}
+
+risposta 200
+
+{
+    "message": "End date updated successfully"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+21) /airline/route/   methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che permette di visualizzare tutte le route di una compagnia aerea
+
+Body {
+  "airline_code": "AZ"
+}
+
+risposta 200
+
+{
+    "routes": [
+        {
+            "details": [
+                {
+                    "arrival_airport": "GYD",
+                    "arrival_time": "12:40:00",
+                    "departure_airport": "FCO",
+                    "departure_time": "09:00:00",
+                    "id_next": null,
+                    "route_detail_id": 9,
+                    "route_section_id": 9
+                }
+            ],
+            "end_date": "2026-09-12",
+            "route_code": "AZ1",
+            "route_created_at": "2025-08-03T22:52:41.408573+00:00",
+            "start_date": "2025-08-10"
+        },
+        {
+            "details": [
+                {
+                    "arrival_airport": "JFK",
+                    "arrival_time": "16:35:00",
+                    "departure_airport": "FCO",
+                    "departure_time": "08:30:00",
+                    "id_next": 6,
+                    "route_detail_id": 5,
+                    "route_section_id": 5
+                },
+                {
+                    "arrival_airport": "MIA",
+                    "arrival_time": "21:40:00",
+                    "departure_airport": "JFK",
+                    "departure_time": "19:35:00",
+                    "id_next": null,
+                    "route_detail_id": 6,
+                    "route_section_id": 6
+                }
+            ],
+            "end_date": "2025-08-12",
+            "route_code": "AZ1930",
+            "route_created_at": "2025-08-03T22:42:08.779117+00:00",
+            "start_date": "2025-08-10"
+        },
+        {
+            "details": [
+                {
+                    "arrival_airport": "FCO",
+                    "arrival_time": "11:50:00",
+                    "departure_airport": "JFK",
+                    "departure_time": "03:45:00",
+                    "id_next": null,
+                    "route_detail_id": 8,
+                    "route_section_id": 8
+                },
+                {
+                    "arrival_airport": "JFK",
+                    "arrival_time": "01:45:00",
+                    "departure_airport": "MIA",
+                    "departure_time": "23:40:00",
+                    "id_next": 8,
+                    "route_detail_id": 7,
+                    "route_section_id": 7
+                }
+            ],
+            "end_date": "2025-08-12",
+            "route_code": "AZ1931",
+            "route_created_at": "2025-08-03T22:42:08.779122+00:00",
+            "start_date": "2025-08-10"
+        },
+        {
+            "details": [
+                {
+                    "arrival_airport": "FCO",
+                    "arrival_time": "18:20:00",
+                    "departure_airport": "GYD",
+                    "departure_time": "14:40:00",
+                    "id_next": null,
+                    "route_detail_id": 10,
+                    "route_section_id": 10
+                }
+            ],
+            "end_date": "2026-09-12",
+            "route_code": "AZ2",
+            "route_created_at": "2025-08-03T22:52:41.408576+00:00",
+            "start_date": "2025-08-10"
+        }
+    ]
+}

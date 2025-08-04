@@ -10,6 +10,7 @@ from ..models.aircraft import Aircraft
 
 
 
+
 def all_airline(session: Session):
     stmt = select(Airline)
     result = session.scalars(stmt).all()
@@ -107,7 +108,7 @@ def insert_block_seat_map(session: Session, matrix: list[list[bool]], id_aircraf
         )
         session.add(comp)
 
-        session.commit()  # Commit esplicito se vuoi
+        session.commit()
         return {"message": "Block inserted successfully"}, 201
 
     except Exception as e:
@@ -174,11 +175,7 @@ def delete_aircraft_composition(session: Session, id_aircraft_airline: int):
 
     for comp in compositions:
         session.delete(comp)
-
         if comp.cell_block:
             session.delete(comp.cell_block)
-
-    session.commit()
-
 
 

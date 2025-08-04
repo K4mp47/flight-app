@@ -1,5 +1,6 @@
 from pydantic import BaseModel, StringConstraints, PositiveFloat, Field, field_validator, PositiveInt
-from typing import Annotated, List
+from typing import Annotated, List, Optional
+from datetime import date, timedelta, time
 
 
 
@@ -53,6 +54,50 @@ class Clone_aircraft_seat_mao_schema(BaseModel):
         if source_id and v == source_id:
             raise ValueError("The IDs must be different.")
         return v
+
+
+FourDigitInt = Annotated[int, Field(ge=0, le=9999)]
+
+class SectionBase(BaseModel):
+    departure_airport: Annotated[str, StringConstraints(min_length=3, max_length=3, pattern=r'^[A-Z]{3}$')]
+    arrival_airport: Annotated[str, StringConstraints(min_length=3, max_length=3, pattern=r'^[A-Z]{3}$')]
+
+class FirstSection_schema(SectionBase):
+    departure_time: time
+    next_session: Optional["NextSection_schema"] = None
+
+class NextSection_schema(SectionBase):
+    waiting_time: Annotated[int, Field(ge=120)]
+    next_session: Optional["NextSection_schema"] = None
+
+FirstSection_schema.model_rebuild()
+NextSection_schema.model_rebuild()
+
+class Route_airline_schema(BaseModel):
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
+    number_route : FourDigitInt
+    start_date: date
+    end_date: date
+    section: FirstSection_schema
+
+    @field_validator('start_date')
+    def check_start_date_in_future(cls, start_date_val):
+        today = date.today()
+        if start_date_val <= (today + timedelta(days=1)):
+            raise ValueError("start_date must be at least one day in the future")
+        return start_date_val
+
+    @field_validator('end_date')
+    def check_end_date_after_start(cls, end_date_val, info):
+        start_date_val = info.data.get('start_date')
+        if start_date_val and end_date_val <= start_date_val:
+            raise ValueError("end_date must be after start_date")
+        return end_date_val
+
+class Route_deadline_schema(BaseModel):
+    end_date : date
+
+
 
 
 

@@ -1,10 +1,16 @@
 from sqlalchemy.orm import Session
-
+from datetime import datetime, timedelta, date
+from ..models import Route_section
 from ..models.aircraft import Aircraft
 from ..models.aircraft_airlines import Aircraft_airline
 from ..models.class_seat import Class_seat
+from ..models.route import Route
+from ..models.airport import Airport
+from ..models.route_detail import Route_detail
 from ..query.airline_query import *
 from ..query.airport_query import get_airport_by_iata_code
+from ..query.route_query import get_route_by_airport, find_reverse_route
+from ..utils.geo import *
 
 class Airline_controller:
 
@@ -93,14 +99,16 @@ class Airline_controller:
 
 
     def clone_aircraft_seat_map(self, id_source_id, target_id):
-        if (self.session.get(Aircraft_airline, id_source_id) is None or self.session.get(Aircraft_airline, target_id) is None):
+        if (self.session.get(Aircraft_airline, id_source_id) is None or
+                self.session.get(Aircraft_airline, target_id) is None):
             return {"message": "id_source_id or target_id not found"}, 404
-        else:
-            source_blocks = get_aircraft_seat_map(self.session, id_source_id)
-            if not source_blocks:
-                return {"message": "No block found for source_id"}, 404
 
-            if aircraft_exists_composition(self.session,target_id):
+        source_blocks = get_aircraft_seat_map(self.session, id_source_id)
+        if not source_blocks:
+            return {"message": "No block found for source_id"}, 404
+
+        try:
+            if aircraft_exists_composition(self.session, target_id):
                 delete_aircraft_composition(self.session, target_id)
 
             new_blocks = []
@@ -111,7 +119,7 @@ class Airline_controller:
                     cols=source_block.cols
                 )
                 self.session.add(new_block)
-                self.session.flush()  # ottieni id_cell_block
+                self.session.flush()
 
                 for cell in source_block.cells:
                     self.session.add(Cell(
@@ -132,22 +140,173 @@ class Airline_controller:
                 new_blocks.append(new_block)
 
             self.session.commit()
-            return {"message": f"Operation successful {len(new_blocks)} copied blocks"}, 201
+
+            return {"message": f"Operation successful, {len(new_blocks)} copied blocks"}, 201
+
+        except Exception as e:
+            self.session.rollback()
+            return {"message": f"Clone failed: {str(e)}"}, 500
 
 
 
+    def insert_new_route(self,airline_code, number_route, start_date, end_date, section):
+        name_route = airline_code + str(number_route)
 
+        if self.session.get(Route, name_route) is not None:
+            return {"message": "route already present in the database"}, 400
 
+        name_route_return = ""
 
+        if self.session.get(Route, airline_code + str(number_route + 1)) is None:
+            name_route_return = airline_code + str(number_route + 1)
+        elif self.session.get(Route, airline_code + str(number_route - 1)) is None:
+            name_route_return = airline_code + str(number_route - 1)
+        else:
+            return {"message": "The number chosen for the route is free, but the number for the return route is busy."}, 400
 
+        route_main = Route(
+            code=name_route,
+            airline_iata_code=airline_code,
+            start_date=start_date,
+            end_date=end_date
+        )
+        route_return = Route(
+            code=name_route_return,
+            airline_iata_code=airline_code,
+            start_date=start_date,
+            end_date=end_date
+        )
 
+        self.session.add_all([route_main, route_return])
+        self.session.flush()
 
+        prev_detail = None
+        outbound_sections = []
+        final_arrival_time = None
 
+        dummy_date = datetime(2025, 1, 1)
+        current_section = section
+        first_departure_time = section.departure_time  # Usa solo nel primo segmento
 
+        current_departure_dt = datetime.combine(dummy_date, first_departure_time)
 
+        while current_section:
+            outbound_sections.append(current_section)
 
+            dep_airport = self.session.get(Airport, current_section.departure_airport)
+            arr_airport = self.session.get(Airport, current_section.arrival_airport)
 
+            if not dep_airport or not arr_airport:
+                return {"message": "Airport not found"}, 404
 
+            route_section = get_route_by_airport(self.session, dep_airport, arr_airport)
+
+            if route_section is None:
+                route_section = Route_section(
+                    code_departure_airport=dep_airport.iata_code,
+                    code_arrival_airport=arr_airport.iata_code
+                )
+                self.session.add(route_section)
+                self.session.flush()
+
+            distance = haversine(
+                dep_airport.latitude, dep_airport.longitude,
+                arr_airport.latitude, arr_airport.longitude
+            )
+
+            departure_time = current_departure_dt.time()
+            arrival_time = calculate_arrival_time(departure_time.strftime("%H:%M"), distance)
+            final_arrival_time = arrival_time
+
+            new_route_detail = Route_detail(
+                code_route=name_route,
+                id_route_section=route_section.id_routes_section,
+                departure_time=departure_time,
+                arrival_time=arrival_time
+            )
+            self.session.add(new_route_detail)
+            self.session.flush()
+
+            if prev_detail:
+                prev_detail.id_next = new_route_detail.id_airline_routes
+                self.session.flush()
+
+            prev_detail = new_route_detail
+
+            if current_section.next_session:
+                arr_dt = datetime.combine(dummy_date, arrival_time)
+                waiting_minutes = current_section.next_session.waiting_time
+                current_departure_dt = arr_dt + timedelta(minutes=waiting_minutes)
+
+            current_section = current_section.next_session
+
+        # return route
+
+        prev_detail = None
+        next_departure_dt = datetime.combine(dummy_date, final_arrival_time) + timedelta(hours=2)
+
+        for section in reversed(outbound_sections):
+            dep_airport = self.session.get(Airport, section.arrival_airport)
+            arr_airport = self.session.get(Airport, section.departure_airport)
+
+            route_section = get_route_by_airport(self.session, dep_airport, arr_airport)
+
+            if route_section is None:
+                route_section = Route_section(
+                    code_departure_airport=dep_airport.iata_code,
+                    code_arrival_airport=arr_airport.iata_code
+                )
+                self.session.add(route_section)
+                self.session.flush()
+
+            distance = haversine(
+                dep_airport.latitude, dep_airport.longitude,
+                arr_airport.latitude, arr_airport.longitude
+            )
+
+            departure_time = next_departure_dt.time()
+            arrival_time = calculate_arrival_time(departure_time.strftime("%H:%M"), distance)
+
+            new_detail = Route_detail(
+                code_route=name_route_return,
+                id_route_section=route_section.id_routes_section,
+                departure_time=departure_time,
+                arrival_time=arrival_time
+            )
+            self.session.add(new_detail)
+            self.session.flush()
+
+            if prev_detail:
+                prev_detail.id_next = new_detail.id_airline_routes
+                self.session.flush()
+
+            prev_detail = new_detail
+            next_departure_dt = datetime.combine(dummy_date, arrival_time) + timedelta(hours=2)
+
+        return {"message": f"Route {name_route} and return {name_route_return} created successfully"}, 201
+
+    def change_deadline(self, code, end_date):
+        route = self.session.get(Route, code)
+        if route is None:
+            return {"message": "Route not found"}, 404
+
+        if end_date < date.today():
+            return {"message": "End date cannot be before today"}, 400
+
+        if end_date < route.end_date:
+            return {"message": "the new date must be later than the old one"}, 400
+
+        route.end_date = end_date
+
+        inverse_code = find_reverse_route(self.session, code)
+        if inverse_code:
+            inverse_route = self.session.get(Route, inverse_code)
+            if inverse_route:
+                inverse_route.end_date = end_date
+
+        self.session.commit()
+
+        return {"message": "End date updated successfully"}, 200
 
 
 

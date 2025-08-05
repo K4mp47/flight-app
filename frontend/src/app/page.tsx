@@ -1,14 +1,17 @@
 "use client";
 import { MainForm } from "@/components/MainForm";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="min-h-screen text-white">
       <div className="relative">
-        <img
+        <Image
           src="/banner.svg"
           alt="Logo"
+          width={1920}
+          height={1080}
           className="w-full h-40 sm:h-60 md:h-80 object-cover"
         />
         <div className="absolute bottom-0 left-0 w-full h-30 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />

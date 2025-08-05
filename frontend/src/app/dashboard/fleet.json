@@ -1,0 +1,478 @@
+[
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 7,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 480,
+            "name": "A350-1000"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 1
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 8,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 189,
+            "name": "737-800"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 2
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 1,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 180,
+            "name": "A320"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "VCE",
+        "flying_towards": null,
+        "id_aircraft_airline": 3
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 1,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 180,
+            "name": "A320"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "FCO",
+        "flying_towards": null,
+        "id_aircraft_airline": 4
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 1,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 180,
+            "name": "A320"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "MXP",
+        "flying_towards": null,
+        "id_aircraft_airline": 5
+    }
+    ,
+    {
+        "aircraft": {
+            "double_deck": true,
+            "id_aircraft": 9,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 524,
+            "name": "747-8"
+        },
+        "airline": {
+            "iata_code": "LH",
+            "name": "Lufthansa"
+        },
+        "current_position": "FRA",
+        "flying_towards": "JFK",
+        "id_aircraft_airline": 6
+    },
+    {
+        "aircraft": {
+            "double_deck": true,
+            "id_aircraft": 10,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 575,
+            "name": "A380"
+        },
+        "airline": {
+            "iata_code": "EK",
+            "name": "Emirates"
+        },
+        "current_position": "DXB",
+        "flying_towards": "LHR",
+        "id_aircraft_airline": 7
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 11,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 242,
+            "name": "787-9"
+        },
+        "airline": {
+            "iata_code": "BA",
+            "name": "British Airways"
+        },
+        "current_position": "LHR",
+        "flying_towards": "JFK",
+        "id_aircraft_airline": 8
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 12,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 220,
+            "name": "A321neo"
+        },
+        "airline": {
+            "iata_code": "AA",
+            "name": "American Airlines"
+        },
+        "current_position": "DFW",
+        "flying_towards": "ORD",
+        "id_aircraft_airline": 9
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 13,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 178,
+            "name": "737 MAX 8"
+        },
+        "airline": {
+            "iata_code": "WN",
+            "name": "Southwest"
+        },
+        "current_position": "DAL",
+        "flying_towards": "DEN",
+        "id_aircraft_airline": 10
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 14,
+            "manufacturer": {
+                "id_manufacturer": 3,
+                "name": "Bombardier"
+            },
+            "max_economy_seats": 100,
+            "name": "CRJ-1000"
+        },
+        "airline": {
+            "iata_code": "IB",
+            "name": "Iberia"
+        },
+        "current_position": "MAD",
+        "flying_towards": "BCN",
+        "id_aircraft_airline": 11
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 15,
+            "manufacturer": {
+                "id_manufacturer": 4,
+                "name": "Embraer"
+            },
+            "max_economy_seats": 132,
+            "name": "E195-E2"
+        },
+        "airline": {
+            "iata_code": "KL",
+            "name": "KLM"
+        },
+        "current_position": "AMS",
+        "flying_towards": "CDG",
+        "id_aircraft_airline": 12
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 16,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 230,
+            "name": "757-300"
+        },
+        "airline": {
+            "iata_code": "UA",
+            "name": "United"
+        },
+        "current_position": "ORD",
+        "flying_towards": "SFO",
+        "id_aircraft_airline": 13
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 17,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 244,
+            "name": "A330-300"
+        },
+        "airline": {
+            "iata_code": "AF",
+            "name": "Air France"
+        },
+        "current_position": "CDG",
+        "flying_towards": "JFK",
+        "id_aircraft_airline": 14
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 18,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 416,
+            "name": "777-300ER"
+        },
+        "airline": {
+            "iata_code": "SQ",
+            "name": "Singapore Airlines"
+        },
+        "current_position": "SIN",
+        "flying_towards": "SYD",
+        "id_aircraft_airline": 15
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 19,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 160,
+            "name": "A319"
+        },
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "current_position": "LIN",
+        "flying_towards": "FCO",
+        "id_aircraft_airline": 16
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 20,
+            "manufacturer": {
+                "id_manufacturer": 4,
+                "name": "Embraer"
+            },
+            "max_economy_seats": 98,
+            "name": "E190"
+        },
+        "airline": {
+            "iata_code": "TP",
+            "name": "TAP Portugal"
+        },
+        "current_position": "LIS",
+        "flying_towards": "OPO",
+        "id_aircraft_airline": 17
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 21,
+            "manufacturer": {
+                "id_manufacturer": 3,
+                "name": "Bombardier"
+            },
+            "max_economy_seats": 90,
+            "name": "Q400"
+        },
+        "airline": {
+            "iata_code": "AC",
+            "name": "Air Canada"
+        },
+        "current_position": "YYZ",
+        "flying_towards": "YVR",
+        "id_aircraft_airline": 18
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 22,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 365,
+            "name": "777-200"
+        },
+        "airline": {
+            "iata_code": "NH",
+            "name": "ANA"
+        },
+        "current_position": "HND",
+        "flying_towards": "KIX",
+        "id_aircraft_airline": 19
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 23,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 200,
+            "name": "A321"
+        },
+        "airline": {
+            "iata_code": "DL",
+            "name": "Delta"
+        },
+        "current_position": "ATL",
+        "flying_towards": "JFK",
+        "id_aircraft_airline": 20
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 24,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 215,
+            "name": "737-900"
+        },
+        "airline": {
+            "iata_code": "AS",
+            "name": "Alaska Airlines"
+        },
+        "current_position": "SEA",
+        "flying_towards": "LAX",
+        "id_aircraft_airline": 21
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 25,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 230,
+            "name": "A321XLR"
+        },
+        "airline": {
+            "iata_code": "QF",
+            "name": "Qantas"
+        },
+        "current_position": "SYD",
+        "flying_towards": "MEL",
+        "id_aircraft_airline": 22
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 26,
+            "manufacturer": {
+                "id_manufacturer": 2,
+                "name": "Boeing"
+            },
+            "max_economy_seats": 290,
+            "name": "787-10"
+        },
+        "airline": {
+            "iata_code": "SQ",
+            "name": "Singapore Airlines"
+        },
+        "current_position": "SIN",
+        "flying_towards": "LHR",
+        "id_aircraft_airline": 23
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 27,
+            "manufacturer": {
+                "id_manufacturer": 1,
+                "name": "Airbus"
+            },
+            "max_economy_seats": 174,
+            "name": "A220-300"
+        },
+        "airline": {
+            "iata_code": "LX",
+            "name": "Swiss"
+        },
+        "current_position": "ZRH",
+        "flying_towards": "GVA",
+        "id_aircraft_airline": 24
+    },
+    {
+        "aircraft": {
+            "double_deck": false,
+            "id_aircraft": 28,
+            "manufacturer": {
+                "id_manufacturer": 3,
+                "name": "Bombardier"
+            },
+            "max_economy_seats": 160,
+            "name": "CS300"
+        },
+        "airline": {
+            "iata_code": "BT",
+            "name": "Air Baltic"
+        },
+        "current_position": "RIX",
+        "flying_towards": "ARN",
+        "id_aircraft_airline": 25
+    }
+]

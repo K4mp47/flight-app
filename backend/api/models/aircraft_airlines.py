@@ -28,6 +28,11 @@ class Aircraft_airline(Base):
         cascade="all, delete-orphan"
     )
 
+    flights : Mapped[List["Flight"]] = relationship(
+        back_populates="aircraft",
+        cascade="all, delete-orphan",
+    )
+
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):

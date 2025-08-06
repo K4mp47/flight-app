@@ -78,6 +78,7 @@ class Route_airline_schema(BaseModel):
     number_route : FourDigitInt
     start_date: date
     end_date: date
+    delta_for_return_route: Annotated[int, Field(ge=120)]
     section: FirstSection_schema
 
     @field_validator('start_date')
@@ -96,6 +97,34 @@ class Route_airline_schema(BaseModel):
 
 class Route_deadline_schema(BaseModel):
     end_date : date
+
+
+class Flight_schedule_schema(BaseModel):
+    departure_date_outbound: date
+    departure_date_inbound: date
+
+    @field_validator("departure_date_inbound")
+    def inbound_after_outbound(cls, v, info):
+        if "departure_date_outbound" in info.data:
+            outbound_date = info.data["departure_date_outbound"]
+            if v <= outbound_date:
+                raise ValueError("departure_date_inbound must be after departure_date_outbound")
+        return v
+
+class Flight_schedule_request_schema(BaseModel):
+    aircraft_id: PositiveInt
+    flight_schedule: List[Flight_schedule_schema]
+
+    @field_validator("flight_schedule")
+    def no_duplicates(cls, v):
+        seen = set()
+        for item in v:
+            key = (item.departure_date_outbound, item.departure_date_inbound)
+            if key in seen:
+                raise ValueError(f"Duplicate flight schedule entry: {key}")
+            seen.add(key)
+        return v
+
 
 
 

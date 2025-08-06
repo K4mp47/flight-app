@@ -31,7 +31,7 @@ class Airport(Base):
 
     routes_arrival: Mapped[List["Route_section"]] = relationship(
         back_populates="arrival_airport",
-        foreign_keys="[Route_section.code_departure_airport]"
+        foreign_keys="[Route_section.code_arrival_airport]"
     )
 
 

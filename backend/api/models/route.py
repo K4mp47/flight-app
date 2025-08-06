@@ -12,6 +12,11 @@ class Route(Base):
     airline_iata_code: Mapped[str] = mapped_column(ForeignKey("airlines.iata_code"), nullable=False)
     airline : Mapped["Airline"] = relationship("Airline", back_populates="routes")
 
+    flights: Mapped[List["Flight"]] = relationship(
+        back_populates="route",
+        cascade="all, delete-orphan"
+    )
+
     routes_details: Mapped[List["Route_detail"]] = relationship(
         back_populates="route",
         cascade="all, delete-orphan"

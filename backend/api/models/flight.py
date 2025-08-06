@@ -1,0 +1,33 @@
+from . import Aircraft
+from .base import Base
+from typing import List
+from datetime import datetime
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, String,DateTime, ForeignKey
+
+class Flight(Base):
+    __tablename__ = 'flights'
+
+    id_flight: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    id_aircraft: Mapped[int] = mapped_column(ForeignKey('aircraft_airlines.id_aircraft_airline'), nullable=False)
+    aircraft: Mapped["Aircraft"] = relationship("Aircraft_airline", back_populates="flights")
+
+    id_route: Mapped[int] = mapped_column(ForeignKey('routes.code'), nullable=False)
+    route : Mapped["Route"] = relationship("Route", back_populates="flights")
+
+    scheduled_departure_day : Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    scheduled_arrival_day : Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    def  __repr__(self):
+        return f"<Flight {self.id_flight}, aircraft={self.aircraft.to_dict()}, route={self.route.to_dict()}, scheduled_departure_day={self.scheduled_departure_day}, scheduled_arrival_day{self.scheduled_arrival_day}> >"
+
+    def to_dict(self):
+        return {
+            "id_flight": self.id_flight,
+            "aircraft": self.aircraft.to_dict(),
+            "route": self.route.to_dict(),
+            "scheduled_departure_day": self.scheduled_departure_day,
+            "scheduled_arrival_day": self.scheduled_arrival_day,
+        }

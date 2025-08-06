@@ -6,9 +6,9 @@ from ..models import Route
 from ..models.aircraft_airlines import Aircraft_airline
 from ..models.airline import Airline
 from ..query.airline_query import all_airline, get_aircraft_seat_map_JSON, number_seat_aircraft,get_max_economy_seats, get_fleet_aircraft_by_id
-from ..query.route_query import get_all_route_airline
+from ..query.route_query import get_all_route_airline, get_route
 from ..utils.role_checking import role_required
-from ..validations.airline_validation import Airline_schema, Airline_aircraft_schema, Airline_aircraft_block_schema, Clone_aircraft_seat_mao_schema, Route_airline_schema, Route_deadline_schema
+from ..validations.airline_validation import *
 from ..controllers.airline_controller import Airline_controller
 
 airline_bp = Blueprint("airline_bp", __name__)
@@ -147,7 +147,7 @@ def add_route():
     try:
         with session.begin():
             controller = Airline_controller(session)
-            response, status = controller.insert_new_route(data.airline_code, data.number_route, data.start_date,data.end_date, data.section)
+            response, status = controller.insert_new_route(data.airline_code, data.number_route, data.start_date,data.end_date, data.section, data.delta_for_return_route)
     except Exception as e:
         response, status = {"message": str(e)}, 500
     finally:
@@ -172,13 +172,43 @@ def change_route_deadline(code: str):
 
 @airline_bp.route("/route/", methods=["GET"])
 #@role_required("Airline-Admin")
-def get_route():
+def get_routes():
     session = SessionLocal()
     data = request.get_json()
     if session.get(Airline, data.get("airline_code")) is None:
         return jsonify({"message": "airline_code not found"}), 404
-    route = get_all_route_airline(session,data.get("airline_code"))
+    routes = get_all_route_airline(session,data.get("airline_code"))
+    return jsonify({"routes": routes}), 200
+
+@airline_bp.route("/route/<code>/info", methods=["GET"])
+def get_route_info(code: str):
+    session = SessionLocal()
+    if session.get(Route, code) is None:
+        return jsonify({"message": "route not found"}), 404
+    route = get_route(session, code)
     return jsonify({"routes": route}), 200
+
+@airline_bp.route("/route/<code>/add-flight", methods=["POST"])
+#@role_required("Airline-Admin")
+def new_route_flight(code: str):
+    session = SessionLocal()
+    try:
+        data = Flight_schedule_request_schema(**request.get_json())
+    except ValidationError as e:
+        session.close()
+        return jsonify({"message": str(e)}), 400
+
+    try:
+        with session.begin():
+            controller = Airline_controller(session)
+            response, status = controller.insert_flight_schedule(code, data.aircraft_id, data.flight_schedule)
+    except Exception as e:
+        response, status = {"message": str(e)}, 500
+    finally:
+        session.close()
+
+    return jsonify(response), status
+
 
 
 

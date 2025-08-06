@@ -686,6 +686,7 @@ Prima vedediamo l'esempio inserendo una rotta senza scalo
   "number_route": 1,
   "start_date": "2025-08-10",
   "end_date": "2025-08-12",
+  "delta_for_return_route": 120,
   "section": {
     "departure_time": "09:00",
     "departure_airport": "FCO",
@@ -700,6 +701,8 @@ number_route è il numero della route sommato al codice della compagnia formerà
 start_date indica quando inizia il contratto delle rotta
 end_date indica quando finisce il contratto delle rotta
 
+delta_for_return_route rappresenta dopo quanti minuti ci sarà la departure_time della route di ritorno rispetto al arrival_time
+
 section indica invece i dettagli della rotte, si noti che basta solo inserire la departure_time poichè l'orario d'arrivo viene calcolato dinamicamente in base alle coordinate dei vari airport
 "next_session" indice se la route è composta da più segmenti.
 
@@ -710,6 +713,7 @@ Guardare quest'altro esempio che spiega invece la creazione di una rotta con sca
   "number_route": 1930,
   "start_date": "2025-08-10",
   "end_date": "2025-08-12",
+  "delta_for_return_route": 780,
   "section": {
     "departure_time": "08:30",
     "departure_airport": "FCO",
@@ -878,4 +882,56 @@ risposta 200
             "start_date": "2025-08-10"
         }
     ]
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+/airline/route/<code>/info
+
+
+API che permette di visualizzare le informazioni di una rotta dove <code> è il codice della rotta
+
+risposta 200
+
+{
+    "routes": {
+        "route_code": "AZ1931",
+        "segments": [
+            {
+                "arrival_time": "01:45",
+                "departure_time": "23:40",
+                "from": "MIA",
+                "id_airline_routes": 7,
+                "layover_minutes": null,
+                "to": "JFK"
+            },
+            {
+                "arrival_time": "11:50",
+                "departure_time": "03:45",
+                "from": "JFK",
+                "id_airline_routes": 8,
+                "layover_minutes": 120,
+                "to": "FCO"
+            }
+        ],
+        "total_duration": "12:10"
+    }
+}
+
+
+------------------------------------------------------------------------------------------------------------------
+{
+  "aircraft_id": 1,
+  "flight_schedule": [
+    { "departure_date_outbound": "2025-09-01", "departure_date_inbound": "2025-09-02" },
+    { "departure_date_outbound": "2025-09-03", "departure_date_inbound": "2025-09-04" },
+    { "departure_date_outbound": "2025-09-05", "departure_date_inbound": "2025-09-06" },
+    { "departure_date_outbound": "2025-09-07", "departure_date_inbound": "2025-09-08" },
+    { "departure_date_outbound": "2025-09-09", "departure_date_inbound": "2025-09-10" },
+    { "departure_date_outbound": "2025-09-11", "departure_date_inbound": "2025-09-12" },
+    { "departure_date_outbound": "2025-09-13", "departure_date_inbound": "2025-09-14" },
+    { "departure_date_outbound": "2025-09-15", "departure_date_inbound": "2025-09-16" },
+    { "departure_date_outbound": "2025-09-17", "departure_date_inbound": "2025-09-18" },
+    { "departure_date_outbound": "2025-09-19", "departure_date_inbound": "2025-09-20" }
+  ]
 }

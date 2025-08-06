@@ -1,6 +1,7 @@
 from collections import defaultdict
-
+from datetime import datetime, timedelta, time
 from sqlalchemy import select, and_
+from sqlalchemy.orm import joinedload
 from flask_sqlalchemy.session import Session
 from ..models.route_section import Route_section
 from ..models.route import Route
@@ -111,3 +112,72 @@ def get_all_route_airline(session: Session, airline_code: str):
         })
 
     return list(routes_dict.values())
+
+def get_route(session: Session, route_code: str)-> dict:
+    stmt = (
+        select(Route_detail)
+        .options(joinedload(Route_detail.section))
+        .where(Route_detail.code_route == route_code)
+    )
+    results = session.scalars(stmt).all()
+
+    if not results:
+        return {"message": "Route not found"}, 404
+
+    id_map = {r.id_airline_routes: r for r in results}
+    id_next_set = {r.id_next for r in results if r.id_next is not None}
+    starting_node = next((r for r in results if r.id_airline_routes not in id_next_set), None)
+
+    if not starting_node:
+        return {"message": "Invalid route chain"}, 400
+
+    segments = []
+    total_duration = timedelta()
+    prev_arrival_time = None
+
+    current = starting_node
+    while current:
+        section = current.section
+        dep_time = current.departure_time
+        arr_time = current.arrival_time
+
+        duration_segment = datetime.combine(datetime.today(), arr_time) - datetime.combine(datetime.today(), dep_time)
+        if duration_segment.total_seconds() < 0:
+            duration_segment += timedelta(days=1)
+
+
+        layover = None
+        if prev_arrival_time:
+            layover = (datetime.combine(datetime.today(), dep_time) - datetime.combine(datetime.today(),
+                                                                                       prev_arrival_time))
+            if layover.total_seconds() < 0:
+                layover += timedelta(days=1)
+        else:
+            layover = None
+
+        total_duration += duration_segment
+        if layover:
+            total_duration += layover
+
+        segments.append({
+            "id_airline_routes": current.id_airline_routes,
+            "from": section.code_departure_airport,
+            "to": section.code_arrival_airport,
+            "departure_time": dep_time.strftime("%H:%M"),
+            "arrival_time": arr_time.strftime("%H:%M"),
+            "layover_minutes": int(layover.total_seconds() / 60) if layover else None
+        })
+
+        prev_arrival_time = arr_time
+        current = id_map.get(current.id_next)
+
+    total_minutes = int(total_duration.total_seconds() // 60)
+    total_hours = total_minutes // 60
+    remaining_minutes = total_minutes % 60
+    total_duration_str = f"{total_hours:02}:{remaining_minutes:02}"
+
+    return {
+        "route_code": route_code,
+        "segments": segments,
+        "total_duration": total_duration_str
+    }

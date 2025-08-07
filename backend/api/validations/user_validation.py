@@ -1,21 +1,35 @@
+import bleach
 import re
 from enum import Enum
 from typing import Annotated
+from ..validations.XSS_protection import SafeStr
 
 from pydantic import BaseModel, EmailStr, field_validator, constr, StringConstraints
 
 
 class User_login_Schema(BaseModel):
     email: EmailStr
-    pwd: Annotated[str, StringConstraints(min_length=8)]
+    pwd: Annotated[SafeStr, StringConstraints(min_length=8)]
+
+    @field_validator("email")
+    @classmethod
+    def sanitize_email(cls, v: EmailStr) -> EmailStr:
+        clean = bleach.clean(str(v), tags=[], strip=True)
+        return EmailStr(clean)
 
 
 class User_Register_Schema(BaseModel):
-    name:Annotated[str, StringConstraints(min_length=1)]
-    lastname:Annotated[str, StringConstraints(min_length=1)]
+    name:Annotated[SafeStr, StringConstraints(min_length=1)]
+    lastname:Annotated[SafeStr, StringConstraints(min_length=1)]
     email:EmailStr
-    pwd:Annotated[str, StringConstraints(min_length=8)]
-    pwd2:Annotated[str, StringConstraints(min_length=8)]
+    pwd:Annotated[SafeStr, StringConstraints(min_length=8)]
+    pwd2:Annotated[SafeStr, StringConstraints(min_length=8)]
+
+    @field_validator("email")
+    @classmethod
+    def sanitize_email(cls, v: EmailStr) -> EmailStr:
+        clean = bleach.clean(str(v), tags=[], strip=True)
+        return EmailStr(clean)
 
     @field_validator("pwd")
     @classmethod

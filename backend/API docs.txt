@@ -387,10 +387,8 @@ Authorization Bearer token_utente
 
 body {
     "airline_code" : "AZ",
-    "current_position" : "VCE"
 }
 
-current_position -> rappresenta l'areoporto dove il nuovo aereo si troverà
 
 risposta 200
 
@@ -410,8 +408,6 @@ risposta 200
             "iata_code": "AZ",
             "name": "Alitalia"
         },
-        "current_position": "MXP",
-        "flying_towards": null,
         "id_aircraft_airline": 5
     },
     "message": "aircraft inserted successfully"
@@ -448,8 +444,6 @@ risposta 200
             "iata_code": "AZ",
             "name": "Alitalia"
         },
-        "current_position": "VCE",
-        "flying_towards": null,
         "id_aircraft_airline": 1
     },
     {
@@ -467,8 +461,6 @@ risposta 200
             "iata_code": "AZ",
             "name": "Alitalia"
         },
-        "current_position": "VCE",
-        "flying_towards": null,
         "id_aircraft_airline": 2
     }
 }
@@ -781,10 +773,6 @@ risposta 200
 
 21) /airline/route/   methods=["GET"]
 
-Ruoli -> Airline-Admin
-
-Authorization Bearer token_utente
-
 API che permette di visualizzare tutte le route di una compagnia aerea
 
 Body {
@@ -886,7 +874,7 @@ risposta 200
 
 ------------------------------------------------------------------------------------------------------------------
 
-/airline/route/<code>/info
+22) /airline/route/<code>/info  methods=["GET"]
 
 
 API che permette di visualizzare le informazioni di una rotta dove <code> è il codice della rotta
@@ -920,18 +908,73 @@ risposta 200
 
 
 ------------------------------------------------------------------------------------------------------------------
+23)  airline/route/<code>/add-flight methods=["POST"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+<code> = codice della route in questo esempio passeremo AZ1
+Api che serve per inserire i voli nelle varie route. Mettiamo caso abbiamo creato la route AZ1 che va da VCE -> VNO e di conseguenza anche quella per il ritorno AZ2 VNO -> VCE
+come facciamo a inserire i voli per quell' API?
+
+Guardiamo i dati che passiamo
+
 {
-  "aircraft_id": 1,
+  "aircraft_id": 4,
   "flight_schedule": [
-    { "departure_date_outbound": "2025-09-01", "departure_date_inbound": "2025-09-02" },
-    { "departure_date_outbound": "2025-09-03", "departure_date_inbound": "2025-09-04" },
-    { "departure_date_outbound": "2025-09-05", "departure_date_inbound": "2025-09-06" },
-    { "departure_date_outbound": "2025-09-07", "departure_date_inbound": "2025-09-08" },
-    { "departure_date_outbound": "2025-09-09", "departure_date_inbound": "2025-09-10" },
-    { "departure_date_outbound": "2025-09-11", "departure_date_inbound": "2025-09-12" },
-    { "departure_date_outbound": "2025-09-13", "departure_date_inbound": "2025-09-14" },
-    { "departure_date_outbound": "2025-09-15", "departure_date_inbound": "2025-09-16" },
-    { "departure_date_outbound": "2025-09-17", "departure_date_inbound": "2025-09-18" },
-    { "departure_date_outbound": "2025-09-19", "departure_date_inbound": "2025-09-20" }
+    {
+      "outbound": "2025-08-10",
+      "return_": "2025-08-10"
+    },
+    {
+      "outbound": "2025-08-11",
+      "return_": "2025-08-11"
+    },
+     {
+      "outbound": "2025-08-12",
+      "return_": "2025-08-12"
+    }
   ]
 }
+
+aircraft_id è l'aereo a cui verrà assegnata la rotta.
+flight_schedule invece è una lista composte da due date ovvero il giorno di partenza della route di andata (AZ1) e il giorno di partenza della route di ritorno (AZ2)
+
+il backend calcolerà il giorno della data di arrivo quindi NON c'è bisogno di inserirla.
+E' bene specificare che le date non possono essere messe a caso. se outbound = 2025-08-10 e troviamo che la data d'arrivo è 2025-08-11 allora return_ non può essere 2025-08-10
+Inoltre le date devono essere inserite tra l'inizio e la fine del contratto della route, (per dettagli guardare API 19)
+
+Per semplicità si assume che un aereo può essere assegnato unicamente a una sola route (si intende route di andata e ritorno) quindi in questo caso l'aereo della compagnia aerea con id = 4
+può avere voli solo della route AZ1 e AZ2 (ho scento di fare così perchè altrimenti controllare che gli orari andassero bene e non si sovrapponessero per ogni route diventava troppo lungo e c'era anche la questione di dove si trovassero gli aerei in tempo reale. Per implementare il Tracker leggere la parte sotto e scoprirai perchè non l'ho implementato)
+
+Infine si considera che bisogna sempre passare all'API la route di andata e mai il ritorno. per capire qual'è la route d'andata il campo is_outbound della route deve essere True.
+(E' stato fatto così perchè altrimente dovevamo avere un server che ogni tot ore lanciasse uno script per tenere in considerazione dove si trovano in tempo reale gli aerei)
+
+risposta 200
+
+{
+    "flights": [
+        {
+            "outbound_arrival": "Sun, 10 Aug 2025 00:00:00 GMT",
+            "outbound_departure": "Sun, 10 Aug 2025 00:00:00 GMT",
+            "return_arrival": "Sun, 10 Aug 2025 00:00:00 GMT",
+            "return_departure": "Sun, 10 Aug 2025 00:00:00 GMT"
+        },
+        {
+            "outbound_arrival": "Mon, 11 Aug 2025 00:00:00 GMT",
+            "outbound_departure": "Mon, 11 Aug 2025 00:00:00 GMT",
+            "return_arrival": "Mon, 11 Aug 2025 00:00:00 GMT",
+            "return_departure": "Mon, 11 Aug 2025 00:00:00 GMT"
+        },
+        {
+            "outbound_arrival": "Tue, 12 Aug 2025 00:00:00 GMT",
+            "outbound_departure": "Tue, 12 Aug 2025 00:00:00 GMT",
+            "return_arrival": "Tue, 12 Aug 2025 00:00:00 GMT",
+            "return_departure": "Tue, 12 Aug 2025 00:00:00 GMT"
+        }
+    ],
+    "message": "Flight schedule successfully inserted"
+}
+
+------------------------------------------------------------------------------------------------------------------

@@ -14,16 +14,6 @@ class Airport(Base):
     id_city: Mapped[int] = mapped_column(ForeignKey("city.id_city"))
     city: Mapped["City"] = relationship("City", back_populates="airports")
 
-    aircraft_airline_position: Mapped[List["Aircraft_airline"]] = relationship(
-        back_populates= "current_airport",
-        foreign_keys="[Aircraft_airline.current_position]"
-    )
-
-    aircraft_airline_flying_towards: Mapped[List["Aircraft_airline"]] = relationship(
-        back_populates= "flying_towards_airport",
-        foreign_keys="[Aircraft_airline.flying_towards]"
-    )
-
     routes_departure: Mapped[List["Route_section"]] = relationship(
         back_populates="departure_airport",
         foreign_keys="[Route_section.code_departure_airport]"

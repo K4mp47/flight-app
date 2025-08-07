@@ -24,40 +24,83 @@ def get_route_by_airport(session: Session, departure_airport, arrival_airport):
     return result
 
 def find_reverse_route(session: Session, code: str)-> str | None:
-    original_start = session.scalar(
-        select(Route_section.code_departure_airport)
-        .join(Route_detail, Route_detail.id_route_section == Route_section.id_routes_section)
+    subq = (
+        select(Route_detail)
         .where(Route_detail.code_route == code)
-        .order_by(Route_detail.id_airline_routes.asc())
-        .limit(1)
+        .subquery()
     )
 
-    original_end = session.scalar(
-        select(Route_section.code_arrival_airport)
-        .join(Route_detail, Route_detail.id_route_section == Route_section.id_routes_section)
-        .where(Route_detail.code_route == code)
-        .order_by(Route_detail.id_airline_routes.desc())
-        .limit(1)
+    # Find the ID of the first step (not referenced by any id_next)
+    first_step_id = session.scalar(
+        select(subq.c.id_airline_routes)
+        .where(
+            ~subq.c.id_airline_routes.in_(
+                select(subq.c.id_next).where(subq.c.id_next.isnot(None))
+            )
+        )
     )
 
-    if not original_start or not original_end:
+    # Find the ID of the last step (id_next NULL)
+    last_step_id = session.scalar(
+        select(subq.c.id_airline_routes)
+        .where(subq.c.id_next.is_(None))
+    )
+
+    if not first_step_id or not last_step_id:
         return None
 
-    inverse_code = session.scalar(
+    # Find the Route_section of the first and last step
+    start_airport = session.scalar(
+        select(Route_section.code_departure_airport)
+        .join(Route_detail, Route_detail.id_route_section == Route_section.id_routes_section)
+        .where(Route_detail.id_airline_routes == first_step_id)
+    )
+
+    end_airport = session.scalar(
+        select(Route_section.code_arrival_airport)
+        .join(Route_detail, Route_detail.id_route_section == Route_section.id_routes_section)
+        .where(Route_detail.id_airline_routes == last_step_id)
+    )
+
+    if not start_airport or not end_airport:
+        return None
+
+    # Now search for the reverse route
+    candidate_routes = (
         select(Route.code)
         .join(Route_detail, Route_detail.code_route == Route.code)
         .join(Route_section, Route_section.id_routes_section == Route_detail.id_route_section)
-        .where(
-            and_(
-                Route_section.code_departure_airport == original_end,
-                Route_section.code_arrival_airport == original_start,
-                Route.code != code
-            )
-        )
+        .where(Route.code != code)
+        .subquery()
+    )
+
+    # You need to do the same for all routes: find the start and end points.
+    # but we can limit ourselves to searching for a route that has::
+    # - the first step starting from end_airport
+    # - and last step that arrives at start_airport
+
+    reverse_route = session.scalar(
+        select(Route.code)
+        .where(Route.code.in_(
+            select(Route_detail.code_route)
+            .where(Route_detail.id_airline_routes.in_(
+                select(Route_detail.id_airline_routes)
+                .join(Route_section)
+                .where(Route_section.code_departure_airport == end_airport)
+            ))
+            .where(Route_detail.code_route.in_(
+                select(Route_detail.code_route)
+                .where(Route_detail.id_airline_routes.in_(
+                    select(Route_detail.id_airline_routes)
+                    .join(Route_section)
+                    .where(Route_section.code_arrival_airport == start_airport)
+                ))
+            ))
+        ))
         .limit(1)
     )
 
-    return inverse_code
+    return reverse_route
 
 def get_all_route_airline(session: Session, airline_code: str):
     stmt = (

@@ -14,6 +14,11 @@ class Cell(Base):
     id_cell_block: Mapped[int] = mapped_column(ForeignKey("cells_block.id_cell_block"),nullable=False)
     block: Mapped["Cells_block"] = relationship("Cells_block", back_populates='cells')
 
+    tickets: Mapped[List["Ticket"]] = relationship(
+        back_populates="seat",
+        cascade="all, delete-orphan",
+    )
+
     x: Mapped[int] = mapped_column(Integer, nullable=False)
     y: Mapped[int] = mapped_column(Integer, nullable=False)
     is_seat: Mapped[bool] = mapped_column(Boolean, default=False)

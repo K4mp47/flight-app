@@ -13,8 +13,13 @@ class Flight(Base):
     id_aircraft: Mapped[int] = mapped_column(ForeignKey('aircraft_airlines.id_aircraft_airline'), nullable=False)
     aircraft: Mapped["Aircraft"] = relationship("Aircraft_airline", back_populates="flights")
 
-    id_route: Mapped[int] = mapped_column(ForeignKey('routes.code'), nullable=False)
+    route_code: Mapped[str] = mapped_column(ForeignKey('routes.code'), nullable=False)
     route : Mapped["Route"] = relationship("Route", back_populates="flights")
+
+    flight_tickets: Mapped[List["Ticket"]] = relationship(
+        back_populates="flight",
+        cascade="all, delete-orphan",
+    )
 
     scheduled_departure_day : Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     scheduled_arrival_day : Mapped[DateTime] = mapped_column(DateTime, nullable=False)

@@ -42,7 +42,7 @@ def new_aircraft(id_aircraft: int):
         return jsonify({"message": str(e)}), 400
     session = SessionLocal()
     controller = Airline_controller(session)
-    response, status = controller.insert_aircraft(data.airline_code,id_aircraft, data.current_position)
+    response, status = controller.insert_aircraft(data.airline_code,id_aircraft)
     session.close()
     return jsonify(response), status
 

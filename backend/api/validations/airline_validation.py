@@ -1,16 +1,16 @@
 from pydantic import BaseModel, StringConstraints, PositiveFloat, Field, field_validator, PositiveInt
 from typing import Annotated, List, Optional
 from datetime import date, timedelta, time
+from ..validations.XSS_protection import SafeStr
 
 
 
 class Airline_schema(BaseModel):
     iata_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
-    name: Annotated[str, StringConstraints(min_length=1)]
+    name: Annotated[SafeStr, StringConstraints(min_length=1)]
 
 class Airline_aircraft_schema(BaseModel):
     airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
-    current_position: Annotated[str, StringConstraints(min_length=3, max_length=3, pattern=r'^[A-Z]{3}$')]
 
 class Airline_aircraft_block_schema(BaseModel):
     matrix: Annotated[List[List[bool]], Field(min_length=1)]
@@ -99,33 +99,41 @@ class Route_deadline_schema(BaseModel):
     end_date : date
 
 
-class Flight_schedule_schema(BaseModel):
-    departure_date_outbound: date
-    departure_date_inbound: date
 
-    @field_validator("departure_date_inbound")
-    def inbound_after_outbound(cls, v, info):
-        if "departure_date_outbound" in info.data:
-            outbound_date = info.data["departure_date_outbound"]
-            if v <= outbound_date:
-                raise ValueError("departure_date_inbound must be after departure_date_outbound")
+class Flight_dates(BaseModel):
+    outbound: date
+    return_: date
+
+    @field_validator('outbound', 'return_', mode='after')
+    @classmethod
+    def check_not_in_past(cls, v: date):
+        if v < date.today():
+            raise ValueError("Date cannot be in the past")
         return v
+
+    @field_validator('return_')
+    @classmethod
+    def check_return_after_outbound(cls, v: date, info):
+        outbound = info.data["outbound"]
+        if v < outbound:
+            raise ValueError("Return date must be after outbound date")
+        return v
+
 
 class Flight_schedule_request_schema(BaseModel):
     aircraft_id: PositiveInt
-    flight_schedule: List[Flight_schedule_schema]
+    flight_schedule: List[Flight_dates]
 
-    @field_validator("flight_schedule")
-    def no_duplicates(cls, v):
+    @field_validator('flight_schedule')
+    @classmethod
+    def check_no_duplicates(cls, v: List[Flight_dates]):
         seen = set()
-        for item in v:
-            key = (item.departure_date_outbound, item.departure_date_inbound)
+        for fs in v:
+            key = (fs.outbound, fs.return_)
             if key in seen:
-                raise ValueError(f"Duplicate flight schedule entry: {key}")
+                raise ValueError("Duplicate flight schedule found")
             seen.add(key)
         return v
-
-
 
 
 

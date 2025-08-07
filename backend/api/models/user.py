@@ -1,3 +1,5 @@
+from typing import List
+
 from .base import Base
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -11,6 +13,10 @@ class User(Base):
 
     id_role: Mapped[int] = mapped_column(ForeignKey("roles.id_role"), nullable=False)
     role: Mapped["Role"] = relationship("Role", back_populates='users')
+
+    tickets: Mapped[List["Passenger_ticket"]] = relationship(
+        back_populates= "buyer"
+    )
 
     name: Mapped[str] = mapped_column(String, nullable=False)
     lastname: Mapped[str] = mapped_column(String, nullable=False)

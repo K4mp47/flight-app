@@ -11,7 +11,7 @@ from ..models.flight import Flight
 from ..query.airline_query import *
 from ..query.airport_query import get_airport_by_iata_code
 from ..query.route_query import get_route_by_airport, find_reverse_route, get_route
-from ..query.flight_query import is_aircraft_available
+from ..query.flight_query import get_routes_assigned_to_aircraft, check_aircraft_schedule_conflicts
 from ..utils.geo import *
 
 class Airline_controller:
@@ -25,28 +25,21 @@ class Airline_controller:
         else:
             return insert_airline(self.session,iata_code, name), 201
 
-    def insert_aircraft(self,airline_code,id_aircraft, current_position):
+    def insert_aircraft(self,airline_code,id_aircraft):
 
         airline = get_airline_by_iata_code(self.session,airline_code)
-        airport = get_airport_by_iata_code(self.session, current_position)
 
-        if airport is None or airline is None:
-            return {"message": "airport or airline doesn't exist"}, 400
+        new_aircraft = Aircraft_airline(
+            airline_code=airline_code,
+            id_aircraft_model=id_aircraft
+        )
 
-        else:
-            new_aircraft = Aircraft_airline(
-                airline_code = airline_code,
-                id_aircraft_model = id_aircraft,
-                current_position = current_position,
-                flying_towards = None
-            )
+        self.session.add(new_aircraft)
+        self.session.commit()
+        self.session.refresh(new_aircraft)
 
+        return {"message": "aircraft inserted successfully", "aircraft": new_aircraft.to_dict()}, 201
 
-            self.session.add(new_aircraft)
-            self.session.commit()
-            self.session.refresh(new_aircraft)
-
-            return {"message": "aircraft inserted successfully", "aircraft": new_aircraft.to_dict()}, 201
 
     def get_airline_fleet(self,iata_code):
         if get_airline_by_iata_code(self.session,iata_code) is None:
@@ -169,12 +162,14 @@ class Airline_controller:
         route_main = Route(
             code=name_route,
             airline_iata_code=airline_code,
+            is_outbound= True,
             start_date=start_date,
             end_date=end_date
         )
         route_return = Route(
             code=name_route_return,
             airline_iata_code=airline_code,
+            is_outbound=False,
             start_date=start_date,
             end_date=end_date
         )
@@ -311,15 +306,15 @@ class Airline_controller:
 
         return {"message": "End date updated successfully"}, 200
 
-    def parse_duration(duration_str):
-        hours, minutes = map(int, duration_str.split(":"))
-        return timedelta(hours=hours, minutes=minutes)
-
-
     def insert_flight_schedule(self, route_code, aircraft_id, flight_schedule):
 
-        if self.session.get(Route, route_code) is None:
+        route = self.session.get(Route, route_code)
+
+        if route is None:
             return {"message": "Route outbound not found"}, 404
+
+        if route.is_outbound == False:
+            return {"message": "To enter flights, select the outbound route, NOT the return route."}, 400
 
         return_route_code = find_reverse_route(self.session, route_code)
         if return_route_code is None:
@@ -328,68 +323,104 @@ class Airline_controller:
         if self.session.get(Aircraft_airline, aircraft_id) is None:
             return {"message": "Aircraft not found"}, 404
 
+        for schedule in flight_schedule:
+            if schedule.outbound < route.start_date or schedule.outbound > route.end_date:
+                return {
+                    "message": f"Outbound date {schedule.outbound} is outside the route validity period ({route.start_date} to {route.end_date})"
+                }, 400
+            if schedule.return_ < route.start_date or schedule.return_ > route.end_date:
+                return {
+                    "message": f"Return date {schedule.return_} is outside the route validity period ({route.start_date} to {route.end_date})"
+                }, 400
+
+        assigned_routes = get_routes_assigned_to_aircraft(self.session, aircraft_id)
+        expected_routes = {route_code, return_route_code}
+
+        if assigned_routes:
+            assigned_routes_set = set(assigned_routes)
+            if assigned_routes_set != expected_routes:
+                return {
+                    "message": f"Aircraft already assigned to different routes: {assigned_routes}"
+                }, 400
+
         data_route_outbound = get_route(self.session, route_code)
         data_route_return = get_route(self.session, return_route_code)
 
-        total_duration_outbound = self.parse_duration(data_route_outbound["routes"]["total_duration"])
-        total_duration_return = self.parse_duration(data_route_return["routes"]["total_duration"])
+        # OUTBOUND
+        first_segment_outbound = data_route_outbound["segments"][0]
+        dep_time_str_outbound = first_segment_outbound["departure_time"]
+        dur_str_outbound = data_route_outbound["total_duration"]
 
-        flight_schedules = flight_schedule.get("flight_schedule", [])
+        dep_hour_out, dep_min_out = map(int, dep_time_str_outbound.split(":"))
+        dur_hour_out, dur_min_out = map(int, dur_str_outbound.split(":"))
+        dur_outbound = timedelta(hours=dur_hour_out, minutes=dur_min_out)
 
-        for fs in flight_schedules:
-            try:
-                dep_out = datetime.strptime(fs["departure_date_outbound"], "%Y-%m-%d").date()
-                dep_in = datetime.strptime(fs["departure_date_inbound"], "%Y-%m-%d").date()
-            except (ValueError, KeyError):
-                raise ValueError("Invalid or missing date format in flight_schedule. Use YYYY-MM-DD.")
+        # RETURN
+        first_segment_return = data_route_return["segments"][0]
+        dep_time_str_return = first_segment_return["departure_time"]
+        dur_str_return = data_route_return["total_duration"]
 
-            # Calcola orario di partenza e arrivo outbound
-            first_outbound_dep_time = datetime.strptime(
-                data_route_outbound["routes"]["segments"][0]["departure_time"], "%H:%M"
-            ).time()
-            dt_outbound_departure = datetime.combine(dep_out, first_outbound_dep_time)
-            dt_outbound_arrival = dt_outbound_departure + total_duration_outbound
+        dep_hour_ret, dep_min_ret = map(int, dep_time_str_return.split(":"))
+        dur_hour_ret, dur_min_ret = map(int, dur_str_return.split(":"))
+        dur_return = timedelta(hours=dur_hour_ret, minutes=dur_min_ret)
 
-            # Controllo che inbound date sia coerente con arrivo outbound
-            if dt_outbound_arrival.date() != dep_in:
-                raise ValueError(
-                    f"Invalid inbound date for outbound on {dep_out}. "
-                    f"Expected arrival: {dt_outbound_arrival.date()}, got: {dep_in}"
-                )
+        arrival_dates = []
 
-            # Calcola orario di partenza e arrivo ritorno
-            first_return_dep_time = datetime.strptime(
-                data_route_return["routes"]["segments"][0]["departure_time"], "%H:%M"
-            ).time()
-            dt_return_departure = datetime.combine(dep_in, first_return_dep_time)
-            dt_return_arrival = dt_return_departure + total_duration_return
+        for schedule in flight_schedule:
+            # OUTBOUND
+            full_dep_out = datetime.combine(schedule.outbound, datetime.min.time()).replace(hour=dep_hour_out,
+                                                                                            minute=dep_min_out)
+            arr_out = full_dep_out + dur_outbound
 
-            # Controlla disponibilità aereo sulle date outbound e inbound
-            if not is_aircraft_available(self.session, aircraft_id, dep_out):
-                raise ValueError(f"Aircraft already assigned to another flight on {dep_out}")
+            # RETURN
+            full_dep_ret = datetime.combine(schedule.return_, datetime.min.time()).replace(hour=dep_hour_ret,
+                                                                                           minute=dep_min_ret)
+            arr_ret = full_dep_ret + dur_return
 
-            if not is_aircraft_available(self.session, aircraft_id, dep_in):
-                raise ValueError(f"Aircraft already assigned to another flight on {dep_in}")
+            arrival_dates.append({
+                "outbound_departure": schedule.outbound,
+                "outbound_arrival": arr_out.date(),
+                "return_departure": schedule.return_,
+                "return_arrival": arr_ret.date()
+            })
 
-            # Aggiungi i voli (andata e ritorno)
-            outbound_flight = Flight(
+        for ad in arrival_dates:
+            dates_to_check = [
+                ad["outbound_departure"],
+                ad["outbound_arrival"],
+                ad["return_departure"],
+                ad["return_arrival"]
+            ]
+
+            if check_aircraft_schedule_conflicts(self.session, aircraft_id, dates_to_check):
+                return {
+                    "message": f"Aircraft already scheduled for a flight on one of these dates: {dates_to_check}"
+                }, 400
+
+        flights_to_insert = []
+        for ad in arrival_dates:
+            # Flights outbound
+            flights_to_insert.append(Flight(
                 id_aircraft=aircraft_id,
                 route_code=route_code,
-                scheduled_departure_day=dep_out,
-                scheduled_arrival_day=dt_outbound_arrival.date(),
-            )
-            return_flight = Flight(
+                scheduled_departure_day=ad["outbound_departure"],
+                scheduled_arrival_day=ad["outbound_arrival"]
+            ))
+            # Flights return
+            flights_to_insert.append(Flight(
                 id_aircraft=aircraft_id,
                 route_code=return_route_code,
-                scheduled_departure_day=dep_in,
-                scheduled_arrival_day=dt_return_arrival.date(),
-            )
+                scheduled_departure_day=ad["return_departure"],
+                scheduled_arrival_day=ad["return_arrival"]
+            ))
+        self.session.add_all(flights_to_insert)
+        self.session.commit()
 
-            self.session.add(outbound_flight)
-            self.session.add(return_flight)
+        return {
+            "message": "Flight schedule successfully inserted",
+            "flights": arrival_dates
+        }, 201
 
-        # Commit viene gestito all'esterno nella route
-        return {"message": "Flight schedule inserted successfully"}, 201
 
 
 

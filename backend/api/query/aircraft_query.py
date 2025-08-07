@@ -6,6 +6,7 @@ from ..models.aircraft import Aircraft
 from ..models.manufacturer import Manufacturer
 
 
+
 def all_aircraft(session: Session):
     stmt = select(Aircraft)
     result = session.scalars(stmt).all()
@@ -24,4 +25,6 @@ def all_aircraft_by_manufacturer(session: Session,manufacturer_id: int):
     )
     result = session.scalars(stmt).all()
     return [aircraft.to_dict_without_manufacturer() for aircraft in result]
+
+
 

@@ -15,3 +15,6 @@ from .route import Route
 from .route_section import Route_section
 from .route_detail import Route_detail
 from .flight import Flight
+from .ticket import Ticket
+from .passenger_ticket import Passenger_ticket
+from .passenger import Passenger

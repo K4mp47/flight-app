@@ -36,3 +36,15 @@ class Flight(Base):
             "scheduled_departure_day": self.scheduled_departure_day,
             "scheduled_arrival_day": self.scheduled_arrival_day,
         }
+
+    def to_dict_search(self):
+        return {
+            "route_code": self.route.code,
+            "airline": {
+                "iata_code": self.route.airline.iata_code,
+                "name": self.route.airline.name
+            },
+            "scheduled_departure_day": self.scheduled_departure_day.isoformat(),
+            "scheduled_arrival_day": self.scheduled_arrival_day.isoformat(),
+            "sections": [rd.to_dict_search() for rd in self.route.routes_details],
+        }

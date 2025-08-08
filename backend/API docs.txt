@@ -643,7 +643,7 @@ Ruoli -> Airline-Admin, Admin
 
 Authorization Bearer token_utente
 
-API che permette di aggiungere le tratte di una rotta
+API che permette di aggiungere le tratte di una rotta. Occhio che non vanno a creare le rotte delle compagnie ma solo i segmenti. Da Frontend non la userai mai.
 
 body {
   "departure_airport": "IST",
@@ -975,6 +975,174 @@ risposta 200
         }
     ],
     "message": "Flight schedule successfully inserted"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+24) /flight//search  methods=["POST"]
+
+API che permette di eseguire una ricerca dei voli presenti sul db. Se si vuole un esempio guardare il sito di sky scanner
+
+body {
+   "departure_airport": "FCO",
+  "arrival_airport": "MIA",
+  "round_trip_flight": true,
+  "direct_flights": false,
+  "departure_date_outbound": "2025-08-10",
+  "departure_date_return": "2025-08-21"
+}
+
+round_trip_flight indica se si vuole trovare volo andata e ritorno. Se messo a false allora departure_date_return deve essere impostato a null.
+
+direct_flights indica se nei voli che ricerchiamo vogliamo oppure no voli diretti.
+
+Attenzione:
+Se abbiamo una route FCO -> JFK -> MIA che chiamiano AZ1930 se ricerchiamo la tratta JFK -> MIA o FCO -> JFK non ci veranno fuori i voli della rotta AZ1930 poichè sono
+considerati un blocco unico.
+
+Infine non ho implementato la ricerca interlinea perchè bisognava usare algoritmi per i grafi e sinceramente voglio finio stò robo presto.
+Per chi non lo sa interlinea è quando devi andare da Venezia a Novosibirsk ma nessuna compagnia aerea copre quella tratta, allora con un algoritmo che usa i grafi,
+troviamo per esempio che AZ copre Venezia -> Ankara mentre TK copre Ankara -> Novosibirsk
+
+risposta 200
+
+{
+    "outbound_flights": [
+        {
+            "airline": {
+                "iata_code": "TK",
+                "name": "Turkish Airlines"
+            },
+            "route_code": "TK1930",
+            "scheduled_arrival_day": "2025-08-10",
+            "scheduled_departure_day": "2025-08-10",
+            "sections": [
+                {
+                    "arrival_time": "21:40:00",
+                    "departure_time": "19:35:00",
+                    "id_airline_routes": 25,
+                    "next_id": null,
+                    "section": {
+                        "code_arrival_airport": "MIA",
+                        "code_departure_airport": "JFK",
+                        "id_routes_section": 6
+                    }
+                },
+                {
+                    "arrival_time": "16:35:00",
+                    "departure_time": "08:30:00",
+                    "id_airline_routes": 24,
+                    "next_id": 25,
+                    "section": {
+                        "code_arrival_airport": "JFK",
+                        "code_departure_airport": "FCO",
+                        "id_routes_section": 5
+                    }
+                }
+            ]
+        },
+        {
+            "airline": {
+                "iata_code": "AZ",
+                "name": "Alitalia"
+            },
+            "route_code": "AZ1930",
+            "scheduled_arrival_day": "2025-08-10",
+            "scheduled_departure_day": "2025-08-10",
+            "sections": [
+                {
+                    "arrival_time": "21:40:00",
+                    "departure_time": "19:35:00",
+                    "id_airline_routes": 6,
+                    "next_id": null,
+                    "section": {
+                        "code_arrival_airport": "MIA",
+                        "code_departure_airport": "JFK",
+                        "id_routes_section": 6
+                    }
+                },
+                {
+                    "arrival_time": "16:35:00",
+                    "departure_time": "08:30:00",
+                    "id_airline_routes": 5,
+                    "next_id": 6,
+                    "section": {
+                        "code_arrival_airport": "JFK",
+                        "code_departure_airport": "FCO",
+                        "id_routes_section": 5
+                    }
+                }
+            ]
+        }
+    ],
+    "return_flights": [
+        {
+            "airline": {
+                "iata_code": "TK",
+                "name": "Turkish Airlines"
+            },
+            "route_code": "TK1931",
+            "scheduled_arrival_day": "2025-08-21",
+            "scheduled_departure_day": "2025-08-21",
+            "sections": [
+                {
+                    "arrival_time": "23:50:00",
+                    "departure_time": "15:45:00",
+                    "id_airline_routes": 27,
+                    "next_id": null,
+                    "section": {
+                        "code_arrival_airport": "FCO",
+                        "code_departure_airport": "JFK",
+                        "id_routes_section": 8
+                    }
+                },
+                {
+                    "arrival_time": "12:45:00",
+                    "departure_time": "10:40:00",
+                    "id_airline_routes": 26,
+                    "next_id": 27,
+                    "section": {
+                        "code_arrival_airport": "JFK",
+                        "code_departure_airport": "MIA",
+                        "id_routes_section": 7
+                    }
+                }
+            ]
+        },
+        {
+            "airline": {
+                "iata_code": "TK",
+                "name": "Turkish Airlines"
+            },
+            "route_code": "TK1931",
+            "scheduled_arrival_day": "2025-08-21",
+            "scheduled_departure_day": "2025-08-21",
+            "sections": [
+                {
+                    "arrival_time": "23:50:00",
+                    "departure_time": "15:45:00",
+                    "id_airline_routes": 27,
+                    "next_id": null,
+                    "section": {
+                        "code_arrival_airport": "FCO",
+                        "code_departure_airport": "JFK",
+                        "id_routes_section": 8
+                    }
+                },
+                {
+                    "arrival_time": "12:45:00",
+                    "departure_time": "10:40:00",
+                    "id_airline_routes": 26,
+                    "next_id": 27,
+                    "section": {
+                        "code_arrival_airport": "JFK",
+                        "code_departure_airport": "MIA",
+                        "id_routes_section": 7
+                    }
+                }
+            ]
+        }
+    ]
 }
 
 ------------------------------------------------------------------------------------------------------------------

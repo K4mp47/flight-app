@@ -40,5 +40,14 @@ class Route_detail(Base):
             "id_airline_routes": self.id_airline_routes,
             "route": self.route.to_dict(),
             "section": self.section.to_dict(),
-            "next": self.next.to_dict(),
+            "next": self.next.to_dict() if self.next else None,
+        }
+
+    def to_dict_search(self):
+        return {
+             "id_airline_routes": self.id_airline_routes,
+             "departure_time": self.departure_time.strftime("%H:%M:%S"),
+             "arrival_time": self.arrival_time.strftime("%H:%M:%S"),
+             "section": self.section.to_dict(),
+             "next_id": self.next.id_airline_routes if self.next else None,
         }

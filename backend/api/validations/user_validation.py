@@ -15,7 +15,7 @@ class User_login_Schema(BaseModel):
     @classmethod
     def sanitize_email(cls, v: EmailStr) -> EmailStr:
         clean = bleach.clean(str(v), tags=[], strip=True)
-        return EmailStr(clean)
+        return clean
 
 
 class User_Register_Schema(BaseModel):
@@ -29,7 +29,7 @@ class User_Register_Schema(BaseModel):
     @classmethod
     def sanitize_email(cls, v: EmailStr) -> EmailStr:
         clean = bleach.clean(str(v), tags=[], strip=True)
-        return EmailStr(clean)
+        return clean
 
     @field_validator("pwd")
     @classmethod

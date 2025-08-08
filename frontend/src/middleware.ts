@@ -3,14 +3,14 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
 
-  // lista Route da controllare
-  const protectedRoutes = ['/dashboard', '/seatmap']
+  // // lista Route da controllare
+  // const protectedRoutes = ['/dashboard', '/seatmap']
 
-  const token = request.cookies.get('token')?.value
+  // const token = request.cookies.get('token')?.value
 
-  if (!token && protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+  // if (!token && protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
+  //   return NextResponse.redirect(new URL('/login', request.url))
+  // }
 
   return NextResponse.next()
 }

@@ -1,7 +1,7 @@
 from .base import Base
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, DateTime, ForeignKey, Boolean
+from sqlalchemy import String, DateTime, ForeignKey, Boolean, Integer
 from typing import List
 
 class Route(Base):
@@ -22,6 +22,7 @@ class Route(Base):
         cascade="all, delete-orphan"
     )
 
+    base_price: Mapped[int] = mapped_column(Integer, nullable=False)
     start_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     end_date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     is_outbound: Mapped[bool] = mapped_column(Boolean, nullable=False)
@@ -34,6 +35,7 @@ class Route(Base):
         return {
             "code": self.code,
             "airline_iata_code": self.airline_iata_code,
+            "base_price": self.base_price,
             "start_date": self.start_date,
             "end_date": self.end_date,
         }

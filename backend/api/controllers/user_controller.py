@@ -1,5 +1,6 @@
 from flask import jsonify
 
+from ..models import Airline
 from ..models.user import User
 from ..models.role import Role
 from ..utils.blacklist import blacklisted_tokens
@@ -42,7 +43,7 @@ class User_controller:
         if (not user) or (not check_password_hash(user.password, password)):
             return {"message": "Email or Password wrong"}, 400
 
-        access_token = create_access_token(identity=str(user.id_user),additional_claims={"role": user.role.name})
+        access_token = create_access_token(identity=str(user.id_user),additional_claims={"role": user.role.name, "airline_code": user.airline_code})
         return {"access_token": access_token}, 200
 
     def get_profile(self,id):
@@ -64,6 +65,24 @@ class User_controller:
         user.id_role = role.id_role
         self.session.commit()
         return {"message": "Role changed"}, 200
+
+    def set_user_airline(self, id_user, airline_code):
+        user = self.session.get(User, id_user)
+
+        if user is None:
+            return {"message": "User not found"}, 404
+
+        if user.role.name != "Airline-Admin":
+            return {"message": "user must be an Airline-Admin"}, 400
+
+        airline = self.session.get(Airline, airline_code)
+
+        if airline is None:
+            return {"message": "Airline not found"}, 404
+
+        user.airline_code = airline_code
+        self.session.commit()
+        return {"message": "airline assigned to the user"}, 201
 
 
 

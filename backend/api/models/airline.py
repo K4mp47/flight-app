@@ -20,6 +20,20 @@ class Airline(Base):
         cascade="all, delete-orphan"
     )
 
+    airline_price_policy: Mapped[List["Airline_price_policy"]] = relationship(
+        back_populates= "airline",
+        cascade="all, delete-orphan"
+    )
+
+    class_price_policy: Mapped[List["Class_price_policy"]] = relationship(
+        back_populates= "airline",
+        cascade="all, delete-orphan"
+    )
+
+    users: Mapped[List["User"]] = relationship(
+        back_populates= "airline"
+    )
+
     name : Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 

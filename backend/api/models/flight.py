@@ -40,6 +40,7 @@ class Flight(Base):
     def to_dict_search(self):
         return {
             "route_code": self.route.code,
+            "price": self.route.base_price,
             "airline": {
                 "iata_code": self.route.airline.iata_code,
                 "name": self.route.airline.name

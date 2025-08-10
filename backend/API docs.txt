@@ -184,6 +184,8 @@ body {
 Attenzione:
 new_role acetta solo SOLO: Admin, User, Airline-Admin
 
+Per impostare ad un utente la compagnia aerea per accedere alla dashboard vedere API 25
+
 risposta 200
 
 {
@@ -512,6 +514,7 @@ body {
     [true, true, true,false,true, true, true]
   ],
   "proportion_economy_seat": 1,
+  "airline_code": "AZ",
   "id_class": 4
 
 }
@@ -569,6 +572,11 @@ Ruoli -> Airline-Admin
 
 Authorization Bearer token_utente
 
+body {
+    "airline_code" : "AZ"
+}
+
+
 per vedere la risposta completa andare nella cartella dataset/seat_map.json
 
 {
@@ -614,6 +622,7 @@ Ruoli -> Airline-Admin
 
 Authorization Bearer token_utente
 
+
 API che permette di copiare la disposizione dei blocchi e posizione sedili da un aereo ad un altro.
 Praticamente se ho 2 aerei A e B dove:
 A = source
@@ -624,6 +633,7 @@ B compierà la seat_map di A senza dover usare API 15 ovvero: /airline/add/block
 ATTENZIONE se è già presente una configurazione dei posti di target, essa verà cancellata e sostituita con quella di A.
 
 body {
+  "airline_code" : "AZ"
   "source_id" : 4,
   "target_id" : 3
 
@@ -647,7 +657,7 @@ API che permette di aggiungere le tratte di una rotta. Occhio che non vanno a cr
 
 body {
   "departure_airport": "IST",
-  "arrival_airport": "HND"
+  "arrival_airport": "HND",
 }
 
 risposta 200
@@ -686,6 +696,8 @@ Prima vedediamo l'esempio inserendo una rotta senza scalo
     "next_session": null
   }
 }
+
+ATTENZIONE per poter eseguire questa API bisogna aver prima popolato la tabella price policy, guardare API 29
 
 chiariamo subito cosa significano questi dati:
 number_route è il numero della route sommato al codice della compagnia formerà il codice della route in queto caso AZ1. Il numero deve essere compreso tra 1 e 9999
@@ -760,6 +772,7 @@ API che permette di aggiornare la data di scadenza di una route, per indicare la
 ATTENZIONE modificare una route modificherà anche la route inversa se esiste. Non ha alcuna importanza quale codice di roue inserite.
 
 Body {
+   "airline_code": "AZ",
   "end_date": "2027-09-12"
 }
 
@@ -876,8 +889,11 @@ risposta 200
 
 22) /airline/route/<code>/info  methods=["GET"]
 
-
 API che permette di visualizzare le informazioni di una rotta dove <code> è il codice della rotta
+
+Body {
+  "airline_code": "AZ"
+}
 
 risposta 200
 
@@ -921,6 +937,7 @@ come facciamo a inserire i voli per quell' API?
 Guardiamo i dati che passiamo
 
 {
+   "airline_code": "AZ"
   "aircraft_id": 4,
   "flight_schedule": [
     {
@@ -979,7 +996,7 @@ risposta 200
 
 ------------------------------------------------------------------------------------------------------------------
 
-24) /flight//search  methods=["POST"]
+24) /flight/search  methods=["GET"]
 
 API che permette di eseguire una ricerca dei voli presenti sul db. Se si vuole un esempio guardare il sito di sky scanner
 
@@ -1146,3 +1163,156 @@ risposta 200
 }
 
 ------------------------------------------------------------------------------------------------------------------
+
+25)  /users/<int:user_id>/add-airline   methods=["PUT"]
+
+Ruoli -> Admin
+
+Authorization Bearer token_utente
+
+API che imposta ad un utente che ha ruolo Airline-Admin una compagnia aerea. In questo modo potrà gestire SOLO quella.
+
+body {
+    "airline_code": "AZ"
+}
+
+risposta 200
+
+{
+    "message": "airline assigned to the user"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+26)  airline/add-class-price-policy  methods=["POST"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che serve per aggiungere la politica dei costi delle relative classi. Se compri un biglietto in first class costerà di più rispetto ad economy,
+questa API serve appunto a stabilire la politica dei prezzi per le classi.
+
+body {
+    "id_class": 1,
+    "airline_code": "AZ",
+    "price_multiplier": 20,
+    "fixed_markup" : 10,
+}
+
+price_multiplier è la percentuale che va aggiunta al prezzo del biglietto se compri un posto di classe con id 1
+fixed_markup è il prezzo base per quella classe
+
+------------------------------------------------------------------------------------------------------------------
+
+27)  airline/class-price-policy/<int:id_class_price_policy>/modify  methods=["PUT"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che serve a modificare il price_multiplier e fixed_markup
+
+body {
+    "airline_code": "AZ",
+    "price_multiplier": 20,
+    "fixed_markup" : 10,
+}
+
+Si noti che se si vuole modificare unicamente un valore, si può impostare il valore che non si vuole modificare a null.
+
+------------------------------------------------------------------------------------------------------------------
+
+28)  airline/<code>/class-price-policy/  methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che passando per parametro il codice della compagnia aerea, restituisce la class-price-policy
+
+risposta 200
+
+{
+    "policies": [
+        {
+            "airline_code": "AZ",
+            "class_seat": {
+                "code": "Y",
+                "id_class": 4,
+                "name": "Economy"
+            },
+            "fixed_markup": 0,
+            "price_multiplier": 1
+        }
+    ]
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+29) airline/<code>/add/price-policy  methods=["POST"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che aggiunge alla compagnia aerea (code) la price-policy, essa serve a creare, in base a dei calcoli, il costo del biglietto aereo di base
+
+body {
+    "fixed_markup": 10,
+    "price_for_km": 0.05,
+    "fee_fro_stopover" : 20,
+}
+
+fixed_markup = prezzo di base del biglietto
+price_for_km = moltiplicatore per Km
+fee_fro_stopover = tassa aggiuntiva per ogni scalo
+
+quindi il prezzo base del biglietto è dato da questa formula:
+
+prezzo = fixed_markup + (km_totali * price_for_km) + (numero_cali * fee_fro_stopover)
+
+------------------------------------------------------------------------------------------------------------------
+
+30) airline/price-policy/<code>/modify  methods=["PUT"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che ha lo scopo di modificare la price-policy di una compagnia aerea (code)
+
+body {
+    "fixed_markup": null,
+    "price_for_km": 0.05,
+    "fee_fro_stopover" : 5,
+}
+
+Se non si vuole modificare un valore mettere a null.
+
+------------------------------------------------------------------------------------------------------------------
+
+31)   airline/<code>/price-policy/  methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+APi che serve a visualizzare la price policy della airline passata in parametro (code)
+
+risposta 200 (con code = AZ)
+
+{
+    "policies": [
+        {
+            "airline_code": "AZ",
+            "fee_for_stopover": 25,
+            "fixed_markup": 20,
+            "price_for_km": 0.2
+        }
+    ]
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+

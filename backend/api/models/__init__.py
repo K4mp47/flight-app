@@ -18,3 +18,5 @@ from .flight import Flight
 from .ticket import Ticket
 from .passenger_ticket import Passenger_ticket
 from .passenger import Passenger
+from .airline_price_policy import Airline_price_policy
+from .class_price_policy import Class_price_policy

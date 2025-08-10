@@ -1,6 +1,9 @@
 from flask_sqlalchemy.session import Session
 from sqlalchemy import select, func
 from sqlalchemy.orm import joinedload, selectinload
+
+from ..models.class_price_policy import Class_price_policy
+from ..models.airline_price_policy import Airline_price_policy
 from ..models.airline import Airline
 from ..models.aircraft_airlines import Aircraft_airline
 from ..models.cells_block import Cells_block
@@ -177,5 +180,21 @@ def delete_aircraft_composition(session: Session, id_aircraft_airline: int):
         session.delete(comp)
         if comp.cell_block:
             session.delete(comp.cell_block)
+
+def get_airline_class_price_policy(session: Session, airline_code: str):
+    stmt = (
+        select(Class_price_policy)
+        .where(Class_price_policy.airline_code == airline_code)
+    )
+    result = session.scalars(stmt)
+    return [class_price_policy.to_dict() for class_price_policy in result]
+
+def get_airline_price_policy(session: Session, airline_code: str):
+    stmt = (
+        select(Airline_price_policy)
+        .where(Airline_price_policy.airline_code == airline_code)
+    )
+    result = session.scalars(stmt)
+    return [price_policy.to_dict() for price_policy in result]
 
 

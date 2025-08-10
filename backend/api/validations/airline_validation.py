@@ -15,6 +15,7 @@ class Airline_aircraft_schema(BaseModel):
 class Airline_aircraft_block_schema(BaseModel):
     matrix: Annotated[List[List[bool]], Field(min_length=1)]
     proportion_economy_seat: PositiveFloat
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
     id_class: PositiveFloat
 
     @field_validator("matrix")
@@ -44,6 +45,7 @@ class Airline_aircraft_block_schema(BaseModel):
         return matrix
 
 class Clone_aircraft_seat_mao_schema(BaseModel):
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
     source_id: PositiveInt
     target_id: PositiveInt
 
@@ -96,6 +98,7 @@ class Route_airline_schema(BaseModel):
         return end_date_val
 
 class Route_deadline_schema(BaseModel):
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
     end_date : date
 
 
@@ -121,6 +124,7 @@ class Flight_dates(BaseModel):
 
 
 class Flight_schedule_request_schema(BaseModel):
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
     aircraft_id: PositiveInt
     flight_schedule: List[Flight_dates]
 
@@ -134,6 +138,24 @@ class Flight_schedule_request_schema(BaseModel):
                 raise ValueError("Duplicate flight schedule found")
             seen.add(key)
         return v
+
+class Class_price_policy_schema(BaseModel):
+    id_class: PositiveInt
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
+    price_multiplier: Annotated[int, Field(ge=1, le=100)]
+    fixed_markup: int
+
+class Class_price_policy_data_schema(BaseModel):
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
+    price_multiplier: Optional[Annotated[int, Field(ge=1, le=100)]] = None
+    fixed_markup: Optional[int] = None
+
+class Price_policy_schema(BaseModel):
+    fixed_markup: Optional[int] = None
+    price_for_km: Optional[float] = None
+    fee_fro_stopover: Optional[int] = None
+
+
 
 
 

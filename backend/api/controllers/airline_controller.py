@@ -8,6 +8,8 @@ from ..models.route import Route
 from ..models.airport import Airport
 from ..models.route_detail import Route_detail
 from ..models.flight import Flight
+from ..models.class_price_policy import Class_price_policy
+from ..models.airline_price_policy import Airline_price_policy
 from ..query.airline_query import *
 from ..query.airport_query import get_airport_by_iata_code
 from ..query.route_query import get_route_by_airport, find_reverse_route, get_route
@@ -150,6 +152,11 @@ class Airline_controller:
         if self.session.get(Route, name_route) is not None:
             return {"message": "route already present in the database"}, 400
 
+        price_policy = self.session.get(Airline_price_policy, airline_code)
+
+        if price_policy is None:
+            return {"message": "Before adding a route, add a price policy"}, 400
+
         name_route_return = ""
 
         if self.session.get(Route, airline_code + str(number_route + 1)) is None:
@@ -163,13 +170,15 @@ class Airline_controller:
             code=name_route,
             airline_iata_code=airline_code,
             is_outbound= True,
+            base_price=1,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
         )
         route_return = Route(
             code=name_route_return,
             airline_iata_code=airline_code,
             is_outbound=False,
+            base_price=1,
             start_date=start_date,
             end_date=end_date
         )
@@ -188,7 +197,12 @@ class Airline_controller:
         current_departure_dt = datetime.combine(dummy_date, first_departure_time)
         waiting_minutes = 0
 
+        #tot_km and num_stopover used to calculate the base price of the route based on pricing policies
+        tot_km = 0
+        num_stopover = -1
+
         while current_section:
+            num_stopover += 1
             outbound_sections.append(current_section)
 
             dep_airport = self.session.get(Airport, current_section.departure_airport)
@@ -211,6 +225,7 @@ class Airline_controller:
                 dep_airport.latitude, dep_airport.longitude,
                 arr_airport.latitude, arr_airport.longitude
             )
+            tot_km = tot_km + distance
 
             departure_time = current_departure_dt.time()
             arrival_time = calculate_arrival_time(departure_time.strftime("%H:%M"), distance)
@@ -237,6 +252,15 @@ class Airline_controller:
                 current_departure_dt = arr_dt + timedelta(minutes=waiting_minutes)
 
             current_section = current_section.next_session
+
+        # price calculation
+        price = tot_km * price_policy.price_for_km
+        price = price + price_policy.fixed_markup
+        price = price + (price_policy.fee_for_stopover * num_stopover)
+        price = int(price)
+
+        route_main.base_price = tot_km
+        route_return.base_price = tot_km
 
         # return route
 
@@ -420,6 +444,103 @@ class Airline_controller:
             "message": "Flight schedule successfully inserted",
             "flights": arrival_dates
         }, 201
+
+    def insert_class_price_policy(self, id_class, airline_code, price_multiplier, fixed_markup):
+        class_ = self.session.get(Class_seat, id_class)
+
+        if class_ is None:
+            return {"message": "Class not found"}, 404
+
+        airline = self.session.get(Airline, airline_code)
+
+        if airline is None:
+            return {"message": "Airline not found"}, 404
+
+        new_class_price_policy = Class_price_policy(
+            id_class = id_class,
+            airline_code = airline_code,
+            price_multiplier = price_multiplier,
+            fixed_markup = fixed_markup
+        )
+
+        self.session.add(new_class_price_policy)
+        self.session.commit()
+        self.session.refresh(new_class_price_policy)
+
+        return {"message": "class price policy inserted successfully", "aircraft": new_class_price_policy.to_dict()}, 201
+
+    def change_class_price_policy(self,id_class_price_policy,price_multiplier, fixed_markup):
+        class_price_policy = self.session.get(Class_price_policy, id_class_price_policy)
+
+        if class_price_policy is None:
+            return {"message": "Class price policy not found"}, 404
+
+        if price_multiplier is not None or fixed_markup is not None:
+
+            if price_multiplier is not None:
+                class_price_policy.price_multiplier = price_multiplier
+
+            if fixed_markup is not None:
+                class_price_policy.fixed_markup = fixed_markup
+
+            self.session.commit()
+
+        return {"message": "class price policy has been successfully modified."}, 201
+
+    def insert_price_policy(self, airline_code, fixed_markup, price_for_km, fee_for_stopover):
+        airline = self.session.get(Airline, airline_code)
+        if airline is None:
+            return {"message": "Airline not found"}, 404
+
+        if fixed_markup is None or price_for_km is None or fee_for_stopover is None:
+            return {"message": "fixed_markup and price_for_km and fee_for_stopover, they must not be none"}, 400
+
+        new_airline_price_policy = Airline_price_policy(
+            airline_code = airline_code,
+            fixed_markup = fixed_markup,
+            price_for_km = price_for_km,
+            fee_for_stopover = fee_for_stopover
+        )
+
+        self.session.add(new_airline_price_policy)
+        self.session.commit()
+        self.session.refresh(new_airline_price_policy)
+
+        return {"message": "price policy inserted successfully",
+                "aircraft": new_airline_price_policy.to_dict()}, 201
+
+    def change_price_policy(self,airline_code, fixed_markup, price_for_km, fee_for_stopover):
+        airline_price_policy = self.session.get(Airline_price_policy, airline_code)
+
+        if airline_price_policy is None:
+            return {"message": "price policy not found"}, 404
+
+        if fixed_markup is not None or price_for_km is not None or fee_for_stopover is not None:
+
+            if fixed_markup is not None:
+                airline_price_policy.fixed_markup = fixed_markup
+
+            if price_for_km is not None:
+                airline_price_policy.price_for_km = price_for_km
+
+            if fee_for_stopover is not None:
+                airline_price_policy.fee_for_stopover = fee_for_stopover
+
+            self.session.commit()
+
+        return {"message": "price policy has been successfully modified."}, 201
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

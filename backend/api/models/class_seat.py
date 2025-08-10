@@ -16,6 +16,11 @@ class Class_seat(Base):
         back_populates="class_block"
     )
 
+    class_price_policy : Mapped[List["Class_price_policy"]] = relationship(
+        back_populates="class_seat",
+        cascade="all, delete-orphan",
+    )
+
     name : Mapped[str] = mapped_column(String, nullable=False)
     code : Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

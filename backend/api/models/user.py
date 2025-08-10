@@ -14,6 +14,9 @@ class User(Base):
     id_role: Mapped[int] = mapped_column(ForeignKey("roles.id_role"), nullable=False)
     role: Mapped["Role"] = relationship("Role", back_populates='users')
 
+    airline_code: Mapped[str] = mapped_column(ForeignKey("airlines.iata_code"), nullable=True)
+    airline: Mapped["Airline"] = relationship("Airline", back_populates="users")
+
     tickets: Mapped[List["Passenger_ticket"]] = relationship(
         back_populates= "buyer"
     )

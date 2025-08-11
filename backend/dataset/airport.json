@@ -1,0 +1,508 @@
+{
+    "airports": [
+        {
+            "city": {
+                "id_city": 1,
+                "name": "Ayn al Faydah"
+            },
+            "iata_code": "AAN",
+            "latitude": 24.25,
+            "longitude": 55.75,
+            "name": "Al Ain Airport"
+        },
+        {
+            "city": {
+                "id_city": 2,
+                "name": "Novorossiysk"
+            },
+            "iata_code": "AAQ",
+            "latitude": 44.9,
+            "longitude": 37.3167,
+            "name": "Olkhovka Airport"
+        },
+        {
+            "city": {
+                "id_city": 3,
+                "name": "Allentown"
+            },
+            "iata_code": "ABE",
+            "latitude": 40.6514,
+            "longitude": -75.4342,
+            "name": "Lehigh Valley International Airport"
+        },
+        {
+            "city": {
+                "id_city": 4,
+                "name": "Abidjan"
+            },
+            "iata_code": "ABJ",
+            "latitude": 5.2556,
+            "longitude": -3.9292,
+            "name": "Abidjan Port Bouet Airport"
+        },
+        {
+            "city": {
+                "id_city": 5,
+                "name": "Albuquerque"
+            },
+            "iata_code": "ABQ",
+            "latitude": 35.0494,
+            "longitude": -106.625,
+            "name": "Albuquerque International Airport"
+        },
+        {
+            "city": {
+                "id_city": 6,
+                "name": "Aberdeen"
+            },
+            "iata_code": "ABZ",
+            "latitude": 57.2004,
+            "longitude": -2.20373,
+            "name": "Aberdeen Dyce International Airport"
+        },
+        {
+            "city": {
+                "id_city": 7,
+                "name": "Acapulco"
+            },
+            "iata_code": "ACA",
+            "latitude": 16.7561,
+            "longitude": -99.7536,
+            "name": "General Juan N Alvarez International Airport"
+        },
+        {
+            "city": {
+                "id_city": 8,
+                "name": "Accra"
+            },
+            "iata_code": "ACC",
+            "latitude": 5.5964,
+            "longitude": -0.17,
+            "name": "Kotoka International Airport"
+        },
+        {
+            "city": {
+                "id_city": 9,
+                "name": "San Bartolomé"
+            },
+            "iata_code": "ACE",
+            "latitude": 28.9521,
+            "longitude": -13.6085,
+            "name": "Arrecife Airport"
+        },
+        {
+            "city": {
+                "id_city": 10,
+                "name": "Adana"
+            },
+            "iata_code": "ADA",
+            "latitude": 36.9811,
+            "longitude": 35.2803,
+            "name": "Sakirpasa Airport"
+        },
+        {
+            "city": {
+                "id_city": 11,
+                "name": "Azmir"
+            },
+            "iata_code": "ADB",
+            "latitude": 38.32,
+            "longitude": 27.1603,
+            "name": "Gaziemir Airport"
+        },
+        {
+            "city": {
+                "id_city": 12,
+                "name": "Addis Ababa"
+            },
+            "iata_code": "ADD",
+            "latitude": 8.9783,
+            "longitude": 38.8011,
+            "name": "Bole International Airport"
+        },
+        {
+            "city": {
+                "id_city": 13,
+                "name": "Ash Shaykh Uthman"
+            },
+            "iata_code": "ADE",
+            "latitude": 12.8278,
+            "longitude": 45.0306,
+            "name": "Aden International Airport"
+        },
+        {
+            "city": {
+                "id_city": 14,
+                "name": "Adelaide"
+            },
+            "iata_code": "ADL",
+            "latitude": -34.9464,
+            "longitude": 138.529,
+            "name": "Adelaide International Airport"
+        },
+        {
+            "city": {
+                "id_city": 15,
+                "name": "Kodiak"
+            },
+            "iata_code": "ADQ",
+            "latitude": 57.7545,
+            "longitude": -152.512,
+            "name": "Kodiak Airport"
+        },
+        {
+            "city": {
+                "id_city": 16,
+                "name": "Buenos Aires"
+            },
+            "iata_code": "AEP",
+            "latitude": -34.5617,
+            "longitude": -58.4113,
+            "name": "Aeroparque Jorge Newbery"
+        },
+        {
+            "city": {
+                "id_city": 17,
+                "name": "Sochi"
+            },
+            "iata_code": "AER",
+            "latitude": 43.447,
+            "longitude": 39.9552,
+            "name": "Adler Airport"
+        },
+        {
+            "city": {
+                "id_city": 18,
+                "name": "Agadir"
+            },
+            "iata_code": "AGA",
+            "latitude": 30.3833,
+            "longitude": -9.55,
+            "name": "Almassira Airport"
+        },
+        {
+            "city": {
+                "id_city": 19,
+                "name": "Malaga"
+            },
+            "iata_code": "AGP",
+            "latitude": 36.6749,
+            "longitude": -4.49298,
+            "name": "Malaga Airport"
+        },
+        {
+            "city": {
+                "id_city": 20,
+                "name": "Alghero"
+            },
+            "iata_code": "AHO",
+            "latitude": 40.6319,
+            "longitude": 8.29279,
+            "name": "Alghero Airport"
+        },
+        {
+            "city": {
+                "id_city": 21,
+                "name": "Ajaccio"
+            },
+            "iata_code": "AJA",
+            "latitude": 41.9204,
+            "longitude": 8.79778,
+            "name": "Campo Dell Oro Airport"
+        },
+        {
+            "city": {
+                "id_city": 22,
+                "name": "Manukau City"
+            },
+            "iata_code": "AKL",
+            "latitude": -37.0085,
+            "longitude": 174.782,
+            "name": "Auckland International Airport"
+        },
+        {
+            "city": {
+                "id_city": 23,
+                "name": "King Salmon"
+            },
+            "iata_code": "AKN",
+            "latitude": 58.6775,
+            "longitude": -156.655,
+            "name": "King Salmon Airport"
+        },
+        {
+            "city": {
+                "id_city": 24,
+                "name": "Almaty"
+            },
+            "iata_code": "ALA",
+            "latitude": 43.3608,
+            "longitude": 77.0319,
+            "name": "Alma Ata Airport"
+        },
+        {
+            "city": {
+                "id_city": 25,
+                "name": "Latham"
+            },
+            "iata_code": "ALB",
+            "latitude": 42.7426,
+            "longitude": -73.809,
+            "name": "Albany International Airport"
+        },
+        {
+            "city": {
+                "id_city": 26,
+                "name": "Elx"
+            },
+            "iata_code": "ALC",
+            "latitude": 38.2844,
+            "longitude": -0.5576,
+            "name": "Alicante Airport"
+        },
+        {
+            "city": {
+                "id_city": 27,
+                "name": "Algiers"
+            },
+            "iata_code": "ALG",
+            "latitude": 36.6993,
+            "longitude": 3.21935,
+            "name": "Houari Boumediene Airport"
+        },
+        {
+            "city": {
+                "id_city": 28,
+                "name": "Djibrine"
+            },
+            "iata_code": "ALP",
+            "latitude": 36.1808,
+            "longitude": 37.2267,
+            "name": "Aleppo International Airport"
+        },
+        {
+            "city": {
+                "id_city": 29,
+                "name": "Alexandria"
+            },
+            "iata_code": "ALY",
+            "latitude": 31.1845,
+            "longitude": 29.9491,
+            "name": "An-Nuzhah Airport"
+        },
+        {
+            "city": {
+                "id_city": 30,
+                "name": "Ahmedabad"
+            },
+            "iata_code": "AMD",
+            "latitude": 23.0728,
+            "longitude": 72.6328,
+            "name": "Sardar Vallabhbhai Patel International Airport"
+        },
+        {
+            "city": {
+                "id_city": 31,
+                "name": "Amman"
+            },
+            "iata_code": "AMM",
+            "latitude": 31.7231,
+            "longitude": 35.9936,
+            "name": "Queen Alia International Airport"
+        },
+        {
+            "city": {
+                "id_city": 32,
+                "name": "Schiphol Zuid"
+            },
+            "iata_code": "AMS",
+            "latitude": 52.3122,
+            "longitude": 4.77511,
+            "name": "Schiphol Airport"
+        },
+        {
+            "city": {
+                "id_city": 33,
+                "name": "Anchorage"
+            },
+            "iata_code": "ANC",
+            "latitude": 61.1767,
+            "longitude": -149.961,
+            "name": "Anchorage International Airport"
+        },
+        {
+            "city": {
+                "id_city": 34,
+                "name": "Carlisle"
+            },
+            "iata_code": "ANU",
+            "latitude": 17.1375,
+            "longitude": -61.79,
+            "name": "V C Bird International Airport"
+        },
+        {
+            "city": {
+                "id_city": 35,
+                "name": "Falconara Marittima"
+            },
+            "iata_code": "AOI",
+            "latitude": 43.6158,
+            "longitude": 13.3634,
+            "name": "Falconara Airport"
+        },
+        {
+            "city": {
+                "id_city": 36,
+                "name": "Aqaba"
+            },
+            "iata_code": "AQJ",
+            "latitude": 29.6119,
+            "longitude": 35.0178,
+            "name": "Aqaba International Airport"
+        },
+        {
+            "city": {
+                "id_city": 37,
+                "name": "Arkhangel'sk"
+            },
+            "iata_code": "ARH",
+            "latitude": 64.4465,
+            "longitude": 40.4242,
+            "name": "Arkhangelsk Airport"
+        },
+        {
+            "city": {
+                "id_city": 38,
+                "name": "Märst"
+            },
+            "iata_code": "ARN",
+            "latitude": 59.6521,
+            "longitude": 17.9317,
+            "name": "Arlanda Airport"
+        },
+        {
+            "city": {
+                "id_city": 39,
+                "name": "Ashgabat"
+            },
+            "iata_code": "ASB",
+            "latitude": 37.9842,
+            "longitude": 58.3294,
+            "name": "Ashkhabad Northwest Airport"
+        },
+        {
+            "city": {
+                "id_city": 40,
+                "name": "Athens"
+            },
+            "iata_code": "ATH",
+            "latitude": 37.8937,
+            "longitude": 23.7235,
+            "name": "Eleftherios Venizelos International Airport"
+        },
+        {
+            "city": {
+                "id_city": 41,
+                "name": "Atlanta"
+            },
+            "iata_code": "ATL",
+            "latitude": 33.6558,
+            "longitude": -84.4333,
+            "name": "Hartsfield-Jackson Atlanta International Airport"
+        },
+        {
+            "city": {
+                "id_city": 42,
+                "name": "Raja Sansi"
+            },
+            "iata_code": "ATQ",
+            "latitude": 31.7131,
+            "longitude": 74.7955,
+            "name": "Raja Sansi Airport"
+        },
+        {
+            "city": {
+                "id_city": 43,
+                "name": "Abu Dhabi"
+            },
+            "iata_code": "AUH",
+            "latitude": 24.4331,
+            "longitude": 54.6489,
+            "name": "Abu Dhabi International Airport"
+        },
+        {
+            "city": {
+                "id_city": 44,
+                "name": "Austin"
+            },
+            "iata_code": "AUS",
+            "latitude": 30.2027,
+            "longitude": -97.6653,
+            "name": "Austin-Bergstrom International Airport"
+        },
+        {
+            "city": {
+                "id_city": 45,
+                "name": "Antalya"
+            },
+            "iata_code": "AYT",
+            "latitude": 36.9022,
+            "longitude": 30.7917,
+            "name": "Antalya Airport"
+        },
+        {
+            "city": {
+                "id_city": 46,
+                "name": "Al Muharraq"
+            },
+            "iata_code": "BAH",
+            "latitude": 26.2736,
+            "longitude": 50.6234,
+            "name": "Bahrain International Airport"
+        },
+        {
+            "city": {
+                "id_city": 47,
+                "name": "Soledad"
+            },
+            "iata_code": "BAQ",
+            "latitude": 10.8961,
+            "longitude": -74.7789,
+            "name": "Ernesto Cortissoz Airport"
+        },
+        {
+            "city": {
+                "id_city": 48,
+                "name": "Barnaul"
+            },
+            "iata_code": "BAX",
+            "latitude": 53.3667,
+            "longitude": 83.75,
+            "name": "Barnaui West Airport"
+        },
+        {
+            "city": {
+                "id_city": 49,
+                "name": "Bucharest"
+            },
+            "iata_code": "BBU",
+            "latitude": 44.4966,
+            "longitude": 26.087,
+            "name": "Aeroportul National Bucuresti-Baneasa"
+        },
+        {
+            "city": {
+                "id_city": 50,
+                "name": "El Prat de Llobregat"
+            },
+            "iata_code": "BCN",
+            "latitude": 41.3006,
+            "longitude": 2.07976,
+            "name": "Barcelona International Airport"
+        }
+    ],
+    "page": 1,
+    "per_page": 50,
+    "total": 656,
+    "total_pages": 14
+}

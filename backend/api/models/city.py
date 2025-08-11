@@ -23,5 +23,6 @@ class City(Base):
 
     def to_dict(self):
         return {
+            "id_city": self.id_city,
             "name": self.name,
         }

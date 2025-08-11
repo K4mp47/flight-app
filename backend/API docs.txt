@@ -1315,4 +1315,212 @@ risposta 200 (con code = AZ)
 
 ------------------------------------------------------------------------------------------------------------------
 
+32) /airports/<code>  methods=["GET"]
+
+API che dato lo iata_code di un areoporto ti restituisce tutte le informazioni su esso.
+
+in questo caso per code = VCE
+
+risposta 200
+
+{
+    "airport": {
+        "city": {
+            "id_city": 605,
+            "name": "Venice"
+        },
+        "iata_code": "VCE",
+        "latitude": 45.505,
+        "longitude": 12.3433,
+        "name": "Marco Polo International Airport"
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+33)  /airports/  methods=["GET"]
+
+API che restituisce tutti gli airport
+
+risposta 200 (per la completa andare su dataset airport)
+
+"airports": [
+        {
+            "city": {
+                "id_city": 1,
+                "name": "Ayn al Faydah"
+            },
+            "iata_code": "AAN",
+            "latitude": 24.25,
+            "longitude": 55.75,
+            "name": "Al Ain Airport"
+        },
+        {
+            "city": {
+                "id_city": 2,
+                "name": "Novorossiysk"
+            },
+            "iata_code": "AAQ",
+            "latitude": 44.9,
+            "longitude": 37.3167,
+            "name": "Olkhovka Airport"
+        },
+        {
+            "city": {
+                "id_city": 3,
+                "name": "Allentown"
+            },
+            "iata_code": "ABE",
+            "latitude": 40.6514,
+            "longitude": -75.4342,
+            "name": "Lehigh Valley International Airport"
+        }
+      ]
+
+
+------------------------------------------------------------------------------------------------------------------
+
+34)  /airports/city/<int:city_id>  methods=["GET"]
+
+API che restituisce l'areoporto in base alla città (city_id)
+
+risposta 200 con city_id = 605
+
+{
+    "airports": [
+        {
+            "city": {
+                "id_city": 605,
+                "name": "Venice"
+            },
+            "iata_code": "VCE",
+            "latitude": 45.505,
+            "longitude": 12.3433,
+            "name": "Marco Polo International Airport"
+        }
+    ]
+}
+
+
+------------------------------------------------------------------------------------------------------------------
+
+35) /airports/  methods=["POST"]
+
+Ruoli -> Admin
+
+Authorization Bearer token_utente
+
+API che permette se sei Admin di inserire un areoporto nel db
+
+body {
+ "iata_code": "RKV",
+  "id_city": 308,
+  "name": "Aeroporto Internazionale di Keflavik",
+  "latitude":63.9850,
+  "longitude": -22.5924
+}
+
+risposta 200
+
+{
+    "airport": {
+        "city": {
+            "id_city": 308,
+            "name": "Reykjavik"
+        },
+        "iata_code": "RKV",
+        "latitude": 63.985,
+        "longitude": -22.5924,
+        "name": "Aeroporto Internazionale di Keflavik"
+    },
+    "message": "Airport created successfully"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+36)  /airports/<string:iata_code>   methods=["PUT"]
+
+Ruoli -> Admin
+
+Authorization Bearer token_utente
+
+API che permette di modificare i valori della tabella degli airport.
+
+body {
+     "id_city": null,
+     "name": "Aeroporto Internazionale di Keflavik",
+     "latitude":null,
+     "longitude": null
+}
+
+Se non si vogliono modificare dei campi come in questo caso id_city, metterlo uguale a null
+
+risposta 200
+
+{
+    "airport": {
+        "city": {
+            "id_city": 308,
+            "name": "Reykjavik"
+        },
+        "iata_code": "RKV",
+        "latitude": 63.985,
+        "longitude": -22.5924,
+        "name": "Aeroporto Internazionale di Keflavik"
+    },
+    "message": "Airport updated successfully"
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+37) /airports/<string:iata_code>   methods=["DELETE"]
+
+Ruoli -> Admin
+
+Authorization Bearer token_utente
+
+API che elimina un areoporto
+
+risposta 200
+
+{
+    "message": "Airport deleted successfully"
+}
+
+
+------------------------------------------------------------------------------------------------------------------
+
+38)  /airports/search?q=query   methods=["GET"]
+
+Api che ricerca gli aereoporti tramite nome o iata_code dell' airport
+
+query = VCE (se vogliamo fare la ricerca per iata_code)
+query = Marco Polo International Airport (se vogliamo fare la ricerca per nome)
+
+risposta 200
+
+{
+    "airports": [
+        {
+            "city": {
+                "id_city": 605,
+                "name": "Venice"
+            },
+            "iata_code": "VCE",
+            "latitude": 45.505,
+            "longitude": 12.3433,
+            "name": "Marco Polo International Airport"
+        }
+    ]
+}
+
+
+
+
+
+
+
+
+
+
 

@@ -36,7 +36,7 @@ class Airport(Base):
     def to_dict(self):
         return {
             "iata_code": self.iata_code,
-            "city": city.to_dict(),
+            "city": self.city.to_dict(),
             "name": self.name,
             "latitude": self.latitude,
             "longitude": self.longitude,

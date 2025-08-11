@@ -4,6 +4,7 @@ from .manufacturer_routes import manufacturer_bp
 from .airline_routes import airline_bp
 from .route_routes import route_bp
 from .flight_routes import flight_bp
+from .airport_routes import airport_bp
 
 
 def register_routes(app):
@@ -13,3 +14,4 @@ def register_routes(app):
     app.register_blueprint(airline_bp, url_prefix="/airline")
     app.register_blueprint(route_bp, url_prefix="/route")
     app.register_blueprint(flight_bp, url_prefix="/flight")
+    app.register_blueprint(airport_bp, url_prefix="/airports")

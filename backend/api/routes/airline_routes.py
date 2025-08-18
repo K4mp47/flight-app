@@ -293,6 +293,21 @@ def get_price_policies(code: str):
     session.close()
     return jsonify({"policies": policies}), 200
 
+@airline_bp.route("/route/<code>/base_price/", methods=["PUT"])
+#@airline_check_body("airline_code")
+def change_base_price(code: str):
+    session = SessionLocal()
+    try:
+        data = Route_change_price_schema(**request.get_json())
+    except ValidationError as e:
+        session.close()
+        return jsonify({"message": str(e)}), 400
+    controller = Airline_controller(session)
+    response, status = controller.change_route_base_price(code, data.base_price)
+    session.close()
+    return jsonify(response), status
+
+
 
 
 

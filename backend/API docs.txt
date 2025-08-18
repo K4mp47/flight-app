@@ -1006,7 +1006,8 @@ body {
   "round_trip_flight": true,
   "direct_flights": false,
   "departure_date_outbound": "2025-08-10",
-  "departure_date_return": "2025-08-21"
+  "departure_date_return": "2025-08-21",
+  "id_class": 4
 }
 
 round_trip_flight indica se si vuole trovare volo andata e ritorno. Se messo a false allora departure_date_return deve essere impostato a null.
@@ -1021,6 +1022,10 @@ Infine non ho implementato la ricerca interlinea perchè bisognava usare algorit
 Per chi non lo sa interlinea è quando devi andare da Venezia a Novosibirsk ma nessuna compagnia aerea copre quella tratta, allora con un algoritmo che usa i grafi,
 troviamo per esempio che AZ copre Venezia -> Ankara mentre TK copre Ankara -> Novosibirsk
 
+
+Attenzione:
+se nell'aereo non sarà configurato il blocco dei posti con id_class == 4 allona API non restituirà il volo (per info vai all' API 15)
+
 risposta 200
 
 {
@@ -1030,6 +1035,7 @@ risposta 200
                 "iata_code": "TK",
                 "name": "Turkish Airlines"
             },
+            "price": 250,
             "route_code": "TK1930",
             "scheduled_arrival_day": "2025-08-10",
             "scheduled_departure_day": "2025-08-10",
@@ -1063,6 +1069,7 @@ risposta 200
                 "iata_code": "AZ",
                 "name": "Alitalia"
             },
+            "price": null,
             "route_code": "AZ1930",
             "scheduled_arrival_day": "2025-08-10",
             "scheduled_departure_day": "2025-08-10",
@@ -1098,6 +1105,7 @@ risposta 200
                 "iata_code": "TK",
                 "name": "Turkish Airlines"
             },
+            "price": 500,
             "route_code": "TK1931",
             "scheduled_arrival_day": "2025-08-21",
             "scheduled_departure_day": "2025-08-21",
@@ -1131,6 +1139,7 @@ risposta 200
                 "iata_code": "TK",
                 "name": "Turkish Airlines"
             },
+            "price": 500,
             "route_code": "TK1931",
             "scheduled_arrival_day": "2025-08-21",
             "scheduled_departure_day": "2025-08-21",
@@ -1514,13 +1523,346 @@ risposta 200
     ]
 }
 
+------------------------------------------------------------------------------------------------------------------
+
+39) /airline/route/TK1930/base_price/   methods=["PUT"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che permette di modiuficare il prezzo base di una rotta
+
+body {
+    "airline_code": "TK",
+    "base_price": 250
+}
+
+response 200
+
+{
+    "message": "route base price has been successfully modified."
+}
 
 
+------------------------------------------------------------------------------------------------------------------
+
+40) /baggage/  methods=["GET"]
+
+API che restituisce tutti i tipi di bagagli
+
+risposta 200:
+
+[
+    {
+        "id_baggage": 1,
+        "name": "Cabin bag"
+    },
+    {
+        "id_baggage": 2,
+        "name": "Checked baggage"
+    },
+    {
+        "id_baggage": 3,
+        "name": "Personal item"
+    }
+]
+
+------------------------------------------------------------------------------------------------------------------
+
+41) /baggage/rules   methods=["POST"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che permette di aggiongere le regolo di dimensioni dei bagagli per le airline
+
+body {
+  "id_baggage_type": 1,
+  "airline_code": "AZ",
+  "max_weight_kg": 8,
+  "max_length_cm": 55,
+  "max_width_cm": 40,
+  "max_height_cm": 20,
+  "max_linear_cm": 115,
+  "over_weight_fee": 30,
+  "over_size_fee": 50,
+  "base_price": 25,
+  "allow_extra": false
+}
+
+ATTENZIONE -> si può aggiungere una sola rogola per tipo di bagaglio, es:
+
+id_baggage_type 1 corrisponde alla cabin bag, se AZ ha già le regole per la cabin bag allora non sarà possibile aggiungerne altre. per modificare le regole usare API 42
+
+nel body alcuni cambi possono essere messi a null:
+max_weight_kg,
+max_linear_cm,
+over_weight_fee
+
+------------------------------------------------------------------------------------------------------------------
+
+42) /baggage/rules   methods=["PUT"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che permette di modificare le regole dei bagagli
+
+body {
+    "id_baggage_rules": 2,
+    "airline_code": "AZ",
+    "max_weight_kg": 10,
+    "max_length_cm": null,
+    "max_width_cm": null,
+    "max_height_cm": null,
+    "max_linear_cm": null,
+    "over_weight_fee": null,
+    "over_size_fee": 60,
+    "base_price": 30,
+    "allow_extra": false
+}
+
+se si vuole modificare un campo della tabella, inserire il nuovo valore altrimente mettere null.
+
+Gli unici valori richiesti sono:
+id_baggage_rules,
+airline_code
+
+------------------------------------------------------------------------------------------------------------------
+
+42) /baggage/rules   methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che ti permette di visualizzare le regole per i bagagli per una compagnia aerea:
+
+body {
+    "airline_code": "AZ"
+}
+
+risposta 200
+
+[
+    {
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "allow_extra": false,
+        "baggage": {
+            "id_baggage": 1,
+            "name": "Cabin bag"
+        },
+        "base_price": 30.0,
+        "id_baggage_rules": 1,
+        "max_height_cm": 20,
+        "max_length_cm": 55,
+        "max_linear_cm": 115,
+        "max_weight_Kg": 10,
+        "max_width_cm": 40,
+        "over_size_fee": 60.0,
+        "over_weight_fee": 30.0
+    }
+]
+
+------------------------------------------------------------------------------------------------------------------
+
+43) /baggage/class-policy   methods=["POST"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che serve per ad aggiungere la class-policy di una compagnia aerea.
+la class-policy specifica quanti bagagli sono inclusi nel biglietto: esempio (classe first hai inclusi nel prezzo 2 bagagli da stiva)
+
+body {
+  "airline_code": "AZ",
+  "id_baggage_type": 3,
+  "id_class": 4,
+  "quantity_included": 1
+}
 
 
+ATTENZIONE: è base specificare che c'è un vincolo unique (airline_code,id_baggage_type,id_class)
 
 
+------------------------------------------------------------------------------------------------------------------
+
+44) /baggage/class-policy   methods=["PUT"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che modifica la quantity_included della class-policy di una compagnia aerea
+
+body {
+  "id_class_baggage_policy": 1,
+  "airline_code": "AZ",
+  "quantity_included": 1
+}
+
+------------------------------------------------------------------------------------------------------------------
+
+45) /baggage/class-policy   methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che ti restituisce in formato JSON la class-policy di una compagnia aerea, se non ci sono dati restituisce []
+
+body {
+  "airline_code": "AZ"
+}
+
+risposta 200
+
+[
+    {
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "baggage": {
+            "id_baggage": 1,
+            "name": "Cabin bag"
+        },
+        "class_": {
+            "code": "Y",
+            "id_class": 4,
+            "name": "Economy"
+        },
+        "id_class_baggage_policy": 1,
+        "quantity_included": 1
+    },
+    {
+        "airline": {
+            "iata_code": "AZ",
+            "name": "Alitalia"
+        },
+        "baggage": {
+            "id_baggage": 3,
+            "name": "Personal item"
+        },
+        "class_": {
+            "code": "Y",
+            "id_class": 4,
+            "name": "Economy"
+        },
+        "id_class_baggage_policy": 2,
+        "quantity_included": 1
+    }
+]
 
 
+------------------------------------------------------------------------------------------------------------------
+
+46) /flight/<int:flight_id>/seats-occupied   methods=["GET"]
+
+API che dato in parametro id del volo, ti restituisce i posti già occupati della seat_map dell' aereo. (per info sulla seat_map vedere API 16)
+
+body {
+  "airline_code" : "AZ"
+}
+
+risposta 200:
+
+[
+    {
+        "id_cell_block": 5,
+        "id_class": 1,
+        "occupied_seats": 1,
+        "seats": [
+            {
+                "id_cell": 3,
+                "x": 2,
+                "y": 0
+            }
+        ]
+    },
+    {
+        "id_cell_block": 6,
+        "id_class": 4,
+        "occupied_seats": 2,
+        "seats": [
+            {
+                "id_cell": 21,
+                "x": 5,
+                "y": 0
+            },
+            {
+                "id_cell": 43,
+                "x": 6,
+                "y": 3
+            }
+        ]
+    }
+]
+
+
+------------------------------------------------------------------------------------------------------------------
+
+47)  /flight/book    methods=["POST"]
+
+API che permette di acquistare un volo
+
+body {
+  "id_buyer": 9,
+  "tickets": [
+    {
+      "ticket_info": {
+        "id_flight": 21,
+        "id_seat": 21,
+        "additional_baggage": [
+          {
+            "id_baggage": 2,
+            "count": 2
+          },
+          {
+            "id_baggage": 1,
+            "count": 1
+          }
+        ]
+      },
+      "passenger_info": {
+        "name": "Mario",
+        "lastname": "Rossi",
+        "date_birth": "1990-05-20",
+        "phone_number": "+393331234567",
+        "email": "mario.rossi@example.com",
+        "passport_number": "X1234567",
+        "sex": "M"
+      }
+    },
+    {
+      "ticket_info": {
+        "id_flight": 21,
+        "id_seat": 43,
+        "price": 120,
+        "additional_baggage": []
+      },
+      "passenger_info": {
+        "name": "Giulia",
+        "lastname": "Bianchi",
+        "date_birth": "1995-08-15",
+        "phone_number": "+393334445556",
+        "email": "giulia.bianchi@example.com",
+        "passport_number": "Y7654321",
+        "sex": "F"
+      }
+    }
+  ]
+}
+
+id_buyer --> id dell'utente che compra il volo
+id_flight --> id del volo reperibile da API numero 24 /flight/search
+id_seat --> id del sedile che l'utente seleziona
 
 

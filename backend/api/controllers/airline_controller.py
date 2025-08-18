@@ -530,6 +530,19 @@ class Airline_controller:
 
         return {"message": "price policy has been successfully modified."}, 201
 
+    def change_route_base_price(self, route_code, base_price):
+        route = self.session.get(Route, route_code)
+
+        if route is None:
+            return {"message": "route not found"}, 404
+
+        route.base_price = base_price
+        self.session.commit()
+        return {"message": "route base price has been successfully modified."}, 201
+
+
+
+
 
 
 

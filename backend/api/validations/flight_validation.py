@@ -1,6 +1,11 @@
-from pydantic import BaseModel, StringConstraints, field_validator, model_validator
+import bleach
+from pydantic import BaseModel, StringConstraints, field_validator, model_validator, PositiveInt, EmailStr
 from datetime import date
-from typing import Annotated, Optional
+from enum import Enum
+from typing import Annotated, Optional, List
+from ..validations.XSS_protection import SafeStr
+
+
 
 
 class Flight_search_schema(BaseModel):
@@ -10,6 +15,7 @@ class Flight_search_schema(BaseModel):
     direct_flights: bool
     departure_date_outbound: date
     departure_date_return: Optional[date]
+    id_class: PositiveInt
 
     @field_validator('arrival_airport')
     @classmethod
@@ -29,5 +35,42 @@ class Flight_search_schema(BaseModel):
             raise ValueError("departure_date_return must be None for one-way flights")
 
         return self
+
+class Additional_baggage(BaseModel):
+    id_baggage: PositiveInt
+    count: PositiveInt
+
+class Ticket_info(BaseModel):
+    id_flight: PositiveInt
+    id_seat: PositiveInt
+    additional_baggage: List[Additional_baggage] = []
+
+
+class SexEnum(str, Enum):
+    MALE = "M"
+    FEMALE = "F"
+
+class Passenger_info(BaseModel):
+    name:Annotated[SafeStr, StringConstraints(min_length=1)]
+    lastname:Annotated[SafeStr, StringConstraints(min_length=1)]
+    date_birth: date
+    phone_number:Annotated[SafeStr, StringConstraints(min_length=1)]
+    email: EmailStr
+    passport_number:Annotated[SafeStr, StringConstraints(min_length=6, max_length=12, pattern=r"^[A-Za-z0-9]+$")]
+    sex: SexEnum
+
+    @field_validator("email")
+    @classmethod
+    def sanitize_email(cls, v: EmailStr) -> EmailStr:
+        clean = bleach.clean(str(v), tags=[], strip=True)
+        return clean
+
+class Ticket(BaseModel):
+    ticket_info: Ticket_info
+    passenger_info: Passenger_info
+
+class Ticket_reservation_schema(BaseModel):
+    id_buyer: PositiveInt
+    tickets: List[Ticket]
 
 

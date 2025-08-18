@@ -10,6 +10,7 @@ from ..models.cells_block import Cells_block
 from ..models.cell import Cell
 from ..models.aircraft_composition import Aircraft_composition
 from ..models.aircraft import Aircraft
+from ..models.class_price_policy import Class_price_policy
 
 
 
@@ -196,5 +197,18 @@ def get_airline_price_policy(session: Session, airline_code: str):
     )
     result = session.scalars(stmt)
     return [price_policy.to_dict() for price_policy in result]
+
+def get_airline_class_multiplier(session: Session, airline_code: str, id_class: int):
+    stmt = (
+        select(
+            Class_price_policy.price_multiplier,
+            Class_price_policy.fixed_markup
+        )
+        .where(
+            Class_price_policy.airline_code == airline_code,
+            Class_price_policy.id_class == id_class
+        )
+    )
+    return session.execute(stmt).first()
 
 

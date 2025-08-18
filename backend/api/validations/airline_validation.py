@@ -155,6 +155,11 @@ class Price_policy_schema(BaseModel):
     price_for_km: Optional[float] = None
     fee_fro_stopover: Optional[int] = None
 
+class Route_change_price_schema(BaseModel):
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
+    base_price: Optional[int] = None
+
+
 
 
 

@@ -20,3 +20,7 @@ from .passenger_ticket import Passenger_ticket
 from .passenger import Passenger
 from .airline_price_policy import Airline_price_policy
 from .class_price_policy import Class_price_policy
+from .baggage import Baggage
+from .baggage_role import Baggage_role
+from .class_baggage_policy import Class_baggage_policy
+from .additional_baggage import Additional_baggage

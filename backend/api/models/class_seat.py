@@ -21,6 +21,11 @@ class Class_seat(Base):
         cascade="all, delete-orphan",
     )
 
+    baggage_class_policies: Mapped[List["Class_baggage_policy"]] = relationship(
+        back_populates="class_",
+        cascade="all, delete-orphan",
+    )
+
     name : Mapped[str] = mapped_column(String, nullable=False)
     code : Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

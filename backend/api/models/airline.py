@@ -34,6 +34,16 @@ class Airline(Base):
         back_populates= "airline"
     )
 
+    baggage_rules: Mapped[List["Baggage_role"]] = relationship(
+        back_populates= "airline",
+        cascade="all, delete-orphan"
+    )
+
+    baggage_class_policies: Mapped[List["Class_baggage_policy"]] = relationship(
+        back_populates= "airline",
+        cascade="all, delete-orphan"
+    )
+
     name : Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 

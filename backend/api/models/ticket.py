@@ -19,18 +19,21 @@ class Ticket(Base):
         back_populates="ticket"
     )
 
+    additional_baggage: Mapped[List["Additional_baggage"]] = relationship(
+        back_populates="ticket",
+        cascade="all, delete-orphan",
+    )
+
     price: Mapped[float] = mapped_column(Float, nullable=False)
-    seat_price: Mapped[float] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"Ticket(id_ticket={self.id_ticket}, flight={self.flight.to_dict()}, seat={self.seat.to_dict()}, price={self.price}, seat_price={self.seat_price})"
+        return f"Ticket(id_ticket={self.id_ticket}, flight={self.flight.to_dict()}, seat={self.seat.to_dict()}, price={self.price})"
 
     def to_dict(self):
         return {
            "id_ticket": self.id_ticket,
             "flight": self.flight.to_dict(),
             "seat": self.seat.to_dict(),
-            "price": self.price,
-            "seat_price": self.seat_price,
+            "price": self.price
         }

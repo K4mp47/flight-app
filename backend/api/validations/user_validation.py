@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Annotated
 from ..validations.XSS_protection import SafeStr
 
-from pydantic import BaseModel, EmailStr, field_validator, constr, StringConstraints
+from pydantic import BaseModel, EmailStr, field_validator, StringConstraints
 
 
 class User_login_Schema(BaseModel):

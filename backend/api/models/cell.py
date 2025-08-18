@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Integer, DateTime, ForeignKey, Boolean
 
 
 class Cell(Base):

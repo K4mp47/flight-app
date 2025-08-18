@@ -7,7 +7,7 @@ from typing import List
 class Passenger_ticket(Base):
     __tablename__ = "passenger_tickets"
 
-    id_passenger_ticket: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id_passenger_tickets: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     id_buyer: Mapped[int] = mapped_column( ForeignKey("users.id_user", ondelete="SET NULL"), nullable=False)
     buyer: Mapped["User"] = relationship("User", back_populates="tickets")
@@ -21,11 +21,11 @@ class Passenger_ticket(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"<Passenger_ticket(id_passenger_ticket={self.id_passenger_ticket}, buyer={self.buyer.to_dict()}, ticket={self.ticket.to_dict()}, passenger={self.passenger.to_dict()})>"
+        return f"<Passenger_ticket(id_passenger_ticket={self.id_passenger_tickets}, buyer={self.buyer.to_dict()}, ticket={self.ticket.to_dict()}, passenger={self.passenger.to_dict()})>"
 
     def to_dict(self):
         return {
-            "id_passenger_ticket": self.id_passenger_ticket,
+            "id_passenger_ticket": self.id_passenger_tickets,
             "buyer": self.buyer.to_dict(),
             "ticket": self.ticket.to_dict(),
             "passenger": self.passenger.to_dict(),

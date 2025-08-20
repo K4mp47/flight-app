@@ -1845,7 +1845,6 @@ body {
       "ticket_info": {
         "id_flight": 21,
         "id_seat": 43,
-        "price": 120,
         "additional_baggage": []
       },
       "passenger_info": {
@@ -1866,3 +1865,303 @@ id_flight --> id del volo reperibile da API numero 24 /flight/search
 id_seat --> id del sedile che l'utente seleziona
 
 
+------------------------------------------------------------------------------------------------------------------
+
+
+48)  /users/flights   methods=["GET"]
+
+Authorization Bearer token_utente (per potere usare API l'utente deve essere loggato)
+
+Api che permette per gli utenti autenticati all'app di vedere tutti i voli che hanno acquistato e anche i dettagli.
+Tramite
+
+risposta 200 (biglietti comprati da user con id 9):
+
+[
+    {
+        "id_buyer": 9,
+        "id_passenger_ticket": 1,
+        "passenger": {
+            "date_birth": "Sun, 20 May 1990 00:00:00 GMT",
+            "email": "mario.rossi@example.com",
+            "id_passengers": 3,
+            "lastname": "Rossi",
+            "name": "Mario",
+            "passport_number": "X1234567",
+            "phone_number": "+393331234567"
+        },
+        "ticket": {
+            "flight": {
+                "airline": {
+                    "iata_code": "AZ",
+                    "name": "Alitalia"
+                },
+                "base_price": 80,
+                "id_aircraft": 4,
+                "id_flight": 21,
+                "route_code": "AZ5",
+                "scheduled_arrival_day": "2025-08-15",
+                "scheduled_departure_day": "2025-08-15",
+                "sections": [
+                    {
+                        "arrival_time": "14:30:00",
+                        "departure_time": "09:00:00",
+                        "id_airline_routes": 20,
+                        "next_id": null,
+                        "section": {
+                            "code_arrival_airport": "TAS",
+                            "code_departure_airport": "FCO",
+                            "id_routes_section": 20
+                        }
+                    }
+                ]
+            },
+            "id_ticket": 8,
+            "price": 180.0
+        }
+    },
+    {
+        "id_buyer": 9,
+        "id_passenger_ticket": 2,
+        "passenger": {
+            "date_birth": "Tue, 15 Aug 1995 00:00:00 GMT",
+            "email": "giulia.bianchi@example.com",
+            "id_passengers": 4,
+            "lastname": "Bianchi",
+            "name": "Giulia",
+            "passport_number": "Y7654321",
+            "phone_number": "+393334445556"
+        },
+        "ticket": {
+            "flight": {
+                "airline": {
+                    "iata_code": "AZ",
+                    "name": "Alitalia"
+                },
+                "base_price": 80,
+                "id_aircraft": 4,
+                "id_flight": 21,
+                "route_code": "AZ5",
+                "scheduled_arrival_day": "2025-08-15",
+                "scheduled_departure_day": "2025-08-15",
+                "sections": [
+                    {
+                        "arrival_time": "14:30:00",
+                        "departure_time": "09:00:00",
+                        "id_airline_routes": 20,
+                        "next_id": null,
+                        "section": {
+                            "code_arrival_airport": "TAS",
+                            "code_departure_airport": "FCO",
+                            "id_routes_section": 20
+                        }
+                    }
+                ]
+            },
+            "id_ticket": 9,
+            "price": 80.0
+        }
+    },
+    {
+        "id_buyer": 9,
+        "id_passenger_ticket": 3,
+        "passenger": {
+            "date_birth": "Tue, 15 Aug 1995 00:00:00 GMT",
+            "email": "prova.prova@example.com",
+            "id_passengers": 5,
+            "lastname": "Bianchi",
+            "name": "prova",
+            "passport_number": "Y7654121",
+            "phone_number": "+393334445556"
+        },
+        "ticket": {
+            "flight": {
+                "airline": {
+                    "iata_code": "AZ",
+                    "name": "Alitalia"
+                },
+                "base_price": 80,
+                "id_aircraft": 4,
+                "id_flight": 21,
+                "route_code": "AZ5",
+                "scheduled_arrival_day": "2025-08-15",
+                "scheduled_departure_day": "2025-08-15",
+                "sections": [
+                    {
+                        "arrival_time": "14:30:00",
+                        "departure_time": "09:00:00",
+                        "id_airline_routes": 20,
+                        "next_id": null,
+                        "section": {
+                            "code_arrival_airport": "TAS",
+                            "code_departure_airport": "FCO",
+                            "id_routes_section": 20
+                        }
+                    }
+                ]
+            },
+            "id_ticket": 10,
+            "price": 80.0
+        }
+    },
+    {
+        "id_buyer": 9,
+        "id_passenger_ticket": 4,
+        "passenger": {
+            "date_birth": "Tue, 15 Aug 1995 00:00:00 GMT",
+            "email": "prova1.prova1@example.com",
+            "id_passengers": 6,
+            "lastname": "Bianchi",
+            "name": "prova1",
+            "passport_number": "Y765sd21",
+            "phone_number": "+393334445556"
+        },
+        "ticket": {
+            "flight": {
+                "airline": {
+                    "iata_code": "AZ",
+                    "name": "Alitalia"
+                },
+                "base_price": 80,
+                "id_aircraft": 4,
+                "id_flight": 21,
+                "route_code": "AZ5",
+                "scheduled_arrival_day": "2025-08-15",
+                "scheduled_departure_day": "2025-08-15",
+                "sections": [
+                    {
+                        "arrival_time": "14:30:00",
+                        "departure_time": "09:00:00",
+                        "id_airline_routes": 20,
+                        "next_id": null,
+                        "section": {
+                            "code_arrival_airport": "TAS",
+                            "code_departure_airport": "FCO",
+                            "id_routes_section": 20
+                        }
+                    }
+                ]
+            },
+            "id_ticket": 11,
+            "price": 80.0
+        }
+    },
+    {
+        "id_buyer": 9,
+        "id_passenger_ticket": 5,
+        "passenger": {
+            "date_birth": "Tue, 15 Aug 1995 00:00:00 GMT",
+            "email": "giulia.bianchi@example.com",
+            "id_passengers": 4,
+            "lastname": "Bianchi",
+            "name": "Giulia",
+            "passport_number": "Y7654321",
+            "phone_number": "+393334445556"
+        },
+        "ticket": {
+            "flight": {
+                "airline": {
+                    "iata_code": "TK",
+                    "name": "Turkish Airlines"
+                },
+                "base_price": 250,
+                "id_aircraft": 10,
+                "id_flight": 145,
+                "route_code": "TK1930",
+                "scheduled_arrival_day": "2025-08-20",
+                "scheduled_departure_day": "2025-08-20",
+                "sections": [
+                    {
+                        "arrival_time": "21:40:00",
+                        "departure_time": "19:35:00",
+                        "id_airline_routes": 25,
+                        "next_id": null,
+                        "section": {
+                            "code_arrival_airport": "MIA",
+                            "code_departure_airport": "JFK",
+                            "id_routes_section": 6
+                        }
+                    },
+                    {
+                        "arrival_time": "16:35:00",
+                        "departure_time": "08:30:00",
+                        "id_airline_routes": 24,
+                        "next_id": 25,
+                        "section": {
+                            "code_arrival_airport": "JFK",
+                            "code_departure_airport": "FCO",
+                            "id_routes_section": 5
+                        }
+                    }
+                ]
+            },
+            "id_ticket": 12,
+            "price": 250.0
+        }
+    }
+]
+
+ATTENZIONE:
+
+il prezzo da visualizzare è price NON base_price!!!
+
+------------------------------------------------------------------------------------------------------------------
+
+48)  /airline/analytics/route/<code>  methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che dato il codice della route, in questo caso AZ5 restituisce le info su quella rotta
+
+body {
+    "airline_code": "AZ"
+}
+
+è possibile inserire nel body anche start_date e end_date per creare un range di tempo
+
+risposta 200:
+
+{
+    "class_distribution": {
+        "Economy": 50.0,
+        "First": 50.0
+    },
+    "passengers": 4,
+    "revenue": 420.0,
+    "route_code": "AZ5"
+}
+
+class_distribution indica la percentuale di acquisto di biglietto tra le varie classi
+
+------------------------------------------------------------------------------------------------------------------
+
+49) /airline/analytics/flight/<id_flight>
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che dato un id di un volo (id_flight) permette di vedere le analytics
+
+body {
+    "airline_code": "AZ"
+}
+
+risposta 200:
+
+{
+    "class_distribution": {
+        "Economy": 50.0,
+        "First": 50.0
+    },
+    "id_flight": "21",
+    "passengers": 4,
+    "revenue": 420.0,
+    "route_code": "AZ5",
+    "scheduled_arrival_day": "2025-08-15",
+    "scheduled_departure_day": "2025-08-15"
+}
+
+------------------------------------------------------------------------------------------------------------------

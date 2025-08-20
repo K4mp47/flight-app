@@ -30,3 +30,11 @@ class Passenger_ticket(Base):
             "ticket": self.ticket.to_dict(),
             "passenger": self.passenger.to_dict(),
         }
+
+    def to_dict_buy_ticket(self):
+        return {
+            "id_passenger_ticket": self.id_passenger_tickets,
+            "id_buyer": self.id_buyer,
+            "ticket": self.ticket.to_dict(),
+            "passenger": self.passenger.to_dict(),
+        }

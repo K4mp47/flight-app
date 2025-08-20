@@ -33,7 +33,6 @@ class Ticket(Base):
     def to_dict(self):
         return {
            "id_ticket": self.id_ticket,
-            "flight": self.flight.to_dict(),
-            "seat": self.seat.to_dict(),
+            "flight": self.flight.to_dict_search(),
             "price": self.price
         }

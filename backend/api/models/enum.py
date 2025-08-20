@@ -1,6 +1,6 @@
 import enum
 
 class SexEnum(enum.Enum):
-    MALE = "M"
-    FEMALE = "F"
+    M = "M"
+    F = "F"
 

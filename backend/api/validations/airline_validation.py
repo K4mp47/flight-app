@@ -159,6 +159,11 @@ class Route_change_price_schema(BaseModel):
     airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
     base_price: Optional[int] = None
 
+class Route_analytics_schema(BaseModel):
+    airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+
 
 
 

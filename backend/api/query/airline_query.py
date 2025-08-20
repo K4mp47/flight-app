@@ -212,3 +212,5 @@ def get_airline_class_multiplier(session: Session, airline_code: str, id_class: 
     return session.execute(stmt).first()
 
 
+
+

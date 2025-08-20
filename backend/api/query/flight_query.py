@@ -3,7 +3,7 @@ from datetime import timedelta
 import sqlalchemy
 from sqlalchemy import select, or_, and_, true, func
 from flask_sqlalchemy.session import Session
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 from sqlalchemy.orm import aliased
 
@@ -15,6 +15,9 @@ from ..models.aircraft_airlines import Aircraft_airline
 from ..models.aircraft_composition import Aircraft_composition
 from ..models.ticket import Ticket
 from ..models.cell import Cell
+from ..models.class_seat import Class_seat
+from ..models.passenger import Passenger
+from ..models.passenger_ticket import Passenger_ticket
 from ..models.cells_block import Cells_block
 
 
@@ -127,7 +130,7 @@ def get_flight_for_search(session: Session, departure_airport: str, arrival_airp
 
     return flights
 
-def get_flight_seat_blocks(session, id_flight: int):
+def get_flight_seat_blocks(session: Session, id_flight: int):
     stmt = (
         select(
             Aircraft_composition.id_cell_block,
@@ -156,7 +159,7 @@ def get_flight_seat_blocks(session, id_flight: int):
         for row in results
     ]
 
-def get_aircraft_by_seat_id(session, id_seat: int) -> int | None:
+def get_aircraft_by_seat_id(session: Session, id_seat: int) -> int | None:
     stmt = (
         select(Aircraft_composition.id_aircraft_airline)
         .join(Cell, Cell.id_cell_block == Aircraft_composition.id_cell_block)
@@ -164,13 +167,116 @@ def get_aircraft_by_seat_id(session, id_seat: int) -> int | None:
     )
     return session.scalar(stmt)
 
-def get_class_from_seat(session, id_seat: int) -> int | None:
+def get_class_from_seat(session: Session, id_seat: int) -> int | None:
     stmt = (
         select(Aircraft_composition.id_class)
         .join(Cell, Cell.id_cell_block == Aircraft_composition.id_cell_block)
         .where(Cell.id_cell == id_seat)
     )
     return session.scalar(stmt)
+
+def get_flights_by_user_id(session: Session, id_user: int):
+    stmt = (
+        select(Passenger_ticket)
+        .where(Passenger_ticket.id_buyer == id_user)
+    )
+
+    results = session.execute(stmt).scalars().all()
+
+    output = [pt.to_dict_buy_ticket() for pt in results]
+
+    return output
+
+def get_route_totals(session, route_code, start_date=None, end_date=None):
+    stmt = (
+        select(
+            func.count(Ticket.id_ticket).label("passengers"),
+            func.sum(Ticket.price).label("revenue")
+        )
+        .join(Flight, Ticket.id_flight == Flight.id_flight)
+        .where(Flight.route_code == route_code)
+    )
+
+    if start_date and end_date:
+        stmt = stmt.where(Flight.scheduled_departure_day.between(start_date, end_date))
+    elif start_date:
+        stmt = stmt.where(Flight.scheduled_departure_day >= start_date)
+    elif end_date:
+        stmt = stmt.where(Flight.scheduled_departure_day <= end_date)
+
+    result = session.execute(stmt).first()
+    return {"passengers": result.passengers or 0, "revenue": result.revenue or 0}
+
+def get_route_class_distribution(session, route_code, start_date=None, end_date=None):
+    stmt = (
+        select(Ticket.id_seat)
+        .join(Flight, Ticket.id_flight == Flight.id_flight)
+        .where(Flight.route_code == route_code)
+    )
+
+    if start_date and end_date:
+        stmt = stmt.where(Flight.scheduled_departure_day.between(start_date, end_date))
+    elif start_date:
+        stmt = stmt.where(Flight.scheduled_departure_day >= start_date)
+    elif end_date:
+        stmt = stmt.where(Flight.scheduled_departure_day <= end_date)
+
+    seat_ids = [row.id_seat for row in session.execute(stmt).all()]
+
+    class_ids = [get_class_from_seat(session,seat_id) for seat_id in seat_ids]
+
+    class_names = []
+    for class_id in class_ids:
+        cls = session.get(Class_seat, class_id)
+        if cls:
+            class_names.append(cls.name)
+
+    total = len(class_names)
+    counter = Counter(class_names)
+
+    distribution = {
+        cls: round((count / total) * 100, 2)
+        for cls, count in counter.items()
+    } if total > 0 else {}
+
+    return distribution
+
+def get_flight_totals(session, id_flight: int):
+    stmt = (
+        select(
+            func.count(Ticket.id_ticket).label("passengers"),
+            func.sum(Ticket.price).label("revenue")
+        )
+        .where(Ticket.id_flight == id_flight)
+    )
+    result = session.execute(stmt).first()
+    return {
+        "passengers": result.passengers or 0,
+        "revenue": result.revenue or 0
+    }
+
+def get_flight_class_distribution(session, id_flight: int):
+    stmt = select(Ticket.id_seat).where(Ticket.id_flight == id_flight)
+    seat_ids = [row.id_seat for row in session.execute(stmt).all()]
+
+    class_names = []
+    for seat_id in seat_ids:
+        class_id = get_class_from_seat(session,seat_id)
+        cls = session.get(Class_seat, class_id)
+        if cls:
+            class_names.append(cls.name)
+
+    total = len(class_names)
+    counter = Counter(class_names)
+    distribution = {
+        cls: round((count / total) * 100, 2)
+        for cls, count in counter.items()
+    } if total > 0 else {}
+
+    return distribution
+
+
+
 
 
 

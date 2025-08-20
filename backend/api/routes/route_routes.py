@@ -16,7 +16,7 @@ def get_routes():
 
 
 @route_bp.route("/add", methods=["POST"])
-#@role_required("Admin", "Airline-Admin")
+@role_required("Admin", "Airline-Admin")
 def new_route():
     session = SessionLocal()
     try:

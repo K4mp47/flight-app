@@ -5,6 +5,7 @@ from ..models.user import User
 from ..models.role import Role
 from ..utils.blacklist import blacklisted_tokens
 from ..query.user_query import get_user_by_email
+from ..query.flight_query import get_flights_by_user_id
 from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, get_jwt
@@ -83,6 +84,15 @@ class User_controller:
         user.airline_code = airline_code
         self.session.commit()
         return {"message": "airline assigned to the user"}, 201
+
+    def get_user_flights(self, id_user):
+        user = self.session.get(User, id_user)
+        if user is None:
+            return {"message": "User not found"}, 404
+        flights = get_flights_by_user_id(self.session, id_user)
+        return flights, 200
+        #return {"flight": flights}, 200
+
 
 
 

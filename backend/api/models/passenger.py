@@ -35,5 +35,4 @@ class Passenger(Base):
             "phone_number": self.phone_number,
             "email": self.email,
             "passport_number": self.passport_number,
-            "sex": self
         }

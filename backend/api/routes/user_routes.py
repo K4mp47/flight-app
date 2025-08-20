@@ -100,6 +100,16 @@ def add_airline(user_id):
     session.close()
     return jsonify(response), status
 
+@user_bp.route("/flights", methods=["GET"])
+@jwt_required()
+def get_flights():
+    session = SessionLocal()
+    id = get_jwt_identity()
+    controller = User_controller(session)
+    response, status = controller.get_user_flights(id)
+    session.close()
+    return jsonify(response), status
+
 
 
 

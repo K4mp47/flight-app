@@ -13,7 +13,7 @@ from ..models.airline_price_policy import Airline_price_policy
 from ..query.airline_query import *
 from ..query.airport_query import get_airport_by_iata_code
 from ..query.route_query import get_route_by_airport, find_reverse_route, get_route
-from ..query.flight_query import get_routes_assigned_to_aircraft, check_aircraft_schedule_conflicts
+from ..query.flight_query import get_routes_assigned_to_aircraft, check_aircraft_schedule_conflicts,get_route_totals, get_route_class_distribution, get_flight_totals, get_flight_class_distribution
 from ..utils.geo import *
 
 class Airline_controller:
@@ -539,6 +539,50 @@ class Airline_controller:
         route.base_price = base_price
         self.session.commit()
         return {"message": "route base price has been successfully modified."}, 201
+
+    def get_route_analytics(self, data: dict, route_code: str):
+        route = self.session.get(Route, route_code)
+        if route is None or route.airline_iata_code != data["airline_code"]:
+            return {"message": "route not found"}, 404
+
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+
+        totals = get_route_totals(self.session, route_code, start_date, end_date)
+        class_distribution = get_route_class_distribution(self.session, route_code, start_date, end_date)
+
+        return {
+            "route_code": route_code,
+            "passengers": totals["passengers"],
+            "revenue": totals["revenue"],
+            "class_distribution": class_distribution
+        }, 200
+
+    def get_flight_analytics(self,id_flight: int):
+        flight = self.session.get(Flight, id_flight)
+        if flight is None :
+            return {"message": "flight not found"}, 404
+
+        route_code = flight.route_code
+        route = self.session.get(Route, route_code)
+        if route is None:
+            return {"message": "flight not found"}, 404
+
+        totals = get_flight_totals(self.session, id_flight)
+        class_distribution = get_flight_class_distribution(self.session, id_flight)
+
+        return {
+            "id_flight": id_flight,
+            "route_code": route_code,
+            "scheduled_departure_day": str(flight.scheduled_departure_day),
+            "scheduled_arrival_day": str(flight.scheduled_arrival_day),
+            "passengers": totals["passengers"],
+            "revenue": totals["revenue"],
+            "class_distribution": class_distribution
+        }, 200
+
+
+
 
 
 

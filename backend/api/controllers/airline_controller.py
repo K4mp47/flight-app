@@ -59,17 +59,15 @@ class Airline_controller:
                 self.session.commit()
             return {"message": "aircraft deleted from the fleet successfully"}, 200
 
-    def insert_block(self,matrix,proportion_economy_seat,id_class,id_aircraft_airline):
+    def insert_block(self,matrix,id_class,id_aircraft_airline):
 
         if (self.session.get(Class_seat, id_class) is None):
             return {"message": "id_class not found"}, 404
         else:
             num_col_seat = 0
             for value in matrix[0]:
-                if value == True:
-                    num_col_seat += proportion_economy_seat
-                else:
-                    num_col_seat += 1
+                num_col_seat += 1
+
             if get_max_cols_aircraft(self.session, id_aircraft_airline) < num_col_seat:
                 return {"message": "The proportion of economy seats is too high"}, 400
             else:
@@ -84,14 +82,12 @@ class Airline_controller:
                             if cell == True:
                                 num_seat_matrix += 1
 
-                    num_seat_matrix = num_seat_matrix * proportion_economy_seat
                     num_seat_aircraft = number_seat_aircraft(self.session, id_aircraft_airline)
 
                     if num_seat_matrix + num_seat_aircraft > get_max_economy_seats(self.session, id_aircraft_airline):
                         return {"message": "exceeded the maximum number of seats available"}, 400
                     else:
-                        return insert_block_seat_map(self.session, matrix, id_aircraft_airline, id_class,
-                                                     proportion_economy_seat)
+                        return insert_block_seat_map(self.session, matrix, id_aircraft_airline, id_class)
 
 
 
@@ -131,7 +127,6 @@ class Airline_controller:
                     id_cell_block=new_block.id_cell_block,
                     id_aircraft_airline=target_id,
                     id_class=composition.id_class,
-                    proportion_economy_seat=composition.proportion_economy_seat
                 ))
 
                 new_blocks.append(new_block)

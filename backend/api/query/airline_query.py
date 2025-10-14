@@ -46,7 +46,7 @@ def get_fleet_by_airline_code(session: Session,airline_code: str):
 
 def number_seat_aircraft(session: Session,id_aircraft_airline: int) -> int:
     stmt = (
-        select(func.sum(Aircraft_composition.proportion_economy_seat))
+        select(func.count())
         .select_from(Cell)
         .join(Aircraft_composition, Aircraft_composition.id_cell_block == Cell.id_cell_block)
         .where(
@@ -84,7 +84,7 @@ def aircraft_exists_composition(session: Session, id_aircraft_airline: int)-> bo
 
 
 
-def insert_block_seat_map(session: Session, matrix: list[list[bool]], id_aircraft_airline: int, id_class: int, proportion_economy_seat: float):
+def insert_block_seat_map(session: Session, matrix: list[list[bool]], id_aircraft_airline: int, id_class: int):
     rows = len(matrix)
     cols = len(matrix[0])
 
@@ -108,7 +108,6 @@ def insert_block_seat_map(session: Session, matrix: list[list[bool]], id_aircraf
             id_cell_block=new_block.id_cell_block,
             id_aircraft_airline=id_aircraft_airline,
             id_class=id_class,
-            proportion_economy_seat=proportion_economy_seat
         )
         session.add(comp)
 
@@ -155,7 +154,6 @@ def get_aircraft_seat_map_JSON(session: Session, id_aircraft_airline: int):
             "cols": block.cols,
             "id_class": composition.id_class,
             "class_name": composition.class_block.name,
-            "proportion_economy_seat": composition.proportion_economy_seat,
             "cells": [
                 {
                     "id_cell": cell.id_cell,

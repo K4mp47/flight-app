@@ -16,7 +16,8 @@ class Cell(Base):
 
     tickets: Mapped[List["Ticket"]] = relationship(
         back_populates="seat",
-        cascade="all, delete-orphan",
+        cascade="save-update, merge",
+        passive_deletes=True
     )
 
     x: Mapped[int] = mapped_column(Integer, nullable=False)

@@ -18,16 +18,14 @@ class Aircraft_composition(Base):
     id_class: Mapped[int] = mapped_column(ForeignKey("class.id_class"))
     class_block: Mapped["Class_seat"] = relationship("Class_seat", back_populates="aircraft_compositions")
 
-    proportion_economy_seat: Mapped[float] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"Aircraft_composition(id_cell_block={self.id_cell_block}, id_aircraft_airline={self.id_aircraft_airline}, id_class={self.id_class}, proportion_economy_seat={self.proportion_economy_seat})"
+        return f"Aircraft_composition(id_cell_block={self.id_cell_block}, id_aircraft_airline={self.id_aircraft_airline}, id_class={self.id_class})"
 
     def to_dict(self):
         return {
             "cell_block": self.cell_block.to_dict(),
             "id_aircraft_airline": self.id_aircraft_airline,
             "id_class": self.class_block.name,
-            "proportion_economy_seat": self.proportion_economy_seat
         }

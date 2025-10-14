@@ -12,7 +12,7 @@ class Passenger_ticket(Base):
     id_buyer: Mapped[int] = mapped_column( ForeignKey("users.id_user", ondelete="SET NULL"), nullable=False)
     buyer: Mapped["User"] = relationship("User", back_populates="tickets")
 
-    id_ticket: Mapped[int] = mapped_column(ForeignKey("tickets.id_ticket", ondelete="SET NULL"), nullable=False)
+    id_ticket: Mapped[int] = mapped_column(ForeignKey("tickets.id_ticket", ondelete="CASCADE"), nullable=False)
     ticket: Mapped["Ticket"] = relationship("Ticket", back_populates="passenger_tickets")
 
     id_passenger: Mapped[int] = mapped_column(ForeignKey("passengers.id_passengers", ondelete="SET NULL"), nullable=False)

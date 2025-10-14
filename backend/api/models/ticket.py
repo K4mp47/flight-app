@@ -12,11 +12,12 @@ class Ticket(Base):
     id_flight: Mapped[int] = mapped_column(ForeignKey("flights.id_flight"))
     flight:Mapped["Flight"] = relationship("Flight", back_populates="flight_tickets")
 
-    id_seat: Mapped[int] = mapped_column(ForeignKey("cells.id_cell_block"))
+    id_seat: Mapped[int] = mapped_column(ForeignKey("cells.id_cell_block"),nullable=True)
     seat: Mapped["Cell"] = relationship("Cell", back_populates="tickets")
 
     passenger_tickets: Mapped[List["Passenger_ticket"]] = relationship(
-        back_populates="ticket"
+        back_populates="ticket",
+        passive_deletes=True,
     )
 
     additional_baggage: Mapped[List["Additional_baggage"]] = relationship(

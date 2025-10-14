@@ -14,7 +14,6 @@ class Airline_aircraft_schema(BaseModel):
 
 class Airline_aircraft_block_schema(BaseModel):
     matrix: Annotated[List[List[bool]], Field(min_length=1)]
-    proportion_economy_seat: PositiveFloat
     airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
     id_class: PositiveFloat
 
@@ -44,7 +43,7 @@ class Airline_aircraft_block_schema(BaseModel):
 
         return matrix
 
-class Clone_aircraft_seat_mao_schema(BaseModel):
+class Clone_aircraft_seat_map_schema(BaseModel):
     airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
     source_id: PositiveInt
     target_id: PositiveInt

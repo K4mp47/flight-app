@@ -26,11 +26,11 @@ import {
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
-  IconCircleCheckFilled,
+  // IconCircleCheckFilled,
   IconDotsVertical,
-  IconGripVertical,
+  // IconGripVertical,
   IconLayoutColumns,
-  IconLoader,
+  // IconLoader,
   IconPlus,
   IconTrendingUp,
 } from "@tabler/icons-react"
@@ -59,7 +59,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { Checkbox } from "@/components/ui/checkbox"
+// import { Checkbox } from "@/components/ui/checkbox"
 import {
   Drawer,
   DrawerClose,
@@ -101,6 +101,8 @@ import {
   TabsContent,
 } from "@/components/ui/tabs"
 
+import aircraftList from "@/app/dashboard/aircraft.json"
+
 export const schema = z.object({
   aircraft: z.object({
     double_deck: z.boolean(),
@@ -122,57 +124,60 @@ export const schema = z.object({
 })
 
 // Create a separate component for the drag handle
-function DragHandle({ id }: { id: number }) {
-  const { attributes, listeners } = useSortable({
-    id,
-  })
+// function DragHandle({ id }: { id: number }) {
+//   const { attributes, listeners } = useSortable({
+//     id,
+//   })
 
-  return (
-    <Button
-      {...attributes}
-      {...listeners}
-      variant="ghost"
-      size="icon"
-      className="text-muted-foreground size-7 hover:bg-transparent"
-    >
-      <IconGripVertical className="text-muted-foreground size-3" />
-      <span className="sr-only">Drag to reorder</span>
-    </Button>
-  )
-}
+//   return (
+//     <Button
+//       {...attributes}
+//       {...listeners}
+//       variant="ghost"
+//       size="icon"
+//       className="text-muted-foreground size-7 hover:bg-transparent"
+//     >
+//       <IconGripVertical className="text-muted-foreground size-3" />
+//       <span className="sr-only">Drag to reorder</span>
+//     </Button>
+//   )
+// }
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     id: "drag",
     header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.id_aircraft_airline} />,
+    cell: () => <div className="w-4 h-8" />,
   },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+
+  // rimuovo la selezione tramite bottone
+  // {
+  //   id: "select",
+    
+    // header: ({ table }) => (
+    //   <div className="flex items-center justify-center">
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && "indeterminate")
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   </div>
+    // ),
+    // cell: ({ row }) => (
+    //   <div className="flex items-center justify-center">
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   </div>
+    // ),
+    // enableSorting: false,
+    // enableHiding: false,
+  // },
   {
     accessorKey: "id_aircraft_airline",
     header: "ID",
@@ -197,18 +202,13 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "Current Position",
     cell: ({ row }) => (
       <Badge variant="outline" className="text-muted-foreground px-1.5">
-        {row.original.current_position === "Done" ? (
-          <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-        ) : (
-          <IconLoader />
-        )}
         {row.original.current_position}
       </Badge>
     ),
   },
   {
     accessorKey: "flying_towards",
-    header: () => <div className="w-full text-right">Flying Towards</div>,
+    header: () => <div className="w-full text-left">Flying Towards</div>,
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
@@ -223,17 +223,15 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         <Label htmlFor={`${row.original.id_aircraft_airline}-flying_towards`} className="sr-only">
           Flying Towards
         </Label>
-        <Input
-          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
-          defaultValue={row.original.flying_towards ?? ""}
-          id={`${row.original.id_aircraft_airline}-flying_towards`}
-        />
+        <Badge variant={row.original.flying_towards ? "outline" : "destructive"} className={`text-muted-foreground px-1.5`}>
+          {row.original.flying_towards ?? "N/A"}
+        </Badge>
       </form>
     ),
   },
   {
     accessorKey: "aircraft.max_economy_seats",
-    header: () => <div className="w-full text-right">Max Economy Seats</div>,
+    header: () => <div className="w-full text-left">Max Economy Seats</div>,
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
@@ -248,12 +246,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         <Label htmlFor={`${row.original.id_aircraft_airline}-max_economy_seats`} className="sr-only">
           Max Economy Seats
         </Label>
-        <Input
-          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
-          defaultValue={row.original.aircraft.max_economy_seats}
-          id={`${row.original.id_aircraft_airline}-max_economy_seats`}
-          type="number"
-        />
+        <Badge variant="outline" className="text-muted-foreground px-1.5 mr-2">
+          {row.original.aircraft.max_economy_seats}
+        </Badge>
       </form>
     ),
   },
@@ -324,7 +319,7 @@ export function DataTable({
   initialData: z.infer<typeof schema>[]
 }) {
   const [data, setData] = React.useState(() => initialData)
-  const [rowSelection, setRowSelection] = React.useState({})
+  // const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -353,13 +348,13 @@ export function DataTable({
     state: {
       sorting,
       columnVisibility,
-      rowSelection,
+      // rowSelection,
       columnFilters,
       pagination,
     },
     getRowId: (row) => row.id_aircraft_airline.toString(),
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    // onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -379,6 +374,27 @@ export function DataTable({
       })
     }
   }
+
+  React.useEffect(() => {
+    setData(initialData)
+  }, [initialData])
+
+  // Skeleton component for loading/empty state
+  function TableSkeleton() {
+    return (
+      <div className="overflow-hidden rounded-lg border">
+        <div className="animate-pulse p-8 flex flex-col gap-4">
+          <div className="h-6 bg-muted rounded w-1/3 mb-2" />
+          <div className="h-4 bg-muted rounded w-full mb-2" />
+          <div className="h-4 bg-muted rounded w-5/6 mb-2" />
+          <div className="h-4 bg-muted rounded w-2/3 mb-2" />
+          <div className="h-4 bg-muted rounded w-1/2" />
+        </div>
+      </div>
+    )
+  }
+
+  const isEmpty = !initialData || initialData.length === 0
 
   return (
     <Tabs
@@ -417,74 +433,99 @@ export function DataTable({
                       {column.id}
                     </DropdownMenuCheckboxItem>
                   )
-                })}
+                }
+                )
+              }
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm">
-            <IconPlus />
-            <span className="hidden lg:inline">Add Section</span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <IconPlus />
+                <span className="hidden lg:inline">Add Aircraft</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 max-h-64 hide-scrollbar">
+              {Array.isArray(aircraftList) && aircraftList.length > 0 ? (
+                aircraftList.map((aircraft: {
+                  id_aircraft: number;
+                  name: string;
+                  [key: string]: unknown;
+                }) => (
+                  <DropdownMenuItem key={aircraft.id_aircraft}>
+                    {aircraft.name}
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>No aircraft available</DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <TabsContent
         value="outline"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <div className="overflow-hidden rounded-lg border">
-          <DndContext
-            collisionDetection={closestCenter}
-            modifiers={[restrictToVerticalAxis]}
-            onDragEnd={handleDragEnd}
-            sensors={sensors}
-            id={sortableId}
-          >
-            <Table>
-              <TableHeader className="bg-muted sticky top-0 z-10">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                {table.getPaginationRowModel().rows?.length ? (
-                  <SortableContext
-                    items={dataIds}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {table.getPaginationRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} />
-                    ))}
-                  </SortableContext>
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
+        {isEmpty ? (
+          <TableSkeleton />
+        ) : (
+          <div className="overflow-hidden rounded-lg border">
+            <DndContext
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis]}
+              onDragEnd={handleDragEnd}
+              sensors={sensors}
+              id={sortableId}
+            >
+              <Table>
+                <TableHeader className="bg-muted sticky top-0 z-10">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id} colSpan={header.colSpan}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TableHead>
+                        )
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody className="**:data-[slot=table-cell]:first:w-8">
+                  {table.getPaginationRowModel().rows?.length ? (
+                    <SortableContext
+                      items={dataIds}
+                      strategy={verticalListSortingStrategy}
                     >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </DndContext>
-        </div>
+                      {table.getPaginationRowModel().rows.map((row) => (
+                        <DraggableRow key={row.id} row={row} />
+                      ))}
+                    </SortableContext>
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </DndContext>
+          </div>
+        )}
         <div className="flex items-center justify-between px-4">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {/* {table.getFilteredSelectedRowModel().rows.length} of{" "} */}
+            {table.getFilteredRowModel().rows.length} row(s) inside the table.
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">

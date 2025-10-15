@@ -52,11 +52,15 @@ class User_controller:
         if not user:
             return {"message": "User not found"}, 404
 
-        return {
+        profile = {
             "name": user.name,
             "lastname": user.lastname,
-            "email": user.email
-        }, 200
+            "email": user.email,
+        }
+        if hasattr(user, "airline_code") and user.airline_code:
+            profile["airline_code"] = user.airline_code
+
+        return profile, 200
 
     def change_role(self,id,new_role):
         user = self.session.query(User).filter_by(id_user=id).first()

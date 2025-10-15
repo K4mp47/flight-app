@@ -1,0 +1,277 @@
+[
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 1,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 180,
+        "name": "A320"
+    },
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 2,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 160,
+        "name": "A319"
+    },
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 3,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 244,
+        "name": "A321"
+    },
+    {
+        "cabin_max_cols": 10,
+        "double_deck": false,
+        "id_aircraft": 4,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 440,
+        "name": "A330‑300"
+    },
+    {
+        "cabin_max_cols": 12,
+        "double_deck": true,
+        "id_aircraft": 5,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 868,
+        "name": "A380"
+    },
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 6,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 194,
+        "name": "A320neo"
+    },
+    {
+        "cabin_max_cols": 9,
+        "double_deck": false,
+        "id_aircraft": 7,
+        "manufacturer": {
+            "id_manufacturer": 1,
+            "name": "Airbus"
+        },
+        "max_economy_seats": 480,
+        "name": "A350-1000"
+    },
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 8,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 189,
+        "name": "737-800"
+    },
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 9,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 210,
+        "name": "737 MAX 8"
+    },
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 10,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 230,
+        "name": "737 MAX 10"
+    },
+    {
+        "cabin_max_cols": 11,
+        "double_deck": false,
+        "id_aircraft": 11,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 440,
+        "name": "777-200ER"
+    },
+    {
+        "cabin_max_cols": 11,
+        "double_deck": false,
+        "id_aircraft": 12,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 550,
+        "name": "777-300ER"
+    },
+    {
+        "cabin_max_cols": 11,
+        "double_deck": false,
+        "id_aircraft": 13,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 248,
+        "name": "787-8 Dreamliner"
+    },
+    {
+        "cabin_max_cols": 11,
+        "double_deck": false,
+        "id_aircraft": 14,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 296,
+        "name": "787-9 Dreamliner"
+    },
+    {
+        "cabin_max_cols": 11,
+        "double_deck": false,
+        "id_aircraft": 15,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 336,
+        "name": "787-10 Dreamliner"
+    },
+    {
+        "cabin_max_cols": 12,
+        "double_deck": true,
+        "id_aircraft": 16,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 660,
+        "name": "747-400"
+    },
+    {
+        "cabin_max_cols": 12,
+        "double_deck": true,
+        "id_aircraft": 17,
+        "manufacturer": {
+            "id_manufacturer": 2,
+            "name": "Boeing"
+        },
+        "max_economy_seats": 605,
+        "name": "747-8 Intercontinental"
+    },
+    {
+        "cabin_max_cols": 5,
+        "double_deck": false,
+        "id_aircraft": 18,
+        "manufacturer": {
+            "id_manufacturer": 3,
+            "name": "Embraer"
+        },
+        "max_economy_seats": 78,
+        "name": "E170"
+    },
+    {
+        "cabin_max_cols": 5,
+        "double_deck": false,
+        "id_aircraft": 19,
+        "manufacturer": {
+            "id_manufacturer": 3,
+            "name": "Embraer"
+        },
+        "max_economy_seats": 88,
+        "name": "E175"
+    },
+    {
+        "cabin_max_cols": 5,
+        "double_deck": false,
+        "id_aircraft": 20,
+        "manufacturer": {
+            "id_manufacturer": 3,
+            "name": "Embraer"
+        },
+        "max_economy_seats": 114,
+        "name": "E190"
+    },
+    {
+        "cabin_max_cols": 5,
+        "double_deck": false,
+        "id_aircraft": 21,
+        "manufacturer": {
+            "id_manufacturer": 3,
+            "name": "Embraer"
+        },
+        "max_economy_seats": 124,
+        "name": "E195"
+    },
+    {
+        "cabin_max_cols": 5,
+        "double_deck": false,
+        "id_aircraft": 22,
+        "manufacturer": {
+            "id_manufacturer": 4,
+            "name": "Bombardier"
+        },
+        "max_economy_seats": 78,
+        "name": "CRJ-700"
+    },
+    {
+        "cabin_max_cols": 5,
+        "double_deck": false,
+        "id_aircraft": 23,
+        "manufacturer": {
+            "id_manufacturer": 4,
+            "name": "Bombardier"
+        },
+        "max_economy_seats": 90,
+        "name": "CRJ-900"
+    },
+    {
+        "cabin_max_cols": 5,
+        "double_deck": false,
+        "id_aircraft": 24,
+        "manufacturer": {
+            "id_manufacturer": 4,
+            "name": "Bombardier"
+        },
+        "max_economy_seats": 104,
+        "name": "CRJ-1000"
+    },
+    {
+        "cabin_max_cols": 7,
+        "double_deck": false,
+        "id_aircraft": 25,
+        "manufacturer": {
+            "id_manufacturer": 5,
+            "name": "Comac"
+        },
+        "max_economy_seats": 174,
+        "name": "C919"
+    }
+]

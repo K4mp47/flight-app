@@ -26,13 +26,9 @@ import {
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
-  // IconCircleCheckFilled,
   IconDotsVertical,
-  // IconGripVertical,
   IconLayoutColumns,
-  // IconLoader,
   IconPlus,
-  IconTrendingUp,
 } from "@tabler/icons-react"
 import {
   ColumnDef,
@@ -46,30 +42,12 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useIsMobile } from "@/hooks/use-mobile"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-// import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -78,7 +56,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -87,7 +64,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import {
   Table,
   TableBody,
@@ -102,6 +78,7 @@ import {
 } from "@/components/ui/tabs"
 
 import aircraftList from "@/app/dashboard/aircraft.json"
+import { api } from "@/lib/api"
 
 export const schema = z.object({
   aircraft: z.object({
@@ -123,25 +100,32 @@ export const schema = z.object({
   id_aircraft_airline: z.number(),
 })
 
-// Create a separate component for the drag handle
-// function DragHandle({ id }: { id: number }) {
-//   const { attributes, listeners } = useSortable({
-//     id,
-//   })
+interface Aircraft {
+  aircraft: {
+    double_deck: boolean;
+    id_aircraft: number;
+    manufacturer: {
+      id_manufacturer: number;
+      name: string;
+    };
+    max_economy_seats: number;
+    name: string;
+  };
+  airline: {
+    iata_code: string;
+    name: string;
+  };
+  current_position: string;
+  flying_towards: string | null;
+  id_aircraft_airline: number;
+}
 
-//   return (
-//     <Button
-//       {...attributes}
-//       {...listeners}
-//       variant="ghost"
-//       size="icon"
-//       className="text-muted-foreground size-7 hover:bg-transparent"
-//     >
-//       <IconGripVertical className="text-muted-foreground size-3" />
-//       <span className="sr-only">Drag to reorder</span>
-//     </Button>
-//   )
-// }
+// Main DataTable component
+export function DataTable({
+  initialData,
+}: {
+  initialData: z.infer<typeof schema>[]
+}) {
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
@@ -149,40 +133,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: () => null,
     cell: () => <div className="w-4 h-8" />,
   },
-
-  // rimuovo la selezione tramite bottone
-  // {
-  //   id: "select",
-    
-    // header: ({ table }) => (
-    //   <div className="flex items-center justify-center">
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && "indeterminate")
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   </div>
-    // ),
-    // cell: ({ row }) => (
-    //   <div className="flex items-center justify-center">
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   </div>
-    // ),
-    // enableSorting: false,
-    // enableHiding: false,
-  // },
   {
     accessorKey: "id_aircraft_airline",
     header: "ID",
     cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />
+      return <p className="font-bold text-md cursor-default">{row.original.id_aircraft_airline}</p>
     },
     enableHiding: false,
   },
@@ -197,38 +152,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       </div>
     ),
   },
-  {
-    accessorKey: "current_position",
-    header: "Current Position",
-    cell: ({ row }) => (
-      <Badge variant="outline" className="text-muted-foreground px-1.5">
-        {row.original.current_position}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: "flying_towards",
-    header: () => <div className="w-full text-left">Flying Towards</div>,
-    cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.current_position}`,
-            success: "Done",
-            error: "Error",
-          })
-        }}
-      >
-        <Label htmlFor={`${row.original.id_aircraft_airline}-flying_towards`} className="sr-only">
-          Flying Towards
-        </Label>
-        <Badge variant={row.original.flying_towards ? "outline" : "destructive"} className={`text-muted-foreground px-1.5`}>
-          {row.original.flying_towards ?? "N/A"}
-        </Badge>
-      </form>
-    ),
-  },
+
   {
     accessorKey: "aircraft.max_economy_seats",
     header: () => <div className="w-full text-left">Max Economy Seats</div>,
@@ -263,7 +187,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     id: "actions",
-    cell: () => (
+    cell: ({ row }) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -280,7 +204,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           <DropdownMenuItem>Make a copy</DropdownMenuItem>
           <DropdownMenuItem>Favorite</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" onClick={handleRemoveAircraft(row.original)}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
@@ -311,15 +235,7 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
     </TableRow>
   )
 }
-
-// Main DataTable component
-export function DataTable({
-  initialData,
-}: {
-  initialData: z.infer<typeof schema>[]
-}) {
   const [data, setData] = React.useState(() => initialData)
-  // const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -348,13 +264,11 @@ export function DataTable({
     state: {
       sorting,
       columnVisibility,
-      // rowSelection,
       columnFilters,
       pagination,
     },
     getRowId: (row) => row.id_aircraft_airline.toString(),
     enableRowSelection: true,
-    // onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -372,6 +286,47 @@ export function DataTable({
         const newIndex = dataIds.indexOf(over.id)
         return arrayMove(data, oldIndex, newIndex)
       })
+    }
+  }
+
+  function handleRemoveAircraft(row?: z.infer<typeof schema>): React.MouseEventHandler<HTMLDivElement> {
+    return async (e) => {
+      e.stopPropagation();
+      try {
+        await api.delete(`/airline/delete/aircraft/${row?.id_aircraft_airline}`, { airline_code: row?.airline?.iata_code });
+        if (!row?.airline?.iata_code) return;
+        const response = await api.get<Aircraft[]>("/airline/fleet?airline_code=" + row?.airline?.iata_code);
+        console.log("Fleet data:", response);
+        setData(response);
+        toast.success("Aircraft removed successfully!");
+      } catch (error: unknown) {
+        console.error(error);
+        if (error instanceof Error) {
+          toast.error("Error removing aircraft: " + error.message);
+        } else {
+          toast.error("Error removing aircraft: " + String(error));
+        }
+      }
+    };
+  }
+
+  async function handleAddAircraft(id_aircraft: number) {
+    if (!id_aircraft) return;
+    const userIataCode = await api.get<{ airline_code: string }>("/users/me").then(res => res.airline_code).catch(() => null);
+    try {
+      await api.post(`/airline/add/aircraft/${id_aircraft}`, { airline_code: userIataCode });
+      if (!userIataCode) return;
+      const response = await api.get<Aircraft[]>("/airline/fleet?airline_code=" + userIataCode);
+      console.log("Fleet data:", response);
+      setData(response);
+      toast.success("Aircraft added successfully!");
+    } catch (error: unknown) {
+      console.error(error);
+      if (error instanceof Error) {
+        toast.error("Error adding aircraft: " + error.message);
+      } else {
+        toast.error("Error adding aircraft: " + String(error));
+      }
     }
   }
 
@@ -452,7 +407,7 @@ export function DataTable({
                   name: string;
                   [key: string]: unknown;
                 }) => (
-                  <DropdownMenuItem key={aircraft.id_aircraft}>
+                  <DropdownMenuItem key={aircraft.id_aircraft} onClick={() => handleAddAircraft(aircraft.id_aircraft)}>
                     {aircraft.name}
                   </DropdownMenuItem>
                 ))
@@ -616,143 +571,5 @@ export function DataTable({
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
     </Tabs>
-  )
-}
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--primary)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
-  },
-} satisfies ChartConfig
-
-// Move this TableCellViewer definition above the columns array
-function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
-  const isMobile = useIsMobile()
-
-  return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
-      <DrawerTrigger asChild>
-        <Button variant="link" className="text-foreground w-fit px-0 text-left">
-          {item.aircraft.name}
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="gap-1">
-          <DrawerTitle>{item.aircraft.name}</DrawerTitle>
-          <DrawerDescription>
-            Showing total visitors for the last 6 months
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-          {!isMobile && (
-            <>
-              <ChartContainer config={chartConfig}>
-                <AreaChart
-                  accessibilityLayer
-                  data={chartData}
-                  margin={{
-                    left: 0,
-                    right: 10,
-                  }}
-                >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                    hide
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="dot" />}
-                  />
-                  <Area
-                    dataKey="mobile"
-                    type="natural"
-                    fill="var(--color-mobile)"
-                    fillOpacity={0.6}
-                    stroke="var(--color-mobile)"
-                    stackId="a"
-                  />
-                  <Area
-                    dataKey="desktop"
-                    type="natural"
-                    fill="var(--color-desktop)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-desktop)"
-                    stackId="a"
-                  />
-                </AreaChart>
-              </ChartContainer>
-              <Separator />
-              <div className="grid gap-2">
-                <div className="flex gap-2 leading-none font-medium">
-                  Trending up by 5.2% this month{" "}
-                  <IconTrendingUp className="size-4" />
-                </div>
-                <div className="text-muted-foreground">
-                  Showing total visitors for the last 6 months. This is just
-                  some random text to test the layout. It spans multiple lines
-                  and should wrap around.
-                </div>
-              </div>
-              <Separator />
-            </>
-          )}
-          <form className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="aircraft-name">Aircraft Name</Label>
-              <Input id="aircraft-name" defaultValue={item.aircraft.name} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="manufacturer">Manufacturer</Label>
-                <Input id="manufacturer" defaultValue={item.aircraft.manufacturer.name} />
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="airline">Airline</Label>
-                <Input id="airline" defaultValue={item.airline.name} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="current_position">Current Position</Label>
-                <Input id="current_position" defaultValue={item.current_position} />
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="flying_towards">Flying Towards</Label>
-                <Input id="flying_towards" defaultValue={item.flying_towards ?? ""} />
-              </div>
-            </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="max_economy_seats">Max Economy Seats</Label>
-              <Input id="max_economy_seats" defaultValue={item.aircraft.max_economy_seats} type="number" />
-            </div>
-          </form>
-        </div>
-        <DrawerFooter>
-          <Button>Submit</Button>
-          <DrawerClose asChild>
-            <Button variant="outline">Done</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
   )
 }

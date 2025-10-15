@@ -24,6 +24,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Button } from "./ui/button"
+import { api } from "@/lib/api"
+
+interface LogoutResponse {
+  message?: string
+}
 
 export function NavUser({
   user,
@@ -36,6 +42,19 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
 
+  function handleLogout() {
+    api.post<LogoutResponse>("/users/logout", {
+      token: document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1],
+    }).then(() => {
+      //remove token from cookies
+      document.cookie = "token=; path=/; max-age=0;" 
+      window.location.href = "/login" // Redirect to login page
+    })
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -47,7 +66,9 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={user?.avatar ?? ""} alt={user?.name ?? ""} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-md leading-tight">
                 <span className="truncate font-medium">{user?.name}</span>
@@ -65,7 +86,9 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user?.name}</span>
@@ -77,8 +100,12 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <IconLogout />
-              Log out
+              <Button variant="ghost" className="w-full text-left cursor-pointer" asChild onClick={handleLogout}>
+                <div>
+                  <IconLogout />
+                Log out
+                </div>
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

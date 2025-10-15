@@ -1,4 +1,5 @@
-import { Link, Plane } from "lucide-react";
+import { Plane } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
 import { LoginForm } from "@/components/login-form";
 

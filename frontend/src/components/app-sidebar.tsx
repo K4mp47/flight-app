@@ -10,7 +10,6 @@ import {
   IconListDetails,
 } from "@tabler/icons-react"
 
-// import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -23,6 +22,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/dist/client/link"
+import { api } from "@/lib/api"
+
 
 const data = {
   user: {
@@ -97,31 +98,20 @@ const data = {
   ],
 }
 
+interface User {
+  name: string;
+  email: string;
+  avatar: string;
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [user, setUser] = React.useState<{ name: string; email: string; avatar: string } | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
 
   React.useEffect(() => {
     const fetchUserData = async () => {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1];
-
       try {
-        const response = await fetch("http://localhost:5000/users/me", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token ?? ""}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          throw new Error("No User data fetched");
-        }
+        const response = await api.get<User>("/users/me");
+        setUser(response);
       } catch (error) {
         console.error(error);
       }
@@ -149,7 +139,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user ?? data.user} />

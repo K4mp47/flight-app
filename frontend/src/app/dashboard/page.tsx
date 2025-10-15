@@ -9,10 +9,8 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
-import data from "./fleet.json"
-
 import React, { useEffect, useState } from "react";
-// import { createDropdownMenuScope } from "@radix-ui/react-dropdown-menu"
+import { api } from "@/lib/api"
 
 interface Aircraft {
   aircraft: {
@@ -34,41 +32,43 @@ interface Aircraft {
   id_aircraft_airline: number;
 }
 
+interface User {
+  email: string;
+  lastname: string;
+  name: string;
+  airline_code: string;
+}
+
 
 export default function Page() {
   const [userIataCode, setUserIataCode] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<Aircraft[]>([]);
+  const [data, setData] = useState<Aircraft[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1];
-
       try {
-        const response = await fetch("http://localhost:5000/users/me", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token ?? ""}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data.airline_code);
-          setUserIataCode(data.airline_code);
-        } else {
-          throw new Error("No User data fetched");
-        }
+        const response = await api.get("/users/me") as User;
+        setUserIataCode(response.airline_code);
       } catch (error) {
         console.error(error);
       }
     };
 
+    const fetchFleetData = async () => {
+      try {
+        if (!userIataCode) return;
+        const response = await api.get<Aircraft[]>("/airline/fleet?airline_code=" + userIataCode);
+        console.log("Fleet data:", response);
+        setData(response);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     fetchUserData();
-  }, []);
+    fetchFleetData();
+  }, [userIataCode]);
 
   useEffect(() => {
     if (userIataCode) {
@@ -77,13 +77,10 @@ export default function Page() {
         (item) => item.airline.iata_code == userIataCode
       );
       setFilteredData(filtered);
-      console.log(filtered);
     } else {
       setFilteredData([]);
     }
-
-    console.log("Filtered Data:", filteredData);
-  }, [userIataCode]);
+  }, [userIataCode, data]);
 
   return (
     <SidebarProvider

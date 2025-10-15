@@ -50,10 +50,10 @@ def new_aircraft(id_aircraft: int):
 @airline_bp.route("/fleet", methods=["GET"])
 #@airline_check_body("airline_code")
 def get_fleet():
-    data = request.get_json()
+    airline_code = request.args.get("airline_code")
     session = SessionLocal()
     controller = Airline_controller(session)
-    response, status = controller.get_airline_fleet(data.get("airline_code"))
+    response, status = controller.get_airline_fleet(airline_code)
     session.close()
     return jsonify(response), status
 

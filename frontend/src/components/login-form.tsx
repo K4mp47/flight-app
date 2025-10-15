@@ -5,73 +5,56 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import React from "react"
+import { api } from "@/lib/api"
+import { toast } from "sonner"
 
-function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-  fetch("http://localhost:5000/users/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: (event.currentTarget.email as HTMLInputElement).value,
-      pwd: (event.currentTarget.password as HTMLInputElement).value,
-    }),
-  })
-    .then(async (response) => {
-      if (response.ok) {
-        // set the access_token
-        return response.json().then((data) => {
-          document.cookie = `token=${data.access_token}; path=/; max-age=3600;`
-          return data
-        })
-      } else {
-        throw new Error("Login failed")
-      }
-    })
-    .then(() => {
-      // Handle successful login, redirect 
-      window.location.href = "/" // Redirect to the dashboard or another page
-    })
-    .catch((error) => {
-      // Handle login error, e.g., show an error message
-      console.error("Error during login:", error)
-    })
-  event.preventDefault() // Prevent the default form submission
+interface Data {
+  access_token: string
+  message?: string
+  // add other fields if needed
 }
 
-function handleSignup(event: React.FormEvent<HTMLFormElement>) {
-  fetch("http://localhost:5000/users/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+  try {
+    api.post<Data>("/users/login", {
       name: (event.currentTarget.elements.namedItem("name") as HTMLInputElement)?.value,
       lastname: (event.currentTarget.elements.namedItem("lastname") as HTMLInputElement)?.value,
       email: (event.currentTarget.elements.namedItem("email") as HTMLInputElement)?.value,
       pwd: (event.currentTarget.elements.namedItem("password") as HTMLInputElement)?.value,
       pwd2: (event.currentTarget.elements.namedItem("password2") as HTMLInputElement)?.value,
-    }),
-  })
-    .then(async (response) => {
-      if (response.ok) {
-        // set the access_token
-        return response.json().then((data) => {
-          document.cookie = `token=${data.access_token}; path=/; max-age=3600;`
-          return data
-        })
-      } else {
-        throw new Error("Signup failed")
-      }
-    })
-    .then(() => {
-      // Handle successful signup, redirect
+    }).then((data) => {
+      toast.success("Login successful!")
+      // add cookie
+      document.cookie = `token=${data.access_token}; path=/; max-age=3600;`
       window.location.href = "/" // Redirect to the dashboard or another page
+    }).catch((error) => {
+      // Handle login error, e.g., show an error message
+      toast.error("Error during login: " + error)
     })
-    .catch((error) => {
+  } catch (error) {
+    console.error("Error during log:", error)
+  }
+  event.preventDefault() // Prevent the default form submission
+}
+
+function handleSignup(event: React.FormEvent<HTMLFormElement>) {
+  try {
+    api.post<Data>("/users/register", {
+      name: (event.currentTarget.elements.namedItem("name") as HTMLInputElement)?.value,
+      lastname: (event.currentTarget.elements.namedItem("lastname") as HTMLInputElement)?.value,
+      email: (event.currentTarget.elements.namedItem("email") as HTMLInputElement)?.value,
+      pwd: (event.currentTarget.elements.namedItem("password") as HTMLInputElement)?.value,
+      pwd2: (event.currentTarget.elements.namedItem("password2") as HTMLInputElement)?.value,
+    }).then((data) => {
+      document.cookie = `token=${data.access_token}; path=/; max-age=3600;`
+      window.location.href = "/" // Redirect to the dashboard or another page
+    }).catch((error) => {
       // Handle signup error, e.g., show an error message
-      console.error("Error during signup:", error)
+      toast.error("Error during signup: " + error.message)
     })
+  } catch (error) {
+    console.error("Error during signup:", error)
+  }
   event.preventDefault() // Prevent the default form submission
 }
 

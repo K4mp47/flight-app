@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 // import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { IconHome2 } from "@tabler/icons-react"
+import { Plane } from "lucide-react"
 import Link from "next/link"
 
 export function SiteHeader() {
@@ -19,8 +19,10 @@ export function SiteHeader() {
               href="/"
               className="dark:text-foreground"
             >
-              <IconHome2 className="size-4" />
-            </Link>
+              <Plane className="size-4" />
+            
+            Flight app
+          </Link>
           </Button>
         </div>
       </div>

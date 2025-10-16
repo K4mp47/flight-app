@@ -18,10 +18,8 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import Link from "next/dist/client/link"
 import { api } from "@/lib/api"
 
 
@@ -125,15 +123,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <Link href="/">
+            
+              <div className="flex items-center gap-2 font-medium p-2">
                 <IconDashboard className="!size-5" />
-                <span className="text-base font-semibold">Flight App</span>
-              </Link>
-            </SidebarMenuButton>
+                <span className="text-base font-semibold">Company Dashboard</span>
+              </div>
+            
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

@@ -18,3 +18,9 @@ export function isTokenExpired(token: string | undefined): boolean {
   console.log("Token expiry:" + new Date(payload.exp * 1000) + " Current time: " + new Date());
   return payload.exp * 1000 < Date.now();
 }
+
+export async function companyToken(token: string | undefined): Promise<boolean> {
+  if (!token) return false;
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  return payload.role === 'Airline-Admin';
+}

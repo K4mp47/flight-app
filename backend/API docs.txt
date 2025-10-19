@@ -679,6 +679,7 @@ Prima vedediamo l'esempio inserendo una rotta senza scalo
   "number_route": 1,
   "start_date": "2025-08-10",
   "end_date": "2025-08-12",
+  "base_price": 10,
   "delta_for_return_route": 120,
   "section": {
     "departure_time": "09:00",
@@ -2128,7 +2129,7 @@ class_distribution indica la percentuale di acquisto di biglietto tra le varie c
 
 ------------------------------------------------------------------------------------------------------------------
 
-49) /airline/analytics/flight/<id_flight>
+49) /airline/analytics/flight/<id_flight>   methods=["GET"]
 
 Ruoli -> Airline-Admin
 
@@ -2156,3 +2157,38 @@ risposta 200:
 }
 
 ------------------------------------------------------------------------------------------------------------------
+
+
+50) /airline/analytics/routes methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che mostra numero di ticket che sono stati venduti e il totale dell'incasso per ogni route della compagnia
+
+body {
+    "airline_code": "TK",
+    "start_date": "2025-08-18"
+}
+
+start_date -> indica la data, in cui si inizia a considerare i biglietti, è utile per mostrare i dati ad esempio dell'ultimo mese, semestre ecc...
+              è possibile non inserire start_date nel body o impostarlo a NULL se si desiderà considerare Tutti i biglietti.
+
+risposta 200:
+
+
+{
+    "analytics": [
+        {
+            "route_code": "TK1",
+            "total_revenue": 30.0,
+            "total_tickets": 1
+        },
+        {
+            "route_code": "TK1930",
+            "total_revenue": 550.0,
+            "total_tickets": 2
+        }
+    ]
+}

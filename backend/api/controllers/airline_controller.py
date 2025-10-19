@@ -16,6 +16,7 @@ from ..query.route_query import get_route_by_airport, find_reverse_route, get_ro
 from ..query.flight_query import get_routes_assigned_to_aircraft, check_aircraft_schedule_conflicts,get_route_totals, get_route_class_distribution, get_flight_totals, get_flight_class_distribution
 from ..utils.geo import *
 
+
 class Airline_controller:
 
     def __init__(self, session: Session):
@@ -254,8 +255,8 @@ class Airline_controller:
         price = price + (price_policy.fee_for_stopover * num_stopover)
         price = int(price)
 
-        route_main.base_price = tot_km
-        route_return.base_price = tot_km
+        route_main.base_price = price
+        route_return.base_price = price
 
         # return route
 

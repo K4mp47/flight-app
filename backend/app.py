@@ -11,7 +11,7 @@ from api.utils.blacklist import blacklisted_tokens
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+    CORS(app, origins="http://localhost:3000")
     register_routes(app)
     jwt = JWTManager(app)
 

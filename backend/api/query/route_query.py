@@ -1,11 +1,13 @@
 from collections import defaultdict
 from datetime import datetime, timedelta, time
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 from sqlalchemy.orm import joinedload
 from flask_sqlalchemy.session import Session
 from ..models.route_section import Route_section
 from ..models.route import Route
 from ..models.route_detail import Route_detail
+from ..models.ticket import Ticket
+from ..models.flight import Flight
 
 def get_all_routes(session: Session):
     stmt = select(Route_section)
@@ -224,3 +226,35 @@ def get_route(session: Session, route_code: str)-> dict:
         "segments": segments,
         "total_duration": total_duration_str
     }
+
+def get_routes_analytics(session, airline_code: str, start_date):
+    stmt = (
+        select(
+            Route.code.label("route_code"),
+            func.count(Ticket.id_ticket).label("total_tickets"),
+            func.coalesce(func.sum(Ticket.price), 0).label("total_revenue"),
+        )
+        .outerjoin(Flight, Flight.route_code == Route.code)
+        .outerjoin(Ticket, Ticket.id_flight == Flight.id_flight)
+        .where(Route.airline_iata_code == airline_code)
+        .group_by(Route.code)
+        .order_by(Route.code)
+    )
+
+    if start_date is not None:
+        stmt = stmt.where(Ticket.created_at >= start_date)
+
+    results = session.execute(stmt).all()
+
+    return [
+        {
+            "route_code": row.route_code,
+            "total_tickets": row.total_tickets,
+            "total_revenue": float(row.total_revenue or 0),
+        }
+        for row in results
+    ]
+        
+
+    
+    

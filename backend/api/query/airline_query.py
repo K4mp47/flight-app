@@ -15,6 +15,7 @@ from ..models.class_price_policy import Class_price_policy
 
 
 
+
 def all_airline(session: Session):
     stmt = select(Airline)
     result = session.scalars(stmt).all()
@@ -208,6 +209,8 @@ def get_airline_class_multiplier(session: Session, airline_code: str, id_class: 
         )
     )
     return session.execute(stmt).first()
+
+
 
 
 

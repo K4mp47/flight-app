@@ -254,6 +254,22 @@ def get_routes_analytics(session, airline_code: str, start_date):
         }
         for row in results
     ]
+
+def get_total_revenue_by_airline_and_date(session: Session, airline_iata_code: str, start_date: datetime) -> int:
+    stmt = (
+        select(func.coalesce(func.sum(Ticket.price), 0).label("total_revenue"))
+        .join(Ticket.flight)
+        .join(Flight.route)
+        .where(Route.airline_iata_code == airline_iata_code)
+    )
+
+    if start_date is not None:
+        stmt = stmt.where(Ticket.created_at >= start_date)
+
+    stmt = stmt.where(Ticket.created_at <= func.now())
+
+    result = session.execute(stmt).scalar_one()
+    return result
         
 
     

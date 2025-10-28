@@ -6,7 +6,7 @@ from ..models import Route
 from ..models.aircraft_airlines import Aircraft_airline
 from ..models.airline import Airline
 from ..query.airline_query import all_airline, get_aircraft_seat_map_JSON, number_seat_aircraft,get_max_economy_seats, get_airline_class_price_policy, get_airline_price_policy
-from ..query.route_query import get_all_route_airline, get_route, get_routes_analytics
+from ..query.route_query import get_all_route_airline, get_route, get_routes_analytics, get_total_revenue_by_airline_and_date
 from ..utils.role_checking import role_required, airline_check_param, airline_check_body
 from ..validations.airline_validation import *
 from ..controllers.airline_controller import Airline_controller
@@ -344,6 +344,18 @@ def get_all_routes_analytics():
     analytics = get_routes_analytics(session, data.airline_code, data.start_date)
     session.close()
     return jsonify({"analytics": analytics}), 200
+
+@airline_bp.route("/analytics/routes/total_revenue", methods=["GET"])
+#@airline_check_body("airline_code")
+def get_routes_total_revenue():
+    try:
+        data = Routes_analytics_schema(**request.get_json())
+    except ValidationError as e:
+        return jsonify({"message": str(e)}), 400
+    session = SessionLocal()
+    analytics = get_total_revenue_by_airline_and_date(session, data.airline_code, data.start_date)
+    session.close()
+    return jsonify({"total_revenue": analytics}), 200
 
 
 

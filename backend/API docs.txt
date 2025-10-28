@@ -2192,3 +2192,29 @@ risposta 200:
         }
     ]
 }
+
+
+------------------------------------------------------------------------------------------------------------------
+
+51) /airline/analytics/routes/total_revenue methods=["GET"]
+
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che mostra numero i guadagni totali di una compagnia comprendento TUTTI i biglietti che gli utenti hanno comprato per ogni volo di ogni rotta
+
+body {
+    "airline_code": "TK",
+    "start_date": "2025-08-18"
+}
+
+start_date -> indica la data, in cui si inizia a considerare i biglietti, è utile per mostrare i dati ad esempio dell'ultimo mese, semestre ecc...
+              è possibile non inserire start_date nel body o impostarlo a NULL se si desiderà considerare Tutti i biglietti.
+
+risposta 200:
+
+{
+    "total_revenue": 580.0
+}

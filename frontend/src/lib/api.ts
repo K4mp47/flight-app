@@ -21,7 +21,8 @@ async function fetcher<T>(url: string, method: HttpMethod = "GET", body?: Record
   });
 
   if (!res.ok) {
-    toast.error(`API error: ${res.status} ${res.statusText}`);  
+    toast.error(`API error: ${res.status} ${res.statusText}`);
+    console.error(`API error: ${res.status} ${res.statusText}`);
     throw new Error(`${res.status} ${res.statusText}`);
   }
 

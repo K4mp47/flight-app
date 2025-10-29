@@ -172,14 +172,14 @@ def change_route_deadline(code: str):
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/route/", methods=["GET"])
+@airline_bp.route("/route", methods=["GET"])
 #@airline_check_body("airline_code")
 def get_routes():
+    airline_code = request.args.get("airline_code")
     session = SessionLocal()
-    data = request.get_json()
-    if session.get(Airline, data.get("airline_code")) is None:
+    if session.get(Airline, airline_code) is None:
         return jsonify({"message": "airline_code not found"}), 404
-    routes = get_all_route_airline(session,data.get("airline_code"))
+    routes = get_all_route_airline(session, airline_code)
     session.close()
     return jsonify({"routes": routes}), 200
 

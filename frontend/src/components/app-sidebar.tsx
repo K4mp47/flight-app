@@ -2,11 +2,7 @@
 
 import * as React from "react"
 import {
-  IconCamera,
-  IconChartBar,
   IconDashboard,
-  IconFileAi,
-  IconFileDescription,
   IconListDetails,
 } from "@tabler/icons-react"
 
@@ -40,59 +36,6 @@ const data = {
       url: "#",
       icon: IconListDetails,
     },
-    {
-      title: "Luggage",
-      url: "#",
-      icon: IconChartBar,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: false,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
   ],
 }
 
@@ -102,7 +45,7 @@ interface User {
   avatar: string;
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ onSelect, ...props }: React.ComponentProps<typeof Sidebar> & { onSelect?: (view: string) => void }) {
   const [user, setUser] = React.useState<User | null>(null);
 
   React.useEffect(() => {
@@ -123,17 +66,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            
-              <div className="flex items-center gap-2 font-medium p-2">
-                <IconDashboard className="!size-5" />
-                <span className="text-base font-semibold">Company Dashboard</span>
-              </div>
-            
+            <div className="flex items-center gap-2 font-medium p-2">
+              <IconDashboard className="!size-5" />
+              <span className="text-base font-semibold">Company Dashboard</span>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} onSelect={onSelect} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user ?? data.user} />

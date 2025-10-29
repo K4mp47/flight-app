@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { DataTable } from "@/components/data-table"
 import { SectionCards } from "@/components/section-cards"
@@ -9,9 +10,11 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
-import React, { useEffect, useState } from "react";
+
+import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { api } from "@/lib/api"
 
+/** interfaccia per lavorare con gli aerei fisici */
 interface Aircraft {
   aircraft: {
     double_deck: boolean;
@@ -39,48 +42,69 @@ interface User {
   airline_code: string;
 }
 
+/** compatibilità col codice che usa `Routes[]` */
+interface Routes {
+  routes: Route[];
+}
+
+/** dettaglio di una singola sezione di route */
+interface RouteDetail {
+  arrival_airport: string;
+  arrival_time: string;
+  departure_airport: string;
+  departure_time: string;
+  id_next: number | null;
+  route_detail_id: number;
+  route_section_id: number;
+}
+
+/** singola route */
+interface Route {
+  details: RouteDetail[];
+  end_date: string;
+  route_code: string;
+  route_created_at?: string;
+  start_date: string;
+}
 
 export default function Page() {
-  const [userIataCode, setUserIataCode] = useState<string | null>(null);
-  const [filteredData, setFilteredData] = useState<Aircraft[]>([]);
-  const [data, setData] = useState<Aircraft[]>([]);
+  const [view, setView] = React.useState<string>("Fleet")
+  const [tableData, setTableData] = React.useState<(Aircraft | Route)[]>([])
+  const [, setLoading] = React.useState<boolean>(false)
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await api.get("/users/me") as User;
-        setUserIataCode(response.airline_code);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  React.useEffect(() => {
+    let mounted = true
 
-    const fetchFleetData = async () => {
+    async function load() {
+      setLoading(true)
       try {
-        if (!userIataCode) return;
-        const response = await api.get<Aircraft[]>("/airline/fleet?airline_code=" + userIataCode);
-        console.log("Fleet data:", response);
-        setData(response);
-      } catch (error) {
-        console.error(error);
+        const user = await api.get<{ airline_code?: string }>("/users/me").catch(() => ({} as User))
+        const code = user?.airline_code ?? ""
+        if (view === "Fleet") {
+          // try to fetch user's airline fleet, fallback to bundled JSON  
+          const res = await api.get<Aircraft[]>(`/airline/fleet?airline_code=${encodeURIComponent(code)}`)
+          console.log(res)
+          if (mounted) setTableData(res)
+        } else if (view === "Routes") {
+          const route_res = await api.get<Routes>(`/airline/route?airline_code=${encodeURIComponent(code)}`)
+          console.log(route_res)
+          if (mounted) setTableData(route_res.routes)
+        } else {
+          if (mounted) setTableData([])
+        }
+      } catch (err) {
+        console.error(err)
+        if (mounted) setTableData([])
+      } finally {
+        if (mounted) setLoading(false)
       }
     }
 
-    fetchUserData();
-    fetchFleetData();
-  }, [userIataCode]);
-
-  useEffect(() => {
-    if (userIataCode) {
-      // Filter data based on userIataCode
-      const filtered = data.filter(
-        (item) => item.airline.iata_code == userIataCode
-      );
-      setFilteredData(filtered);
-    } else {
-      setFilteredData([]);
+    load()
+    return () => {
+      mounted = false
     }
-  }, [userIataCode, data]);
+  }, [view])
 
   return (
     <SidebarProvider
@@ -90,23 +114,27 @@ export default function Page() {
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
-      defaultOpen={false}
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar variant="inset" onSelect={(v: unknown) => { if (typeof v === "string") setView(v); }} />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SectionCards />
-              {/* <div className="px-4 lg:px-6">
+              <div className="px-4 lg:px-6">
                 <ChartAreaInteractive />
-              </div> */}
-              <DataTable initialData={filteredData} />
+              </div>
+              {/* optional small title to show current selection */}
+              <div className="px-4 lg:px-6">
+                <h2 className="mb-4 text-lg font-semibold">{view}</h2>
+              </div>
+
+              <DataTable view={view} initialData={tableData} />
             </div>
           </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

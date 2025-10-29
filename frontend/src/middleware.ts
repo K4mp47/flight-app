@@ -30,5 +30,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/seatmap/:path*'], // Protegge tutto sotto /dashboard
+  matcher: ['/dashboard/:path*', '/seatmap/:path*', '/profile/:path*'], // Protegge tutto sotto /dashboard
 }

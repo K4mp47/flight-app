@@ -78,6 +78,9 @@ import {
 
 import aircraftList from "@/app/dashboard/aircraft.json"
 import { api } from "@/lib/api"
+import { DialogTrigger } from "@radix-ui/react-dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
+import { RouteCreationForm } from "./dashboard-form-routes"
 
 interface Aircraft {
   aircraft: {
@@ -268,7 +271,6 @@ export function DataTable({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuItem>Favorite</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => toast.error(`Delete functionality not implemented yet for ${row.original?.route_code}`)}>Delete</DropdownMenuItem>
@@ -440,6 +442,14 @@ export function DataTable({
     }
   }
 
+  async function handleAddRoute() {
+    // get user airline code safely
+    const user = await api.get<{ airline_code?: string }>("/users/me").catch(() => null);
+    const userIataCode = user?.airline_code ?? null;
+
+    return userIataCode; // Placeholder to avoid lint error
+  }
+
   React.useEffect(() => {
     setData((initialData ?? []) as (Aircraft | Routes)[])
   }, [initialData])
@@ -529,10 +539,22 @@ export function DataTable({
             </DropdownMenu>
           )}
           {view === "Routes" && (
-                <Button variant="outline" size="sm" onClick={() => toast.info("Add Route functionality not implemented yet.")}>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="hidden lg:flex" variant="outline" size="sm" onClick={() => handleAddRoute()}>
                   <IconPlus />
                   <span className="hidden lg:inline">Add Route</span>
                 </Button>
+              </DialogTrigger>
+              <DialogContent className="min-w-4xl">
+                <DialogHeader>
+                  <DialogTitle>Add New Route</DialogTitle>
+                  <DialogDescription>
+                    <RouteCreationForm/>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       </div>

@@ -11,6 +11,8 @@ async function fetcher<T>(url: string, method: HttpMethod = "GET", body?: Record
     .find((row) => row.startsWith("token="))
     ?.split("=")[1];
 
+  console.log('API Request:', method, url, body ? JSON.stringify(body) : '');
+
   const res = await fetch(`${API_BASE_URL}${url}`, {
     method,
     headers: {

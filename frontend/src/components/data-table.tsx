@@ -81,6 +81,7 @@ import { api } from "@/lib/api"
 import { DialogTrigger } from "@radix-ui/react-dialog"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
 import { RouteCreationForm } from "./dashboard-form-routes"
+import { SeatmapCreationForm } from "./dashboard-form-seatmap"
 
 interface Aircraft {
   aircraft: {
@@ -133,6 +134,9 @@ export function DataTable({
   initialData?: (Aircraft | Route)[]
   view: string
 }) {
+
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [selectedAircraft, setSelectedAircraft] = React.useState<Aircraft | null>(null);
 
   // Fleet columns (existing behaviour)
   const fleetColumns: ColumnDef<Aircraft>[] = [
@@ -207,7 +211,10 @@ export function DataTable({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => {
+              setSelectedAircraft(row.original);
+              setIsDialogOpen(true);
+            }}>Edit</DropdownMenuItem>
             <DropdownMenuItem>Make a copy</DropdownMenuItem>
             <DropdownMenuItem>Favorite</DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -471,6 +478,7 @@ export function DataTable({
   const isEmpty = !data || data.length === 0
 
   return (
+    <>
     <Tabs
       defaultValue="outline"
       className="w-full flex-col justify-start gap-6"
@@ -710,5 +718,19 @@ export function DataTable({
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
     </Tabs>
+    
+    {/* Single dialog instance outside the table */}
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent className="min-w-4xl">
+        <DialogHeader>
+          <DialogTitle>SeatMap Setup</DialogTitle>
+          <DialogDescription>
+            Aircraft: {selectedAircraft?.aircraft?.name || 'Unknown'}
+          </DialogDescription>
+        </DialogHeader>
+        <SeatmapCreationForm />
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }

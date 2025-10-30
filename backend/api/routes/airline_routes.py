@@ -345,7 +345,7 @@ def get_all_routes_analytics():
     session.close()
     return jsonify({"analytics": analytics}), 200
 
-@airline_bp.route("/analytics/routes/total_revenue", methods=["GET"])
+@airline_bp.route("/analytics/routes/total_revenue", methods=["POST"])
 #@airline_check_body("airline_code")
 def get_routes_total_revenue():
     try:

@@ -26,7 +26,7 @@ const sectionSchema = z.object({
   waiting_time: z.coerce.number().min(120, "Must be at least 120 minutes (2h)").optional(), // Presente solo negli scali successivi
   departure_airport: z.string().min(3, "Required, 3-letter IATA code").max(3),
   arrival_airport: z.string().min(3, "Required, 3-letter IATA code").max(3),
-}).refine(data => {
+}).refine((data) => {
   // Logica di validazione:
   // - Il PRIMO segmento DEVE avere departure_time
   // - I segmenti successivi (che sono scali) DEVONO avere waiting_time

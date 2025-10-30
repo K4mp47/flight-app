@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react"
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -9,15 +10,70 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { api } from "@/lib/api"
+
+interface User {
+  email: string;
+  lastname: string;
+  name: string;
+  airline_code: string;
+}
 
 export function SectionCards() {
+  const [revenue, setRevenue] = useState<number | null>(null)
+
+  useEffect(() => {
+    let mounted = true
+
+    async function fetchRevenue() {
+      try {
+        const user = await api.get<{ airline_code?: string }>("/users/me").catch(() => ({} as User))
+        const airlineCode = user?.airline_code ?? ""
+        const res = await api.post<{ total_revenue: number }>(
+          "/airline/analytics/routes/total_revenue", 
+          {
+            airline_code: encodeURIComponent(airlineCode),
+            // start_date: "2025-08-18"
+          }
+        )
+        try {
+          console.log(res)
+          const data =
+            typeof res === "string" ? JSON.parse(res) : (res) ?? null
+          // const value =
+          //   typeof data === "number" ? data : data?.total_revenue ?? null
+          if (mounted) setRevenue(data?.total_revenue ?? null)
+        } catch {
+          // ignore parse errors / bad responses for now
+          if (mounted) setRevenue(null)
+        }
+      } catch {
+        // ignore fetch errors for now
+      }
+    }
+
+    void fetchRevenue()
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const formatCurrency = (n: number | null) =>
+    n == null
+      ? "—"
+      : new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(n)
+
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+            {formatCurrency(revenue)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">

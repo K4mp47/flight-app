@@ -47,10 +47,9 @@ def new_aircraft(id_aircraft: int):
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/fleet", methods=["GET"])
-#@airline_check_body("airline_code")
-def get_fleet():
-    airline_code = request.args.get("airline_code")
+@airline_bp.route("/<airline_code>/fleet", methods=["GET"])
+@airline_check_param("airline_code")
+def get_fleet(airline_code: str):
     session = SessionLocal()
     controller = Airline_controller(session)
     response, status = controller.get_airline_fleet(airline_code)
@@ -101,9 +100,9 @@ def new_block(id_aircraft_airline: int):
 
 
 
-@airline_bp.route("/aircraft/<int:id_aircraft_airline>/seat_map", methods=["GET"])
-#@airline_check_body("airline_code")
-def get_seat_map(id_aircraft_airline: int):
+@airline_bp.route("/<airline_code>/aircraft/<int:id_aircraft_airline>/seat_map", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_seat_map(airline_code: str, id_aircraft_airline: int):
     session = SessionLocal()
     if (session.get(Aircraft_airline, id_aircraft_airline) is None):
         return jsonify({"message": "id_aircraft_airline not found"}), 404
@@ -172,10 +171,9 @@ def change_route_deadline(code: str):
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/route", methods=["GET"])
-#@airline_check_body("airline_code")
-def get_routes():
-    airline_code = request.args.get("airline_code")
+@airline_bp.route("/<airline_code>/route", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_routes(airline_code: str):
     session = SessionLocal()
     if session.get(Airline, airline_code) is None:
         return jsonify({"message": "airline_code not found"}), 404
@@ -183,9 +181,9 @@ def get_routes():
     session.close()
     return jsonify({"routes": routes}), 200
 
-@airline_bp.route("/route/<code>/info", methods=["GET"])
-#@airline_check_body("airline_code")
-def get_route_info(code: str):
+@airline_bp.route("/<airline_code>/route/<code>/info", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_route_info(airline_code: str,code: str):
     session = SessionLocal()
     if session.get(Route, code) is None:
         return jsonify({"message": "route not found"}), 404
@@ -242,20 +240,20 @@ def modify_class_price_policy(id_class_price_policy: int):
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/<code>/class-price-policy/", methods=["GET"])
-#@airline_check_param("code")
-def get_class_price_policies(code: str):
+@airline_bp.route("/<airline_code>/class-price-policy/", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_class_price_policies(airline_code: str):
     session = SessionLocal()
-    airline = session.get(Airline, code)
+    airline = session.get(Airline, airline_code)
     if airline is None:
         return jsonify({"message": "airline not found"}), 404
-    policies = get_airline_class_price_policy(session, code)
+    policies = get_airline_class_price_policy(session, airline_code)
     session.close()
     return jsonify({"policies": policies}), 200
 
-@airline_bp.route("/<code>/add/price-policy", methods=["POST"])
-#@airline_check_param("code")
-def new_price_policy(code: str):
+@airline_bp.route("/<airline_code>/add/price-policy", methods=["POST"])
+#@airline_check_param("airline_code")
+def new_price_policy(airline_code: str):
     session = SessionLocal()
     try:
         data = Price_policy_schema(**request.get_json())
@@ -263,13 +261,13 @@ def new_price_policy(code: str):
         session.close()
         return jsonify({"message": str(e)}), 400
     controller = Airline_controller(session)
-    response, status = controller.insert_price_policy(code, data.fixed_markup, data.price_for_km, data.fee_fro_stopover)
+    response, status = controller.insert_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_fro_stopover)
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/price-policy/<code>/modify", methods=["PUT"])
-#@airline_check_param("code")
-def modify_price_policy(code: str):
+@airline_bp.route("<airline_code>/price-policy/modify", methods=["PUT"])
+#@airline_check_param("airline_code")
+def modify_price_policy(airline_code: str):
     session = SessionLocal()
     try:
         data = Price_policy_schema(**request.get_json())
@@ -277,18 +275,18 @@ def modify_price_policy(code: str):
         session.close()
         return jsonify({"message": str(e)}), 400
     controller = Airline_controller(session)
-    response, status = controller.change_price_policy(code, data.fixed_markup, data.price_for_km, data.fee_fro_stopover)
+    response, status = controller.change_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_fro_stopover)
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/<code>/price-policy/", methods=["GET"])
-#@airline_check_param("code")
-def get_price_policies(code: str):
+@airline_bp.route("/<airline_code>/price-policy/", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_price_policies(airline_code: str):
     session = SessionLocal()
-    airline = session.get(Airline, code)
+    airline = session.get(Airline, airline_code)
     if airline is None:
         return jsonify({"message": "airline not found"}), 404
-    policies = get_airline_price_policy(session, code)
+    policies = get_airline_price_policy(session, airline_code)
     session.close()
     return jsonify({"policies": policies}), 200
 
@@ -306,54 +304,53 @@ def change_base_price(code: str):
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/analytics/route/<code>", methods=["GET"])
-@airline_check_body("airline_code")
-def route_analytics(code: str):
+@airline_bp.route("/<airline_code>/analytics/route/<code>", methods=["GET"])
+#@airline_check_param("airline_code")
+def route_analytics(airline_code: str ,code: str):
     try:
-        data = Route_analytics_schema(**request.get_json())
+        query_params = request.args.to_dict()
+        data = Route_analytics_schema(**query_params)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
     session = SessionLocal()
     controller = Airline_controller(session)
-    response, status = controller.get_route_analytics(data.model_dump(),code)
+    response, status = controller.get_route_analytics(airline_code, data.model_dump(),code)
     session.close()
     return jsonify(response), status
 
 
-@airline_bp.route("/analytics/flight/<id_flight>", methods=["GET"])
-#@airline_check_body("airline_code")
-def flight_analytics(id_flight: int):
-    try:
-        data = Airline_aircraft_schema(**request.get_json())
-    except ValidationError as e:
-        return jsonify({"message": str(e)}), 400
+@airline_bp.route("/<airline_code>/analytics/flight/<id_flight>", methods=["GET"])
+#@airline_check_param("airline_code")
+def flight_analytics(airline_code: str,id_flight: int):
     session = SessionLocal()
     controller = Airline_controller(session)
     response, status = controller.get_flight_analytics(id_flight)
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("/analytics/routes", methods=["GET"])
-#@airline_check_body("airline_code")
-def get_all_routes_analytics():
+@airline_bp.route("/<airline_code>/analytics/routes", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_all_routes_analytics(airline_code: str):
     try:
-        data = Routes_analytics_schema(**request.get_json())
+        query_params = request.args.to_dict()
+        data = Routes_analytics_schema(**query_params)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
     session = SessionLocal()
-    analytics = get_routes_analytics(session, data.airline_code, data.start_date)
+    analytics = get_routes_analytics(session, airline_code, data.start_date)
     session.close()
     return jsonify({"analytics": analytics}), 200
 
-@airline_bp.route("/analytics/routes/total_revenue", methods=["POST"])
-#@airline_check_body("airline_code")
-def get_routes_total_revenue():
+@airline_bp.route("/<airline_code>/analytics/routes/total_revenue", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_routes_total_revenue(airline_code: str):
     try:
-        data = Routes_analytics_schema(**request.get_json())
+        query_params = request.args.to_dict()
+        data = Routes_analytics_schema(**query_params)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
     session = SessionLocal()
-    analytics = get_total_revenue_by_airline_and_date(session, data.airline_code, data.start_date)
+    analytics = get_total_revenue_by_airline_and_date(session, airline_code, data.start_date)
     session.close()
     return jsonify({"total_revenue": analytics}), 200
 

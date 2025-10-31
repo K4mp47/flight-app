@@ -9,7 +9,7 @@ from db import SessionLocal
 
 flight_bp = Blueprint("flight_bp", __name__)
 
-@flight_bp.route("/search", methods=["GET"])
+@flight_bp.route("/search", methods=["POST"])
 def flight_search():
     session = SessionLocal()
     try:

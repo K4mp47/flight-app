@@ -536,9 +536,9 @@ class Airline_controller:
         self.session.commit()
         return {"message": "route base price has been successfully modified."}, 201
 
-    def get_route_analytics(self, data: dict, route_code: str):
+    def get_route_analytics(self,airline_code: str, data: dict, route_code: str):
         route = self.session.get(Route, route_code)
-        if route is None or route.airline_iata_code != data["airline_code"]:
+        if route is None or route.airline_iata_code != airline_code:
             return {"message": "route not found"}, 404
 
         start_date = data.get("start_date")

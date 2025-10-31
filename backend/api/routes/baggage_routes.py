@@ -42,16 +42,12 @@ def update_baggage_rules():
     result, status_code = controller.update_baggage_role(data.model_dump())
     return jsonify(result), status_code
 
-@baggage_bp.route("/rules", methods=["GET"])
-#@airline_check_body("airline_code")
-def get_baggage_rules():
-    try:
-        data = Airline_aircraft_schema(**request.get_json())
-    except ValidationError as e:
-        return jsonify({"message": str(e)}), 400
+@baggage_bp.route("/<airline_code>/rules", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_baggage_rules(airline_code:str):
     session = SessionLocal()
     controller = Baggage_controller(session)
-    result, status_code = controller.get_baggage_rule(data.airline_code)
+    result, status_code = controller.get_baggage_rule(airline_code)
     session.close()
     return jsonify(result), status_code
 
@@ -81,16 +77,12 @@ def update_baggage_class_policy():
     session.close()
     return jsonify(result), status_code
 
-@baggage_bp.route("/class-policy", methods=["GET"])
-#@airline_check_body("airline_code")
-def get_baggage_class_policy():
-    try:
-        data = Airline_aircraft_schema(**request.get_json())
-    except ValidationError as e:
-        return jsonify({"message": str(e)}), 400
+@baggage_bp.route("/<airline_code>/class-policy", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_baggage_class_policy(airline_code: str):
     session = SessionLocal()
     controller = Baggage_controller(session)
-    result, status_code = controller.get_airline_class_policy(data.airline_code)
+    result, status_code = controller.get_airline_class_policy(airline_code)
     session.close()
     return jsonify(result), status_code
 

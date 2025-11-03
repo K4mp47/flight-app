@@ -82,11 +82,11 @@ export default function Page() {
         const code = user?.airline_code ?? ""
         if (view === "Fleet") {
           // try to fetch user's airline fleet, fallback to bundled JSON  
-          const res = await api.get<Aircraft[]>(`/airline/fleet?airline_code=${encodeURIComponent(code)}`)
+          const res = await api.get<Aircraft[]>(`/airline/${encodeURIComponent(code)}/fleet`)
           console.log(res)
           if (mounted) setTableData(res)
         } else if (view === "Routes") {
-          const route_res = await api.get<Routes>(`/airline/route?airline_code=${encodeURIComponent(code)}`)
+          const route_res = await api.get<Routes>(`/airline/${encodeURIComponent(code)}/route`)
           console.log(route_res)
           if (mounted) setTableData(route_res.routes)
         } else {

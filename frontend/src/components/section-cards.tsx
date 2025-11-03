@@ -29,12 +29,8 @@ export function SectionCards() {
       try {
         const user = await api.get<{ airline_code?: string }>("/users/me").catch(() => ({} as User))
         const airlineCode = user?.airline_code ?? ""
-        const res = await api.post<{ total_revenue: number }>(
-          "/airline/analytics/routes/total_revenue", 
-          {
-            airline_code: encodeURIComponent(airlineCode),
-            // start_date: "2025-08-18"
-          }
+        const res = await api.get<{ total_revenue: number }>(
+          `/airline/${encodeURIComponent(airlineCode)}/analytics/routes/total_revenue`,
         )
         try {
           console.log(res)

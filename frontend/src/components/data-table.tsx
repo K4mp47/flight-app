@@ -85,6 +85,7 @@ import { SeatmapCreationForm } from "./dashboard-form-seatmap"
 
 interface Aircraft {
   aircraft: {
+    cabin_max_cols: number;
     double_deck: boolean;
     id_aircraft: number;
     manufacturer: {
@@ -420,9 +421,9 @@ export function DataTable({
       if (!row || !row.id_aircraft_airline) return
       try {
         // axios delete requires data in the config: { data: {...} }
-        await api.delete(`/airline/delete/aircraft/${row.id_aircraft_airline}`, { data: { airline_code: row?.airline?.iata_code } })
+        await api.delete(`/airline/delete/aircraft/${row.id_aircraft_airline}`, { airline_code: row?.airline?.iata_code } )
         if (!row?.airline?.iata_code) return
-        const response = await api.get<Aircraft[]>("/airline/fleet?airline_code=" + row?.airline?.iata_code)
+        const response = await api.get<Aircraft[]>(`/airline/${row?.airline?.iata_code}/fleet`)
         setData(response ?? [])
         toast.success("Aircraft removed successfully!")
       } catch (error: unknown) {
@@ -440,7 +441,7 @@ export function DataTable({
     try {
       await api.post(`/airline/add/aircraft/${id_aircraft}`, { airline_code: userIataCode });
       if (!userIataCode) return;
-      const response = await api.get<Aircraft[]>("/airline/fleet?airline_code=" + userIataCode);
+      const response = await api.get<Aircraft[]>(`/airline/${userIataCode}/fleet`);
       setData(response ?? [])
       toast.success("Aircraft added successfully!");
     } catch (error: unknown) {
@@ -728,7 +729,11 @@ export function DataTable({
             Aircraft: {selectedAircraft?.aircraft?.name || 'Unknown'}
           </DialogDescription>
         </DialogHeader>
-        <SeatmapCreationForm />
+        <SeatmapCreationForm 
+          aircraft_code={{ value: String(selectedAircraft?.id_aircraft_airline ?? "") }} 
+          airline_code={selectedAircraft?.airline?.iata_code || "" } 
+          cabin_max_cols={selectedAircraft?.aircraft?.cabin_max_cols || 0}
+        />
       </DialogContent>
     </Dialog>
     </>

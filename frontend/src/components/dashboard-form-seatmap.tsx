@@ -14,22 +14,25 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { IconPlus, IconMinus, IconRotateClockwise } from "@tabler/icons-react"
 import { toast } from "sonner"
+import { api } from "@/lib/api"
 
 interface CreateSeatBlockDialogProps {
   cabin_max_cols?: number
   max_economy_seats: number
-  airline_code: string
+  airline_code: string | undefined
+  aircraft_code: { value: string }
   trigger?: React.ReactNode
 }
 
 export function CreateSeatBlockDialog({
   cabin_max_cols,
   max_economy_seats = 180,
-  airline_code = "AZ",
+  airline_code,
+  aircraft_code,
 }: CreateSeatBlockDialogProps) {
   const [selectedClass, setSelectedClass] = React.useState<string>("")
   const [rows, setRows] = React.useState(10)
-  const [cols, setCols] = React.useState(cabin_max_cols || 6)
+  const [cols, setCols] = React.useState(cabin_max_cols)
   const [matrix, setMatrix] = React.useState<boolean[][]>([])
 
   // Initialize matrix when rows or cols change
@@ -147,6 +150,7 @@ export function CreateSeatBlockDialog({
     }
 
     console.log("Seat matrix configuration:", result)
+    api.post(`/airline/add/block/aircraft/${aircraft_code.value}`, result)
     toast.success(`Seat matrix created with ${totalSeats} seats`)
   }
 
@@ -188,7 +192,7 @@ export function CreateSeatBlockDialog({
                 id="cols-input"
                 type="number"
                 min="1"
-                max="20"
+                max={cabin_max_cols || 20}
                 value={cols}
                 onChange={(e) => setCols(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
               />
@@ -281,13 +285,14 @@ export function CreateSeatBlockDialog({
         </div>
   )
 }
-
-export const SeatmapCreationForm = React.memo(function SeatmapCreation() {
+export const SeatmapCreationForm = React.memo(function SeatmapCreation({ aircraft_code, airline_code, cabin_max_cols }: { aircraft_code: { value: string }, airline_code?: string, cabin_max_cols: number }) {
   return (
     <div key="seatmap-form">
       <CreateSeatBlockDialog
         max_economy_seats={180}
-        airline_code="AZ"
+        airline_code={airline_code}
+        aircraft_code={aircraft_code}
+        cabin_max_cols={cabin_max_cols}
       />
     </div>
   )

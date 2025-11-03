@@ -13,14 +13,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { IconTrash, IconPlaneArrival, IconPlaneDeparture, IconPlus } from "@tabler/icons-react"
 import { format } from "date-fns"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
-import { IconCalendar } from "@tabler/icons-react"
 import { toast } from "sonner"
 import { Button } from "./ui/button"
 import { api } from "@/lib/api"
-import { useState } from "react"
 
 // Schema di validazione per una singola sezione
 const sectionSchema = z.object({
@@ -59,8 +55,6 @@ interface ApiSection {
 }
 
 export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
-  const [startDate, setStartDate] = useState(false);
-  const [endDate, setEndDate] = useState(false);
   const form = useForm<RouteFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {

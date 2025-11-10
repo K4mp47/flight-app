@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, ChevronsUpDown } from "lucide-react";
+import { CalendarIcon, ChevronsUpDown, PlaneTakeoff, PlaneLanding, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -29,25 +29,15 @@ import {
 } from "@/components/ui/popover";
 
 const FormSchema = z.object({
-  dod: z.date({
-    required_error: "A date of departure is required.",
-  }),
-  dor: z.date({
-    required_error: "A date of return is required.",
-  }),
-  dpc: z.string({
-    required_error: "A city of departure is required.",
-  }),
-  dpa: z.string({
-    required_error: "A city of arrival is required.",
-  }),
-  class: z.string({
-    required_error: "A class is required.",
-  }),
+  dod: z.date({ required_error: "Date of departure required" }),
+  dor: z.date({ required_error: "Date of return required" }),
+  dpc: z.string({ required_error: "Departure city required" }),
+  dpa: z.string({ required_error: "Arrival city required" }),
+  class: z.string({ required_error: "Class required" }),
   terms: z.boolean().default(false).optional(),
-  adults: z.number().int().min(1, "A number of adults is required."),
-  children: z.number().int().min(0, "A number of children is required."),
-  infants: z.number().int().min(0, "A number of infants is required."),
+  adults: z.number().int().min(1, "At least 1 adult required."),
+  children: z.number().int().min(0),
+  infants: z.number().int().min(0),
 });
 
 const cities = [
@@ -65,33 +55,31 @@ export function MainForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      adults: 0,
+      adults: 1,
       children: 0,
       infants: 0,
     },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast("You submitted!");
+    toast.success("Flight search initiated!");
     console.log(data);
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-8 flex flex-col items-center w-full">
+    <div className="max-w-2xl mx-auto px-6 py-10 bg-gradient-to-b from-[#1e2022] to-black rounded-2xl shadow-2xl border border-gray-800">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 w-full"
-        >
-          {/* Cities Selection */}
-          <div className="w-full space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          {/* --- City Selection --- */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Departure */}
             <FormField
               control={form.control}
               name="dpc"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Departure
+                  <FormLabel className="text-gray-300 flex items-center gap-2">
+                    <PlaneTakeoff className="w-4 h-4" /> Departure
                   </FormLabel>
                   <Popover open={openDeparture} onOpenChange={setOpenDeparture}>
                     <PopoverTrigger asChild>
@@ -99,29 +87,26 @@ export function MainForm() {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-between text-left font-normal bg-transparent border border-gray-700 rounded-md h-12",
-                            !field.value && "text-muted-foreground"
+                            "w-full justify-between text-left font-normal h-12 bg-[#1e2022] border-gray-700 text-white hover:bg-gray-700 transition",
+                            !field.value && "text-gray-400"
                           )}
                         >
                           {field.value
-                            ? cities.find(city => city.value === field.value)
-                                ?.label
-                            : "Select the city..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            ? cities.find(c => c.value === field.value)?.label
+                            : "Select city..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full p-0" align="start">
+                    <PopoverContent className="w-full bg-[#1e2022] border-gray-800 p-0">
                       <div className="flex flex-col">
                         {cities.map(city => (
                           <Button
                             key={city.value}
                             variant="ghost"
-                            className="justify-start"
+                            className="justify-start text-gray-200 hover:bg-gray-800"
                             onClick={() => {
-                              field.onChange(
-                                city.value === field.value ? "" : city.value
-                              );
+                              field.onChange(city.value);
                               setOpenDeparture(false);
                             }}
                           >
@@ -136,41 +121,41 @@ export function MainForm() {
               )}
             />
 
+            {/* Arrival */}
             <FormField
               control={form.control}
               name="dpa"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Arrival</FormLabel>
+                  <FormLabel className="text-gray-300 flex items-center gap-2">
+                    <PlaneLanding className="w-4 h-4" /> Arrival
+                  </FormLabel>
                   <Popover open={openArrival} onOpenChange={setOpenArrival}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-between text-left font-normal bg-transparent border border-gray-700 rounded-md h-12",
-                            !field.value && "text-muted-foreground"
+                            "w-full justify-between text-left font-normal h-12 bg-[#1e2022] border-gray-700 text-white hover:bg-gray-700 transition",
+                            !field.value && "text-gray-400"
                           )}
                         >
                           {field.value
-                            ? cities.find(city => city.value === field.value)
-                                ?.label
-                            : "Select the city..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            ? cities.find(c => c.value === field.value)?.label
+                            : "Select city..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full p-0" align="start">
+                    <PopoverContent className="w-full bg-[#1e2022] border-gray-800 p-0">
                       <div className="flex flex-col">
                         {cities.map(city => (
                           <Button
                             key={city.value}
                             variant="ghost"
-                            className="justify-start"
+                            className="justify-start text-gray-200 hover:bg-gray-800"
                             onClick={() => {
-                              field.onChange(
-                                city.value === field.value ? "" : city.value
-                              );
+                              field.onChange(city.value);
                               setOpenArrival(false);
                             }}
                           >
@@ -186,247 +171,146 @@ export function MainForm() {
             />
           </div>
 
-          {/* Dates Selection */}
-          <div className="w-full space-y-6">
-            <FormField
-              control={form.control}
-              name="dod"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Date of Departure
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-between text-left font-normal bg-transparent border border-gray-700 rounded-md h-12",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "MMM d, yyyy")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={date =>
-                          date < new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Date of Return
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-between text-left font-normal bg-transparent border border-gray-700 rounded-md h-12",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "MMM d, yyyy")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={date =>
-                          date < new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* --- Dates --- */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {["dod", "dor"].map((name, idx) => (
+              <FormField
+                key={name}
+                control={form.control}
+                name={name as "dod" | "dor"}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-300 flex items-center gap-2">
+                      <CalendarIcon className="w-4 h-4" />{" "}
+                      {idx === 0 ? "Departure Date" : "Return Date"}
+                    </FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-between text-left font-normal h-12 bg-[#1e2022] border-gray-700 text-white hover:bg-gray-700 transition",
+                              !field.value && "text-gray-400"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "MMM d, yyyy")
+                            ) : (
+                              <span>Select date</span>
+                            )}
+                            <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto bg-[#1e2022] border-gray-800 p-2">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={date =>
+                            date < new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
           </div>
 
-          {/* Class Selection */}
-          <div className="w-full space-y-6">
+          {/* --- Class + Passengers --- */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Class */}
             <FormField
               control={form.control}
               name="class"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Flight Class
-                  </FormLabel>
+                  <FormLabel className="text-gray-300">Class</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-2 mt-1"
+                      className="grid grid-cols-2 gap-2 mt-2"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="First" />
-                        </FormControl>
-                        <FormLabel className="font-normal text-sm">
-                          First
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Business" />
-                        </FormControl>
-                        <FormLabel className="font-normal text-sm">
-                          Business
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Premium" />
-                        </FormControl>
-                        <FormLabel className="font-normal text-sm">
-                          Premium Economy
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Economy" />
-                        </FormControl>
-                        <FormLabel className="font-normal text-sm">
-                          Economy
-                        </FormLabel>
-                      </FormItem>
+                      {["First", "Business", "Premium", "Economy"].map(cls => (
+                        <FormItem
+                          key={cls}
+                          className="flex items-center space-x-2 rounded-md bg-[#1e2022] border border-gray-700 px-3 py-2 hover:bg-[#303336] transition"
+                        >
+                          <FormControl>
+                            <RadioGroupItem value={cls} />
+                          </FormControl>
+                          <FormLabel className="text-sm text-gray-200 font-normal">
+                            {cls}
+                          </FormLabel>
+                        </FormItem>
+                      ))}
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Passenger Count */}
-            <div className="space-y-6">
-              <FormField
-                control={form.control}
-                name="adults"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      Adults
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={8}
-                        onChange={e => field.onChange(Number(e.target.value))}
-                        value={field.value}
-                        className="bg-transparent border border-gray-700 rounded-md h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="children"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      Children
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={8}
-                        onChange={e => field.onChange(Number(e.target.value))}
-                        value={field.value}
-                        className="bg-transparent border border-gray-700 rounded-md h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="infants"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      Infants
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={8}
-                        onChange={e => field.onChange(Number(e.target.value))}
-                        value={field.value}
-                        className="bg-transparent border border-gray-700 rounded-md h-12"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* Passengers */}
+            <div className="space-y-3">
+              <FormLabel className="text-gray-300 flex items-center gap-2">
+                <Users className="w-4 h-4" /> Passengers
+              </FormLabel>
+              {["adults", "children", "infants"].map((type, i) => (
+                <FormField
+                  key={i}
+                  control={form.control}
+                  name={type as "adults" | "children" | "infants"}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm text-gray-400 capitalize">
+                        {type}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={8}
+                          value={field.value}
+                          onChange={e => field.onChange(Number(e.target.value))}
+                          className="bg-gray-800 border-gray-700 text-white h-10 focus:ring-1 focus:ring-white transition"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              ))}
             </div>
-
-            <FormField
-              control={form.control}
-              name="terms"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Checkbox
-                      id="terms"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-medium leading-none">
-                    Accept terms and conditions
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
           </div>
+
+          {/* --- Terms --- */}
+          <FormField
+            control={form.control}
+            name="terms"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2">
+                <FormControl>
+                  <Checkbox
+                    id="terms"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="text-gray-300 text-sm">
+                  I accept the terms and conditions
+                </FormLabel>
+              </FormItem>
+            )}
+          />
 
           <Button
             type="submit"
-            className="w-full h-12 mt-2 bg-white text-black hover:bg-gray-200 rounded-md font-medium"
+            className="w-full h-12 text-black bg-white font-semibold rounded-lg hover:bg-gray-200 transition-all"
           >
             Search Flights
           </Button>
@@ -435,3 +319,4 @@ export function MainForm() {
     </div>
   );
 }
+export default MainForm;

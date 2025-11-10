@@ -79,9 +79,11 @@ import {
 import aircraftList from "@/app/dashboard/aircraft.json"
 import { api } from "@/lib/api"
 import { DialogTrigger } from "@radix-ui/react-dialog"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { RouteCreationForm } from "./dashboard-form-routes"
 import { SeatmapCreationForm } from "./dashboard-form-seatmap"
+import { Input } from "./ui/input"
+// import { set } from "date-fns"
 
 interface Aircraft {
   aircraft: {
@@ -136,8 +138,10 @@ export function DataTable({
   view: string
 }) {
 
+  const [isCopying, setIsCopying] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [selectedAircraft, setSelectedAircraft] = React.useState<Aircraft | null>(null);
+  const [copyAircraftId, setCopyAircraftId] = React.useState<number | null>(null);
 
   // Fleet columns (existing behaviour)
   const fleetColumns: ColumnDef<Aircraft>[] = [
@@ -216,7 +220,11 @@ export function DataTable({
               setSelectedAircraft(row.original);
               setIsDialogOpen(true);
             }}>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => {
+              setSelectedAircraft(row.original);
+              setIsCopying(true);
+              }}
+              >Make a copy</DropdownMenuItem>
             <DropdownMenuItem>Favorite</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleRemoveAircraft(row.original)}>Delete</DropdownMenuItem>
@@ -447,6 +455,21 @@ export function DataTable({
     } catch (error: unknown) {
       console.error(error);
       toast.error("Error adding aircraft");
+    }
+  }
+
+  async function handleCopyAircraft(id_from: number | undefined, id_to: number | null) {
+    if (!id_from || !id_to) return;
+
+    const user = await api.get<{ airline_code?: string }>("/users/me").catch(() => null);
+    const userIataCode = user?.airline_code ?? null;
+
+    try {
+      await api.post(`/airline/aircraft/clone-seatmap`, { airline_code: userIataCode, source_id: id_from, target_id: id_to });
+      toast.success("Aircraft copied successfully!");
+    } catch (error: unknown) {
+      console.error(error);
+      toast.error("Error copying aircraft");
     }
   }
 
@@ -734,6 +757,28 @@ export function DataTable({
           airline_code={selectedAircraft?.airline?.iata_code || "" } 
           cabin_max_cols={selectedAircraft?.aircraft?.cabin_max_cols || 0}
         />
+      </DialogContent>
+    </Dialog>
+    <Dialog open={isCopying} onOpenChange={setIsCopying}>
+      <DialogContent className="min-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Copy Aircraft</DialogTitle>
+          <DialogDescription>
+            Choose on which aircraft copy the selected seatmap
+            <Input type="number" placeholder="Enter aircraft ID" onChange={(e) => setCopyAircraftId(Number(e.target.value))}></Input>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsCopying(false)}>
+            Cancel
+          </Button>
+          <Button onClick={() => {
+            handleCopyAircraft(selectedAircraft?.id_aircraft_airline, copyAircraftId);
+            setIsCopying(false);
+          }}>
+            Confirm
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
     </>

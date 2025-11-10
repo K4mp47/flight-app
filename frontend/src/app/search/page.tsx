@@ -14,17 +14,6 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-interface Flight {
-  id: string;
-  flight_number: string;
-  origin: string;
-  destination: string;
-  departure_time: string;
-  arrival_time: string;
-  base_price: string;
-  available_seats: number;
-}
-
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();

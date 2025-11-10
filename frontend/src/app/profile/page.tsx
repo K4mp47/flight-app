@@ -10,18 +10,14 @@ import Link from "next/dist/client/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-interface User {
-  email: string
-  lastname: string
-  name: string
-}
-
 export default function ProfilePage() {
 
   const [user, setUser] = useState<User | null>(null)
+  const [tickets, setTickets] = useState<Ticket []>([])
 
   useEffect(() => {
     fetchUser()
+    fetchTickets()
   }, [])
 
   const handleLogout = async () => {
@@ -43,6 +39,15 @@ export default function ProfilePage() {
   const fetchUser = async () => {
     await api.get<User>('/users/me').then(response => {
       setUser(response)
+    }).catch(error => {
+      toast.error('Error fetching user data: ' + error.message)
+      console.error('Error fetching user data:', error)
+    })
+  }
+
+  const fetchTickets = async () => {
+    await api.get<Ticket[]>('/users/flights').then(response => {
+      setTickets(response)
     }).catch(error => {
       toast.error('Error fetching user data: ' + error.message)
       console.error('Error fetching user data:', error)
@@ -76,7 +81,7 @@ export default function ProfilePage() {
         </div>
         Flight app
       </Link>
-      <h1 className="text-2xl font-bold mb-6">Welcome, {user.name}</h1>
+      <h1 className="text-2xl font-bold mb-6">Welcome, {user?.name}</h1>
       <Tabs defaultValue="profile">
         <TabsList>
           <TabsTrigger value="profile" >Profile</TabsTrigger>
@@ -99,10 +104,28 @@ export default function ProfilePage() {
               <h3 className="text-sm text-muted-foreground">Your booking information</h3>
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-1/2 mb-2" />
-              <Skeleton className="h-4 w-2/3 mb-2" />
+              <CardContent>
+              {tickets.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No bookings found.</p>
+              ) : (
+                <div className="space-y-4">
+                  {tickets.map((t) => {
+                    const flight = t.ticket.flight
+                    const section = flight.sections?.[0]
+                    return (
+                      <div key={t.ticket.id_ticket} className="p-4 border rounded-md">
+                        <p><strong>Passenger:</strong> {t.passenger.name} {t.passenger.lastname}</p>
+                        <p><strong>Airline:</strong> {flight.airline.name} ({flight.airline.iata_code})</p>
+                        <p><strong>Route:</strong> {section?.section?.code_departure_airport ?? ''} - {section?.section?.code_arrival_airport ?? ''}</p>
+                        <p><strong>Departure:</strong> {flight.scheduled_departure_day} {section?.departure_time ?? ''}</p>
+                        <p><strong>Arrival:</strong> {flight.scheduled_arrival_day} {section?.arrival_time ?? ''}</p>
+                        <p><strong>Price:</strong> ${t.ticket.price}</p>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
             </CardContent>
           </Card>
         </TabsContent>

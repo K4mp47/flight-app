@@ -46,14 +46,6 @@ const formSchema = z.object({
 
 type RouteFormValues = z.infer<typeof formSchema>
 
-interface ApiSection {
-  departure_time?: string;
-  waiting_time?: number;
-  departure_airport: string;
-  arrival_airport: string;
-  next_session: ApiSection | null;
-}
-
 export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
   const form = useForm<RouteFormValues>({
     resolver: zodResolver(formSchema),

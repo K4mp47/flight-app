@@ -16,14 +16,6 @@ import { IconPlus, IconMinus, IconRotateClockwise } from "@tabler/icons-react"
 import { toast } from "sonner"
 import { api } from "@/lib/api"
 
-interface CreateSeatBlockDialogProps {
-  cabin_max_cols?: number
-  max_economy_seats: number
-  airline_code: string | undefined
-  aircraft_code: { value: string }
-  trigger?: React.ReactNode
-}
-
 export function CreateSeatBlockDialog({
   cabin_max_cols,
   max_economy_seats = 180,
@@ -31,8 +23,8 @@ export function CreateSeatBlockDialog({
   aircraft_code,
 }: CreateSeatBlockDialogProps) {
   const [selectedClass, setSelectedClass] = React.useState<string>("")
-  const [rows, setRows] = React.useState(10)
-  const [cols, setCols] = React.useState(cabin_max_cols)
+  const [rows, setRows] = React.useState<number>(10)
+  const [cols, setCols] = React.useState<number>(cabin_max_cols ?? 1)
   const [matrix, setMatrix] = React.useState<boolean[][]>([])
 
   // Initialize matrix when rows or cols change

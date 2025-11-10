@@ -45,12 +45,6 @@ const data = {
   ],
 }
 
-interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
-
 export function AppSidebar({ onSelect, ...props }: React.ComponentProps<typeof Sidebar> & { onSelect?: (view: string) => void }) {
   const [user, setUser] = React.useState<User | null>(null);
 

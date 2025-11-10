@@ -83,48 +83,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { RouteCreationForm } from "./dashboard-form-routes"
 import { SeatmapCreationForm } from "./dashboard-form-seatmap"
 import { Input } from "./ui/input"
-// import { set } from "date-fns"
-
-interface Aircraft {
-  aircraft: {
-    cabin_max_cols: number;
-    double_deck: boolean;
-    id_aircraft: number;
-    manufacturer: {
-      id_manufacturer: number;
-      name: string;
-    };
-    max_economy_seats: number;
-    name: string;
-  };
-  airline: {
-    iata_code: string;
-    name: string;
-  };
-  current_position: string;
-  flying_towards: string | null;
-  id_aircraft_airline: number;
-}
-
-/** dettaglio di una singola sezione di route */
-interface RouteDetail {
-  arrival_airport: string;
-  arrival_time: string;
-  departure_airport: string;
-  departure_time: string;
-  id_next: number | null;
-  route_detail_id: number;
-  route_section_id: number;
-}
-
-/** singola route */
-interface Route {
-  details: RouteDetail[];
-  end_date: string;
-  route_code: string;
-  route_created_at?: string;
-  start_date: string;
-}
 
 /** compatibilità col codice che usa `Routes[]` */
 type Routes = Route[];

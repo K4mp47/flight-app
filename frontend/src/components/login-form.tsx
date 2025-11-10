@@ -8,12 +8,6 @@ import React from "react"
 import { api } from "@/lib/api"
 import { toast } from "sonner"
 
-interface Data {
-  access_token: string
-  message?: string
-  // add other fields if needed
-}
-
 function handleLogin(event: React.FormEvent<HTMLFormElement>) {
   try {
     api.post<Data>("/users/login", {

@@ -12,13 +12,6 @@ import {
 } from "@/components/ui/card"
 import { api } from "@/lib/api"
 
-interface User {
-  email: string;
-  lastname: string;
-  name: string;
-  airline_code: string;
-}
-
 export function SectionCards() {
   const [revenue, setRevenue] = useState<number | null>(null)
 

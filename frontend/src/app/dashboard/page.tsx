@@ -14,59 +14,6 @@ import {
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { api } from "@/lib/api"
 
-/** interfaccia per lavorare con gli aerei fisici */
-interface Aircraft {
-  aircraft: {
-    double_deck: boolean;
-    id_aircraft: number;
-    manufacturer: {
-      id_manufacturer: number;
-      name: string;
-    };
-    max_economy_seats: number;
-    name: string;
-  };
-  airline: {
-    iata_code: string;
-    name: string;
-  };
-  current_position: string;
-  flying_towards: string | null;
-  id_aircraft_airline: number;
-}
-
-interface User {
-  email: string;
-  lastname: string;
-  name: string;
-  airline_code: string;
-}
-
-/** compatibilità col codice che usa `Routes[]` */
-interface Routes {
-  routes: Route[];
-}
-
-/** dettaglio di una singola sezione di route */
-interface RouteDetail {
-  arrival_airport: string;
-  arrival_time: string;
-  departure_airport: string;
-  departure_time: string;
-  id_next: number | null;
-  route_detail_id: number;
-  route_section_id: number;
-}
-
-/** singola route */
-interface Route {
-  details: RouteDetail[];
-  end_date: string;
-  route_code: string;
-  route_created_at?: string;
-  start_date: string;
-}
-
 export default function Page() {
   const [view, setView] = React.useState<string>("Fleet")
   const [tableData, setTableData] = React.useState<(Aircraft | Route)[]>([])

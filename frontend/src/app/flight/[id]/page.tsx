@@ -9,22 +9,6 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 // import BookingForm from '@/components/BookingForm';
 
-
-interface Flight {
-  id: string;
-  company_id: string;
-  flight_number: string;
-  origin: string;
-  destination: string;
-  departure_time: string;
-  arrival_time: string;
-  duration: string;
-  base_price: string;
-  total_seats: number;
-  available_seats: number;
-  class_config: { [key: string]: { seats_available: number; price_multiplier: number } };
-}
-
 export default function FlightDetailsPage() {
   const params = useParams();
   const flightId = params.id as string;
@@ -110,7 +94,7 @@ export default function FlightDetailsPage() {
   const arrivalDate = new Date(flight.arrival_time);
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
+    <div className="grid md:grid-cols-2 gap-8 m-8">
       <Card>
         <CardHeader>
           <CardTitle className="text-3xl">{flight.origin} &rarr; {flight.destination}</CardTitle>
@@ -119,11 +103,19 @@ export default function FlightDetailsPage() {
         <CardContent className="space-y-4">
           <div>
             <p className="font-semibold">Departure:</p>
-            <p>{format(departureDate, 'MMM dd, yyyy HH:mm')} ({flight.origin})</p>
+            <p>
+              {isNaN(departureDate.getTime())
+                ? 'TBD'
+                : `${format(departureDate, 'MMM dd, yyyy HH:mm')}`} ({flight.origin})
+            </p>
           </div>
           <div>
             <p className="font-semibold">Arrival:</p>
-            <p>{format(arrivalDate, 'MMM dd, yyyy HH:mm')} ({flight.destination})</p>
+            <p>
+              {isNaN(arrivalDate.getTime())
+                ? 'TBD'
+                : `${format(arrivalDate, 'MMM dd, yyyy HH:mm')}`} ({flight.destination})
+            </p>
           </div>
           <div>
             <p className="font-semibold">Duration:</p>
@@ -163,7 +155,7 @@ export default function FlightDetailsPage() {
           <CardDescription>Select your class and proceed with booking.</CardDescription>
         </CardHeader>
         <CardContent>
-          <BookingForm flight={flight} onBookingSuccess={fetchFlightDetails} />
+          {/* <BookingForm flight={flight} onBookingSuccess={fetchFlightDetails} /> */}
         </CardContent>
       </Card>
     </div>

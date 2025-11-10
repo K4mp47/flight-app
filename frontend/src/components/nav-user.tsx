@@ -27,10 +27,6 @@ import {
 import { Button } from "./ui/button"
 import { api } from "@/lib/api"
 
-interface LogoutResponse {
-  message?: string
-}
-
 export function NavUser({
   user,
 }: {

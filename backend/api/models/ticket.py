@@ -12,7 +12,7 @@ class Ticket(Base):
     id_flight: Mapped[int] = mapped_column(ForeignKey("flights.id_flight"))
     flight:Mapped["Flight"] = relationship("Flight", back_populates="flight_tickets")
 
-    id_seat: Mapped[int] = mapped_column(ForeignKey("cells.id_cell_block"),nullable=True)
+    id_seat: Mapped[int] = mapped_column(ForeignKey("cells.id_cell"),nullable=True)
     seat: Mapped["Cell"] = relationship("Cell", back_populates="tickets")
 
     passenger_tickets: Mapped[List["Passenger_ticket"]] = relationship(

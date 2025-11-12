@@ -17,14 +17,16 @@ class Aircraft_airline(Base):
     id_aircraft_model : Mapped[int] = mapped_column(ForeignKey("aircraft.id_aircraft"), nullable=False)
     aircraft: Mapped["Aircraft"] = relationship("Aircraft", back_populates="airline_aircraft")
 
-    aircraft_compositions: Mapped[List["Aircraft_composition"]] = relationship(
-        back_populates="aircraft",
-        cascade="all, delete-orphan"
-    )
-
     flights : Mapped[List["Flight"]] = relationship(
         back_populates="aircraft",
         cascade="all, delete-orphan",
+    )
+
+    cabins: Mapped[List["Cabin"]] = relationship(
+        "Cabin",
+        back_populates="aircraft",
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

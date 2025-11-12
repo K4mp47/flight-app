@@ -12,8 +12,10 @@ class Class_seat(Base):
 
     id_class : Mapped[int] = mapped_column(Integer,  primary_key=True)
 
-    aircraft_compositions : Mapped[List["Aircraft_composition"]] = relationship(
-        back_populates="class_block"
+    cabins: Mapped[List["Cabin"]] = relationship(
+        "Cabin",
+        back_populates="class_seat",
+        passive_deletes=True
     )
 
     class_price_policy : Mapped[List["Class_price_policy"]] = relationship(

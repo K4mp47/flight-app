@@ -141,12 +141,12 @@ class Flight_schedule_request_schema(BaseModel):
 class Class_price_policy_schema(BaseModel):
     id_class: PositiveInt
     airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
-    price_multiplier: Annotated[int, Field(ge=1, le=100)]
+    price_multiplier: PositiveFloat
     fixed_markup: int
 
 class Class_price_policy_data_schema(BaseModel):
     airline_code: Annotated[str, StringConstraints(min_length=2, max_length=2, pattern=r'^[A-Z0-9]{2}$')]
-    price_multiplier: Optional[Annotated[int, Field(ge=1, le=100)]] = None
+    price_multiplier: Optional[PositiveFloat] = None
     fixed_markup: Optional[int] = None
 
 class Price_policy_schema(BaseModel):

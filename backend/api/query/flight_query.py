@@ -12,13 +12,12 @@ from ..models.route import Route
 from ..models.route_detail import Route_detail
 from ..models.route_section import Route_section
 from ..models.aircraft_airlines import Aircraft_airline
-from ..models.aircraft_composition import Aircraft_composition
 from ..models.ticket import Ticket
 from ..models.cell import Cell
 from ..models.class_seat import Class_seat
 from ..models.passenger import Passenger
 from ..models.passenger_ticket import Passenger_ticket
-from ..models.cells_block import Cells_block
+from ..models.cabin import Cabin
 
 
 def check_aircraft_schedule_conflicts(session, aircraft_id, dates_to_check):
@@ -120,9 +119,8 @@ def get_flight_for_search(session: Session, departure_airport: str, arrival_airp
     flights_stmt = (
         flights_stmt
         .join(Aircraft_airline, Flight.id_aircraft == Aircraft_airline.id_aircraft_airline)
-        .join(Aircraft_composition,
-              Aircraft_airline.id_aircraft_airline == Aircraft_composition.id_aircraft_airline)
-        .where(Aircraft_composition.id_class == id_class)
+        .join(Cabin, Aircraft_airline.id_aircraft_airline == Cabin.id_aircraft)
+        .where(Cabin.id_class == id_class)
         .distinct()
     )
 
@@ -133,25 +131,38 @@ def get_flight_for_search(session: Session, departure_airport: str, arrival_airp
 def get_flight_seat_blocks(session: Session, id_flight: int):
     stmt = (
         select(
-            Aircraft_composition.id_cell_block,
-            Aircraft_composition.id_class,
+            Cabin.id_cabin.label("id_cabin"),
+            Cabin.id_class.label("id_class"),
             func.count(Ticket.id_ticket).label("occupied_seats"),
-            func.json_agg(func.json_build_object("x", Cell.x, "y", Cell.y, "id_cell", Cell.id_cell)).label("seats")
+            func.json_agg(
+                func.json_build_object(
+                    "x", Cell.x,
+                    "y", Cell.y,
+                    "id_cell", Cell.id_cell
+                )
+            ).label("seats")
         )
         .select_from(Flight)
-        .join(Aircraft_composition, Aircraft_composition.id_aircraft_airline == Flight.id_aircraft)
-        .join(Cell, and_(Aircraft_composition.id_cell_block == Cell.id_cell_block, Cell.is_seat == true()))
-        .join(Ticket, and_(Ticket.id_seat == Cell.id_cell, Ticket.id_flight == Flight.id_flight))  # solo posti occupati
+        .join(Aircraft_airline, Aircraft_airline.id_aircraft_airline == Flight.id_aircraft)
+        .join(Cabin, Cabin.id_aircraft == Aircraft_airline.id_aircraft_airline)
+        .join(Cell, and_(Cell.id_cabin == Cabin.id_cabin, Cell.is_seat == true()))
+        .join(
+            Ticket,
+            and_(
+                Ticket.id_seat == Cell.id_cell,
+                Ticket.id_flight == Flight.id_flight
+            )
+        )
         .where(Flight.id_flight == id_flight)
-        .group_by(Aircraft_composition.id_cell_block, Aircraft_composition.id_class)
-        .order_by(Aircraft_composition.id_cell_block)
+        .group_by(Cabin.id_cabin, Cabin.id_class)
+        .order_by(Cabin.id_cabin)
     )
 
     results = session.execute(stmt).all()
 
     return [
         {
-            "id_cell_block": row.id_cell_block,
+            "id_cabin": row.id_cabin,
             "id_class": row.id_class,
             "occupied_seats": row.occupied_seats,
             "seats": row.seats or []
@@ -161,16 +172,16 @@ def get_flight_seat_blocks(session: Session, id_flight: int):
 
 def get_aircraft_by_seat_id(session: Session, id_seat: int) -> int | None:
     stmt = (
-        select(Aircraft_composition.id_aircraft_airline)
-        .join(Cell, Cell.id_cell_block == Aircraft_composition.id_cell_block)
+        select(Cabin.id_aircraft)
+        .join(Cell, Cell.id_cabin == Cabin.id_cabin)
         .where(Cell.id_cell == id_seat)
     )
     return session.scalar(stmt)
 
 def get_class_from_seat(session: Session, id_seat: int) -> int | None:
     stmt = (
-        select(Aircraft_composition.id_class)
-        .join(Cell, Cell.id_cell_block == Aircraft_composition.id_cell_block)
+        select(Cabin.id_class)
+        .join(Cell, Cell.id_cabin == Cabin.id_cabin)
         .where(Cell.id_cell == id_seat)
     )
     return session.scalar(stmt)

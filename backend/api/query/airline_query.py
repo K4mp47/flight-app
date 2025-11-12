@@ -6,9 +6,8 @@ from ..models.class_price_policy import Class_price_policy
 from ..models.airline_price_policy import Airline_price_policy
 from ..models.airline import Airline
 from ..models.aircraft_airlines import Aircraft_airline
-from ..models.cells_block import Cells_block
+from ..models.cabin import Cabin
 from ..models.cell import Cell
-from ..models.aircraft_composition import Aircraft_composition
 from ..models.aircraft import Aircraft
 from ..models.class_price_policy import Class_price_policy
 
@@ -46,12 +45,13 @@ def get_fleet_by_airline_code(session: Session,airline_code: str):
     return [aircraft_airline.to_dict() for aircraft_airline in result]
 
 def number_seat_aircraft(session: Session,id_aircraft_airline: int) -> int:
+   
     stmt = (
         select(func.count())
         .select_from(Cell)
-        .join(Aircraft_composition, Aircraft_composition.id_cell_block == Cell.id_cell_block)
+        .join(Cabin, Cabin.id_cabin == Cell.id_cabin)
         .where(
-            Aircraft_composition.id_aircraft_airline == id_aircraft_airline,
+            Cabin.id_aircraft == id_aircraft_airline,
             Cell.is_seat == True
         )
     )
@@ -61,7 +61,7 @@ def number_seat_aircraft(session: Session,id_aircraft_airline: int) -> int:
 
 def get_max_economy_seats(session: Session,id_aircraft_airline: int) -> int:
     stmt = (
-        select(Aircraft.max_economy_seats)
+        select(Aircraft.max_seats)
         .join(Aircraft_airline, Aircraft.id_aircraft == Aircraft_airline.id_aircraft_model)
         .where(Aircraft_airline.id_aircraft_airline == id_aircraft_airline)
     )
@@ -77,8 +77,8 @@ def get_max_cols_aircraft(session: Session,id_aircraft_airline: int) -> int:
 
 def aircraft_exists_composition(session: Session, id_aircraft_airline: int)-> bool:
     stmt = (
-        select(Aircraft_composition.id_cell_block)
-        .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
+        select(Cabin.id_cabin)
+        .where(Cabin.id_aircraft == id_aircraft_airline)
         .limit(1)
     )
     return session.execute(stmt).first() is not None
@@ -90,27 +90,25 @@ def insert_block_seat_map(session: Session, matrix: list[list[bool]], id_aircraf
     cols = len(matrix[0])
 
     try:
-        new_block = Cells_block(rows=rows, cols=cols)
-        session.add(new_block)
+        new_cabin = Cabin(
+            rows=rows, 
+            cols=cols,
+            id_aircraft = id_aircraft_airline,
+            id_class = id_class,
+        )
+        session.add(new_cabin)
         session.flush()
 
         cells = []
         for y, row in enumerate(matrix):
             for x, is_seat in enumerate(row):
                 cells.append(Cell(
-                    id_cell_block=new_block.id_cell_block,
+                    id_cabin=new_cabin.id_cabin,
                     x=x,
                     y=y,
                     is_seat=is_seat
                 ))
         session.add_all(cells)
-
-        comp = Aircraft_composition(
-            id_cell_block=new_block.id_cell_block,
-            id_aircraft_airline=id_aircraft_airline,
-            id_class=id_class,
-        )
-        session.add(comp)
 
         session.commit()
         return {"message": "Block inserted successfully"}, 201
@@ -121,40 +119,39 @@ def insert_block_seat_map(session: Session, matrix: list[list[bool]], id_aircraf
 
 def get_aircraft_seat_map(session: Session, id_aircraft_airline: int):
     stmt = (
-        select(Cells_block)
-        .join(Aircraft_composition)
-        .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
+        select(Cabin)
+        .where(Cabin.id_aircraft == id_aircraft_airline)
         .options(
-            joinedload(Cells_block.cells),
-            joinedload(Cells_block.aircraft_compositions)
+            joinedload(Cabin.cells),        
+            joinedload(Cabin.class_seat)    
         )
     )
-    return session.execute(stmt).unique().scalars().all()
+
+    result = session.execute(stmt).unique().scalars().all()
+    return result
 
 
 
 def get_aircraft_seat_map_JSON(session: Session, id_aircraft_airline: int):
     stmt = (
-        select(Cells_block)
-        .join(Aircraft_composition)
-        .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
+        select(Cabin)
+        .where(Cabin.id_aircraft == id_aircraft_airline)
         .options(
-            joinedload(Cells_block.cells),
-            joinedload(Cells_block.aircraft_compositions).joinedload(Aircraft_composition.class_block)
+            joinedload(Cabin.cells),          
+            joinedload(Cabin.class_seat)          
         )
     )
 
-    result = session.execute(stmt).unique().scalars().all()
+    cabins = session.execute(stmt).unique().scalars().all()
 
     seat_map = []
-    for block in result:
-        composition = block.aircraft_compositions[0]
+    for cabin in cabins:
         seat_map.append({
-            "id_cell_block": block.id_cell_block,
-            "rows": block.rows,
-            "cols": block.cols,
-            "id_class": composition.id_class,
-            "class_name": composition.class_block.name,
+            "id_cabin": cabin.id_cabin,
+            "rows": cabin.rows,
+            "cols": cabin.cols,
+            "id_class": cabin.id_class,
+            "class_name": cabin.class_seat.name,
             "cells": [
                 {
                     "id_cell": cell.id_cell,
@@ -162,7 +159,7 @@ def get_aircraft_seat_map_JSON(session: Session, id_aircraft_airline: int):
                     "y": cell.y,
                     "is_seat": cell.is_seat
                 }
-                for cell in block.cells
+                for cell in cabin.cells
             ]
         })
 
@@ -170,16 +167,16 @@ def get_aircraft_seat_map_JSON(session: Session, id_aircraft_airline: int):
 
 def delete_aircraft_composition(session: Session, id_aircraft_airline: int):
     stmt = (
-        select(Aircraft_composition)
-        .where(Aircraft_composition.id_aircraft_airline == id_aircraft_airline)
-        .options(joinedload(Aircraft_composition.cell_block).joinedload(Cells_block.cells))
+        select(Cabin)
+        .where(Cabin.id_aircraft == id_aircraft_airline)
+        .options(joinedload(Cabin.cells))
     )
-    compositions = session.execute(stmt).unique().scalars().all()
 
-    for comp in compositions:
-        session.delete(comp)
-        if comp.cell_block:
-            session.delete(comp.cell_block)
+    cabins = session.execute(stmt).unique().scalars().all()
+
+    for cabin in cabins:
+        session.delete(cabin)  #I don't need to delete the cells. i use DELETE CASCADE
+
 
 def get_airline_class_price_policy(session: Session, airline_code: str):
     stmt = (

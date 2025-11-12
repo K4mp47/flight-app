@@ -8,8 +8,7 @@ from .manufacturer import Manufacturer
 from .aircraft import Aircraft
 from .airline import Airline
 from .class_seat import Class_seat
-from .aircraft_composition import Aircraft_composition
-from .cells_block import Cells_block
+from .cabin import Cabin
 from .cell import Cell
 from .route import Route
 from .route_section import Route_section

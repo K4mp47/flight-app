@@ -1,7 +1,7 @@
 from .base import Base
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, DateTime, ForeignKey, Integer
+from sqlalchemy import String, DateTime, ForeignKey, Integer, Float
 
 class Class_price_policy(Base):
     __tablename__ = "class_price_policy"
@@ -14,7 +14,7 @@ class Class_price_policy(Base):
     airline_code: Mapped[str] = mapped_column(String,ForeignKey("airlines.iata_code"), nullable=False)
     airline: Mapped["Airline"] = relationship("Airline", back_populates="class_price_policy")
 
-    price_multiplier: Mapped[int] = mapped_column(Integer, nullable=False)
+    price_multiplier: Mapped[float] = mapped_column(Float, nullable=False)
     fixed_markup: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 

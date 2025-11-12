@@ -48,7 +48,7 @@ def new_aircraft(id_aircraft: int):
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/fleet", methods=["GET"])
-@airline_check_param("airline_code")
+#@airline_check_param("airline_code")
 def get_fleet(airline_code: str):
     session = SessionLocal()
     controller = Airline_controller(session)
@@ -353,6 +353,14 @@ def get_routes_total_revenue(airline_code: str):
     analytics = get_total_revenue_by_airline_and_date(session, airline_code, data.start_date)
     session.close()
     return jsonify({"total_revenue": analytics}), 200
+
+'''@airline_bp.route("/<airline_code>/flights", methods=["GET"])
+#@airline_check_param("airline_code")
+def get_airline_flights(airline_code: str):
+    session = SessionLocal()
+    
+    session.close()
+    return jsonify({"total_revenue": 1}), 200'''
 
 
 

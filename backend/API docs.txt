@@ -298,19 +298,16 @@ risposta 200
 [
 
     {
-        "double_deck": false,
         "id_aircraft": 1,
         "max_economy_seats": 180,
         "name": "A320"
     },
     {
-        "double_deck": false,
         "id_aircraft": 2,
         "max_economy_seats": 160,
         "name": "A319"
     },
     {
-        "double_deck": false,
         "id_aircraft": 3,
         "max_economy_seats": 244,
         "name": "A321"
@@ -429,7 +426,6 @@ risposta 200
 
 {
     "aircraft": {
-            "double_deck": false,
             "id_aircraft": 7,
             "manufacturer": {
                 "id_manufacturer": 1,
@@ -610,7 +606,7 @@ Praticamente se ho 2 aerei A e B dove:
 A = source
 B = target
 
-B compierà la seat_map di A senza dover usare API 15 ovvero: /airline/add/block/aircraft/<int:id_aircraft_airline>
+B (target) compierà la seat_map di A (source) senza dover usare API 15 ovvero: /airline/add/block/aircraft/<int:id_aircraft_airline>
 
 ATTENZIONE se è già presente una configurazione dei posti di target, essa verà cancellata e sostituita con quella di A.
 
@@ -1800,12 +1796,12 @@ body {
         ]
       },
       "passenger_info": {
-        "name": "Mario",
-        "lastname": "Rossi",
+        "name": "Niccolò",
+        "lastname": "Balini",
         "date_birth": "1990-05-20",
         "phone_number": "+393331234567",
-        "email": "mario.rossi@example.com",
-        "passport_number": "X1234567",
+        "email": "Hummansafari@gmail.com",
+        "passport_number": "X1234537",
         "sex": "M"
       }
     },
@@ -1816,13 +1812,13 @@ body {
         "additional_baggage": []
       },
       "passenger_info": {
-        "name": "Giulia",
-        "lastname": "Bianchi",
+        "name": "Dario",
+        "lastname": "Moccia",
         "date_birth": "1995-08-15",
         "phone_number": "+393334445556",
-        "email": "giulia.bianchi@example.com",
-        "passport_number": "Y7654321",
-        "sex": "F"
+        "email": "Depeffo@gmail.com",
+        "passport_number": "Y754321",
+        "sex": "M"
       }
     }
   ]

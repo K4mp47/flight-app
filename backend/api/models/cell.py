@@ -11,8 +11,8 @@ class Cell(Base):
 
     id_cell: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    id_cell_block: Mapped[int] = mapped_column(ForeignKey("cells_block.id_cell_block"),nullable=False)
-    block: Mapped["Cells_block"] = relationship("Cells_block", back_populates='cells')
+    id_cabin: Mapped[int] = mapped_column(ForeignKey("cabins.id_cabin", ondelete="CASCADE", onupdate="CASCADE"),nullable=False)
+    cabin: Mapped["Cabin"] = relationship("Cabin",back_populates="cells")
 
     tickets: Mapped[List["Ticket"]] = relationship(
         back_populates="seat",

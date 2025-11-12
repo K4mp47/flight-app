@@ -18,24 +18,22 @@ class Aircraft(Base):
         back_populates="aircraft",
     )
 
-    max_economy_seats: Mapped[int] = mapped_column(Integer, nullable=False)
+    max_seats: Mapped[int] = mapped_column(Integer, nullable=False)
     cruise_speed_kmh: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     cabin_max_cols: Mapped[int] = mapped_column(Integer, nullable=False)
-    double_deck: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"<Aircraft(id_aircraft={self.id_aircraft}, name={self.name},max_economy_seats{self.max_economy_seats}, double_deck={self.double_deck})>"
+        return f"<Aircraft(id_aircraft={self.id_aircraft}, name={self.name},max_seats{self.max_seats})>"
 
     def to_dict(self):
         return {
             "id_aircraft": self.id_aircraft,
             "manufacturer": self.manufacturer.to_dict(),
             "name": self.name,
-            "max_economy_seats": self.max_economy_seats,
+            "max_seats": self.max_seats,
             "cabin_max_cols": self.cabin_max_cols,
-            "double_deck": self.double_deck,
         }
 
     def to_dict_without_manufacturer(self):
@@ -43,6 +41,5 @@ class Aircraft(Base):
             "id_aircraft": self.id_aircraft,
             "name": self.name,
             "cabin_max_cols": self.cabin_max_cols,
-            "max_economy_seats": self.max_economy_seats,
-            "double_deck": self.double_deck,
+            "max_seats": self.max_seats,
         }

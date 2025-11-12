@@ -43,6 +43,7 @@ class Flight(Base):
             "id_aircraft": self.id_aircraft,
             "route_code": self.route.code,
             "base_price": self.route.base_price,
+            "flight_price": self.route.base_price,
             "airline": {
                 "iata_code": self.route.airline.iata_code,
                 "name": self.route.airline.name

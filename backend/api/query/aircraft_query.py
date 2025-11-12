@@ -20,7 +20,7 @@ def all_manufacturer(session: Session):
 def all_aircraft_by_manufacturer(session: Session,manufacturer_id: int):
     stmt = (
         select(Aircraft)
-        .options(selectinload(Aircraft.manufacturer))  # Eager load manufacturer
+        .options(selectinload(Aircraft.manufacturer))  
         .where(Aircraft.id_manufacturer == manufacturer_id)
     )
     result = session.scalars(stmt).all()

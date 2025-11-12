@@ -24,8 +24,8 @@ class Flight_controller:
             if policy:
                 multiplier = policy[0]
                 markup = policy[1]
-                flight["price"] *= multiplier
-                flight["price"] += markup
+                flight["flight_price"] *= multiplier
+                flight["flight_price"] += markup
 
 
     def get_flights(self, departure_airport_code, arrival_airport_code, round_trip_flight, direct_flights, departure_date_outbound, departure_date_return, id_class):

@@ -69,14 +69,15 @@ class Airline_controller:
             for value in matrix[0]:
                 num_col_seat += 1
 
-            if get_max_cols_aircraft(self.session, id_aircraft_airline) < num_col_seat:
+            aircraft_max_cols = get_max_cols_aircraft(self.session, id_aircraft_airline)
+
+            if aircraft_max_cols < num_col_seat:
                 return {"message": "The proportion of economy seats is too high"}, 400
             else:
 
-                if get_max_cols_aircraft(self.session, id_aircraft_airline) < len(matrix[0]):
+                if aircraft_max_cols < len(matrix[0]):
                     return {"message": "exceeded the maximum number of columns available"}, 400
                 else:
-
                     num_seat_matrix = 0
                     for row in matrix:
                         for cell in row:
@@ -92,49 +93,71 @@ class Airline_controller:
 
 
 
-    def clone_aircraft_seat_map(self, id_source_id, target_id):
-        if (self.session.get(Aircraft_airline, id_source_id) is None or
-                self.session.get(Aircraft_airline, target_id) is None):
-            return {"message": "id_source_id or target_id not found"}, 404
+    def clone_aircraft_seat_map(self, source_id, target_id):
+        
+        source_aircraft = self.session.get(Aircraft_airline, source_id)
+        target_aircraft = self.session.get(Aircraft_airline, target_id)
+        if source_aircraft is None or target_aircraft is None:
+            return {"message": "source_id or target_id not found"}, 404
+        
+        source_model = self.session.get(Aircraft, source_aircraft.id_aircraft_model)
+        target_model = self.session.get(Aircraft, target_aircraft.id_aircraft_model)
+        if source_model is None or target_model is None:
+            return {"message": "Aircraft model not found"}, 404
 
-        source_blocks = get_aircraft_seat_map(self.session, id_source_id)
-        if not source_blocks:
-            return {"message": "No block found for source_id"}, 404
+        if source_model.cabin_max_cols != target_model.cabin_max_cols:
+            return {
+                "message": (
+                    f"Incompatible aircraft cabin layout: "
+                    f"source cols={source_model.cabin_max_cols}, "
+                    f"target cols={target_model.cabin_max_cols}"
+                )
+            }, 400
+
+
+        num_seat_aircraft = number_seat_aircraft(self.session, source_id)
+        if num_seat_aircraft > target_model.max_seats:
+            return {
+                "message": (
+                    f"Source aircraft has {num_seat_aircraft} seats, "
+                    f"which exceeds target aircraft max_seats={target_model.max_seats}"
+                )
+            }, 400
+
+        source_cabins = get_aircraft_seat_map(self.session, source_id)
+        if not source_cabins:
+            return {"message": "No cabins found for source_id"}, 404
 
         try:
             if aircraft_exists_composition(self.session, target_id):
                 delete_aircraft_composition(self.session, target_id)
 
-            new_blocks = []
+            new_cabins = []
 
-            for source_block in source_blocks:
-                new_block = Cells_block(
-                    rows=source_block.rows,
-                    cols=source_block.cols
+            for source_cabin in source_cabins:
+                new_cabin = Cabin(
+                    rows=source_cabin.rows,
+                    cols=source_cabin.cols,
+                    id_aircraft=target_id,
+                    id_class=source_cabin.id_class  
                 )
-                self.session.add(new_block)
-                self.session.flush()
+                self.session.add(new_cabin)
+                self.session.flush()  
 
-                for cell in source_block.cells:
-                    self.session.add(Cell(
+                for cell in source_cabin.cells:
+                    new_cell = Cell(
+                        id_cabin=new_cabin.id_cabin,
                         x=cell.x,
                         y=cell.y,
-                        is_seat=cell.is_seat,
-                        id_cell_block=new_block.id_cell_block
-                    ))
+                        is_seat=cell.is_seat
+                    )
+                    self.session.add(new_cell)
 
-                composition = source_block.aircraft_compositions[0]
-                self.session.add(Aircraft_composition(
-                    id_cell_block=new_block.id_cell_block,
-                    id_aircraft_airline=target_id,
-                    id_class=composition.id_class,
-                ))
-
-                new_blocks.append(new_block)
+                new_cabins.append(new_cabin)
 
             self.session.commit()
 
-            return {"message": f"Operation successful, {len(new_blocks)} copied blocks"}, 201
+            return {"message": f"Operation successful, {len(new_cabins)} copied blocks"}, 201
 
         except Exception as e:
             self.session.rollback()

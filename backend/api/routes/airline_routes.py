@@ -5,6 +5,7 @@ from db import SessionLocal
 from ..models import Route
 from ..models.aircraft_airlines import Aircraft_airline
 from ..models.airline import Airline
+from ..query.flight_query import get_flights_by_airline
 from ..query.airline_query import all_airline, get_aircraft_seat_map_JSON, number_seat_aircraft,get_max_economy_seats, get_airline_class_price_policy, get_airline_price_policy
 from ..query.route_query import get_all_route_airline, get_route, get_routes_analytics, get_total_revenue_by_airline_and_date
 from ..utils.role_checking import role_required, airline_check_param, airline_check_body
@@ -354,13 +355,13 @@ def get_routes_total_revenue(airline_code: str):
     session.close()
     return jsonify({"total_revenue": analytics}), 200
 
-'''@airline_bp.route("/<airline_code>/flights", methods=["GET"])
+@airline_bp.route("/<airline_code>/flights", methods=["GET"])
 #@airline_check_param("airline_code")
 def get_airline_flights(airline_code: str):
     session = SessionLocal()
-    
+    flights = get_flights_by_airline(session, airline_code)
     session.close()
-    return jsonify({"total_revenue": 1}), 200'''
+    return jsonify(flights), 200
 
 
 

@@ -2175,3 +2175,32 @@ risposta 200:
 {
     "total_revenue": 580.0
 }
+
+
+------------------------------------------------------------------------------------------------------------------
+
+52) /airline/<airline_code>/flights    methods=["GET"]
+
+Ruoli -> Airline-Admin
+
+Authorization Bearer token_utente
+
+API che mostra inserendo il codice della compagnia aerea (es AZ, TK ecc...) tutti i voli della compagnia.
+
+risposta 200:
+
+{
+        "Route_code": "AZ9",
+        "airline_iata_code": "AZ",
+        "arrival_day": "Thu, 01 Jan 2026 00:00:00 GMT",
+        "arrival_time": "09:50",
+        "base_price": 135,
+        "departure_day": "Thu, 01 Jan 2026 00:00:00 GMT",
+        "departure_time": "08:30",
+        "destination": "LHR",
+        "duration": "01:20",
+        "id_flight": 267,
+        "origin": "VCE"
+}
+
+se si vuole vedere in interezza il risultato dell'API andare nella cartella dataset e cercare il file flights.json dove ci sono tutti i voli AZ.

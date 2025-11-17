@@ -287,6 +287,44 @@ def get_flight_class_distribution(session, id_flight: int):
     return distribution
 
 
+def get_flights_by_airline(session, airline_code: str):
+
+    stmt = (
+        select(
+            Flight.id_flight.label("id_flight"),
+            Flight.scheduled_departure_day.label("departure_day"),
+            Flight.scheduled_arrival_day.label("arrival_day"),
+            Route.airline_iata_code.label("airline_iata_code"),
+            Route.code.label("Route_code"),
+            Route_section.code_departure_airport.label("origin"),
+            Route_section.code_arrival_airport.label("destination"),
+            Route_detail.departure_time.label("departure_time"),
+            Route_detail.arrival_time.label("arrival_time"),
+            Route.base_price.label("base_price"),
+            func.to_char(
+                (Route_detail.arrival_time - Route_detail.departure_time),
+                "HH24:MI"
+            ).label("duration"),
+        )
+        .join(Route, Flight.route_code == Route.code)
+        .join(Route_detail, Route_detail.code_route == Route.code)
+        .join(Route_section, Route_detail.id_route_section == Route_section.id_routes_section)
+        .where(Route.airline_iata_code == airline_code)
+    )
+
+    rows = session.execute(stmt).mappings().all()
+    flights = []
+    for row in rows:
+        r = dict(row)
+        if r["departure_time"]:
+            r["departure_time"] = r["departure_time"].strftime("%H:%M")
+
+        if r["arrival_time"]:
+            r["arrival_time"] = r["arrival_time"].strftime("%H:%M")
+
+        flights.append(r)
+    return flights
+
 
 
 

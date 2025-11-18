@@ -16,7 +16,7 @@ import { api } from "@/lib/api"
 
 export default function Page() {
   const [view, setView] = React.useState<string>("Fleet")
-  const [tableData, setTableData] = React.useState<(Aircraft | Route)[]>([])
+  const [tableData, setTableData] = React.useState<(Aircraft | Route | Flight)[]>([])
   const [, setLoading] = React.useState<boolean>(false)
 
   React.useEffect(() => {
@@ -36,6 +36,15 @@ export default function Page() {
           const route_res = await api.get<Routes>(`/airline/${encodeURIComponent(code)}/route`)
           console.log(route_res)
           if (mounted) setTableData(route_res.routes)
+        } else if (view === "Flights") {
+          const flight_res = await api.get<Flights>(`/airline/${encodeURIComponent(code)}/flight`)
+          console.log(flight_res)
+          // backend returns the flights array directly (not { flights: [...] }).
+          // Handle both shapes for compatibility without using `any`.
+          const flights = Array.isArray(flight_res)
+            ? (flight_res as (Aircraft | Route | Flight)[])
+            : (flight_res as unknown as { flights?: (Aircraft | Route | Flight)[] })?.flights ?? []
+          if (mounted) setTableData(flights)
         } else {
           if (mounted) setTableData([])
         }

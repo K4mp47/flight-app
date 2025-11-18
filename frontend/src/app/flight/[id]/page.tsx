@@ -98,7 +98,7 @@ export default function FlightDetailsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-3xl">{flight.origin} &rarr; {flight.destination}</CardTitle>
-          <CardDescription className="text-lg">Flight No: {flight.flight_number}</CardDescription>
+          <CardDescription className="text-lg">Flight No: {flight.id_flight}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -125,7 +125,7 @@ export default function FlightDetailsPage() {
             <p className="font-semibold">Base Price:</p>
             <p className="text-2xl font-bold text-blue-600">${flight.base_price}</p>
           </div>
-          <div>
+          {/* <div>
             <p className="font-semibold">Available Seats:</p>
             <p className={`text-xl font-bold ${flight.available_seats <= 5 ? 'text-red-500' : 'text-green-600'}`}>
               {flight.available_seats} / {flight.total_seats}
@@ -146,7 +146,7 @@ export default function FlightDetailsPage() {
             ) : (
               <p>No specific class configuration available.</p>
             )}
-          </div>
+          </div> */}
         </CardContent>
       </Card>
       <Card>

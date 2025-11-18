@@ -103,20 +103,39 @@ interface Ticket {
   }
 } 
 
-interface Flight {
-  id: string;
-  company_id: string;
-  flight_number: string;
-  origin: string;
-  destination: string;
-  departure_time: string;
-  arrival_time: string;
-  duration: string;
-  base_price: string;
-  total_seats: number;
-  available_seats: number;
-  class_config: { [key: string]: { seats_available: number; price_multiplier: number } };
+interface Flights {
+  flights: Flight[];
 }
+ 
+interface Flight {
+  id_flight: string,
+  route_code: string,
+  airline_iata_code: string,
+  arrival_day: string,
+  arrival_time: string,
+  base_price: number | null,
+  departure_day: string,
+  departure_time: string,
+  destination: string,
+  duration: string,
+  id_flight: number,
+  origin: string
+}
+
+// interface Flight {
+  // id: string;
+  // company_id: string;
+  // flight_number: string;
+  // origin: string;
+  // destination: string;
+  // departure_time: string;
+  // arrival_time: string;
+  // duration: string;
+  // base_price: string;
+  // total_seats: number;
+  // available_seats: number;
+  // class_config: { [key: string]: { seats_available: number; price_multiplier: number } };
+// }
 
 // interface Flight {
 //   id: string;

@@ -67,7 +67,7 @@ export function MainForm() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-10 bg-gradient-to-b from-[#1e2022] to-black rounded-2xl shadow-2xl border border-gray-800">
+    <div className="max-w-2xl mx-auto px-6 py-10 bg-gradient-to-b from-[#1e2022] to-black rounded-2xl shadow-2xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* --- City Selection --- */}
@@ -87,7 +87,7 @@ export function MainForm() {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-between text-left font-normal h-12 bg-[#1e2022] border-gray-700 text-white hover:bg-gray-700 transition",
+                            "w-full justify-between text-left font-normal h-12 bg-[#1e2022] text-white hover:bg-gray-700 transition",
                             !field.value && "text-gray-400"
                           )}
                         >
@@ -98,7 +98,7 @@ export function MainForm() {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full bg-[#1e2022] border-gray-800 p-0">
+                    <PopoverContent className="w-full bg-[#1e2022]  p-0">
                       <div className="flex flex-col">
                         {cities.map(city => (
                           <Button
@@ -136,7 +136,7 @@ export function MainForm() {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-between text-left font-normal h-12 bg-[#1e2022] border-gray-700 text-white hover:bg-gray-700 transition",
+                            "w-full justify-between text-left font-normal h-12 bg-[#1e2022] text-white hover:bg-gray-700 transition",
                             !field.value && "text-gray-400"
                           )}
                         >
@@ -147,7 +147,7 @@ export function MainForm() {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full bg-[#1e2022] border-gray-800 p-0">
+                    <PopoverContent className="w-full bg-[#1e2022]  p-0">
                       <div className="flex flex-col">
                         {cities.map(city => (
                           <Button
@@ -190,7 +190,7 @@ export function MainForm() {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full justify-between text-left font-normal h-12 bg-[#1e2022] border-gray-700 text-white hover:bg-gray-700 transition",
+                              "w-full justify-between text-left font-normal h-12 bg-[#1e2022] text-white hover:bg-gray-700 transition",
                               !field.value && "text-gray-400"
                             )}
                           >
@@ -203,7 +203,7 @@ export function MainForm() {
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto bg-[#1e2022] border-gray-800 p-2">
+                      <PopoverContent className="w-auto bg-[#1e2022]  p-2">
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -240,7 +240,7 @@ export function MainForm() {
                       {["First", "Business", "Premium", "Economy"].map(cls => (
                         <FormItem
                           key={cls}
-                          className="flex items-center space-x-2 rounded-md bg-[#1e2022] border border-gray-700 px-3 py-2 hover:bg-[#303336] transition"
+                          className="flex items-center space-x-2 rounded-md bg-[#1e2022] border px-3 py-2 hover:bg-[#303336] transition"
                         >
                           <FormControl>
                             <RadioGroupItem value={cls} />
@@ -278,7 +278,7 @@ export function MainForm() {
                           max={8}
                           value={field.value}
                           onChange={e => field.onChange(Number(e.target.value))}
-                          className="bg-gray-800 border-gray-700 text-white h-10 focus:ring-1 focus:ring-white transition"
+                          className="bg-gray-800 text-white h-10 focus:ring-1 focus:ring-white transition"
                         />
                       </FormControl>
                     </FormItem>

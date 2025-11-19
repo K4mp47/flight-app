@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -16,7 +16,7 @@ export default function FlightDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFlightDetails = async () => {
+  const fetchFlightDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -26,43 +26,13 @@ export default function FlightDetailsPage() {
     } catch (error: Error | unknown) {
       toast.error((error as Error).message + ": " +(error as Error).name || 'Failed to fetch flight details');
     } 
-  };
+  }, [flightId]);
 
   useEffect(() => {
     if (flightId) {
       fetchFlightDetails();
-
-      // Setup Realtime subscription
-      // const channel = supabase
-      //   .channel(`flight-${flightId}`)
-      //   .on(
-      //     'postgres_changes',
-      //     {
-      //       event: 'UPDATE',
-      //       schema: 'public',
-      //       table: 'flights',
-      //       filter: `id=eq.${flightId}`
-      //     },
-      //     (payload: any) => {
-      //       console.log('Realtime update received:', payload);
-      //       setFlight((prevFlight) => {
-      //         if (prevFlight && payload.new) {
-      //           return {
-      //             ...prevFlight,
-      //             available_seats: payload.new.available_seats,
-      //           };
-      //         }
-      //         return prevFlight;
-      //       });
-      //     }
-      //   )
-      //   .subscribe();
-
-      // return () => {
-      //   supabase.removeChannel(channel);
-      // };
     }
-  }, [flightId]); // Dipendenza da flightId per la sottoscrizione e fetch iniziale
+  }, [fetchFlightDetails, flightId]);
 
   if (loading) {
     return (

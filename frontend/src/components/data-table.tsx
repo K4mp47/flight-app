@@ -72,7 +72,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 import aircraftList from "@/app/dashboard/aircraft.json";
 import { api } from "@/lib/api";
-import { DialogTrigger } from "@radix-ui/react-dialog";
+// Removed the direct import from @radix-ui/react-dialog to avoid context mismatch
 import {
   Dialog,
   DialogContent,
@@ -80,9 +80,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger, // Imported from local ui/dialog
 } from "./ui/dialog";
 import { RouteCreationForm } from "./dashboard-form-routes";
 import { SeatmapCreationForm } from "./dashboard-form-seatmap";
+import FlightCreationForm from "./dashboard-form-flight";
 import { Input } from "./ui/input";
 
 export function DataTable({
@@ -552,6 +554,13 @@ export function DataTable({
     setData((initialData ?? []) as (Aircraft | Route | Flight)[]);
   }, [initialData]);
 
+  async function handleAddFlight() {
+    const user = await api
+      .get<{ airline_code?: string }>("/users/me")
+      .catch(() => null);
+    const userIataCode = user?.airline_code ?? null;
+  }
+
   function TableSkeleton() {
     return (
       <div className="overflow-hidden rounded-lg border">
@@ -664,21 +673,38 @@ export function DataTable({
                   <DialogHeader>
                     <DialogTitle>Add New Route</DialogTitle>
                     <DialogDescription>
-                      <RouteCreationForm />
+                      Enter the details for your new route.
                     </DialogDescription>
                   </DialogHeader>
+                  {/* Moved OUTSIDE of DialogDescription */}
+                  <RouteCreationForm />
                 </DialogContent>
               </Dialog>
             )}
             {view === "Flights" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => toast.info("Add Flight functionality coming soon")}
-              >
-                <IconPlus />
-                <span className="hidden lg:inline">Add Flight</span>
-              </Button>
+               <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="hidden lg:flex"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAddFlight()}
+                  >
+                    <IconPlus />
+                    <span className="hidden lg:inline">Add Flight</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="min-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Add New Flight</DialogTitle>
+                    <DialogDescription>
+                      Schedule a new flight.
+                    </DialogDescription>
+                  </DialogHeader>
+                  {/* Moved OUTSIDE of DialogDescription */}
+                  <FlightCreationForm />
+                </DialogContent>
+              </Dialog>
             )}
           </div>
         </div>

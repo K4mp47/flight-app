@@ -17,64 +17,121 @@ airline_bp = Blueprint("airline_bp", __name__)
 @airline_bp.route("/", methods=["GET"])
 #@role_required("Admin")
 def get_all_airlines():
-    session = SessionLocal()
-    airlines = all_airline(session)
-    session.close()
-    return jsonify(airlines), 200
+        """
+        Get all airlines
+        ---
+        tags:
+            - Airline
+        summary: Return all airlines
+        responses:
+            200:
+                description: Array of airlines
+        """
+        session = SessionLocal()
+        airlines = all_airline(session)
+        session.close()
+        return jsonify(airlines), 200
 
 @airline_bp.route("/new", methods=["POST"])
 #@role_required("Admin")
 def new_airline():
-    try:
-        data = Airline_schema(**request.get_json())
-    except ValidationError as e:
-        return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Airline_controller(session)
-    response, status = controller.insert_airline(data.iata_code, data.name)
-    session.close()
-    return jsonify(response), status
+        """
+        Create a new airline
+        ---
+        tags:
+            - Airline
+        summary: Insert a new airline (Admin only)
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/AirlineCreate'
+        responses:
+            200:
+                description: Airline inserted
+        """
+        try:
+                data = Airline_schema(**request.get_json())
+        except ValidationError as e:
+                return jsonify({"message": str(e)}), 400
+        session = SessionLocal()
+        controller = Airline_controller(session)
+        response, status = controller.insert_airline(data.iata_code, data.name)
+        session.close()
+        return jsonify(response), status
 
 @airline_bp.route("/add/aircraft/<int:id_aircraft>", methods=["POST"])
 #@airline_check_body("airline_code")
 def new_aircraft(id_aircraft: int):
-    try:
-        data = Airline_aircraft_schema(**request.get_json())
-    except ValidationError as e:
-        return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Airline_controller(session)
-    response, status = controller.insert_aircraft(data.airline_code,id_aircraft)
-    session.close()
-    return jsonify(response), status
+        """
+        
+        """
+        try:
+                data = Airline_aircraft_schema(**request.get_json())
+        except ValidationError as e:
+                return jsonify({"message": str(e)}), 400
+        session = SessionLocal()
+        controller = Airline_controller(session)
+        response, status = controller.insert_aircraft(data.airline_code,id_aircraft)
+        session.close()
+        return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/fleet", methods=["GET"])
 #@airline_check_param("airline_code")
 def get_fleet(airline_code: str):
-    session = SessionLocal()
-    controller = Airline_controller(session)
-    response, status = controller.get_airline_fleet(airline_code)
-    session.close()
-    return jsonify(response), status
+        """
+        
+        """
+        session = SessionLocal()
+        controller = Airline_controller(session)
+        response, status = controller.get_airline_fleet(airline_code)
+        session.close()
+        return jsonify(response), status
 
 @airline_bp.route("/delete/aircraft/<int:id_aircraft_airline>", methods=["DELETE"])
 #@airline_check_body("airline_code")
 def delete_aircraft(id_aircraft_airline: int):
-    session = SessionLocal()
-    if (session.get(Aircraft_airline, id_aircraft_airline) is None):
-        return jsonify({"message": "id_aircraft_airline not found"}), 404
-    else:
-        data = request.get_json()
-        controller = Airline_controller(session)
-        response, status = controller.dalete_fleet_aircraft(data.get("airline_code"), id_aircraft_airline)
-        session.close()
-        return jsonify(response), status
+        """
+        
+        """
+        session = SessionLocal()
+        if (session.get(Aircraft_airline, id_aircraft_airline) is None):
+                return jsonify({"message": "id_aircraft_airline not found"}), 404
+        else:
+                data = request.get_json()
+                controller = Airline_controller(session)
+                response, status = controller.dalete_fleet_aircraft(data.get("airline_code"), id_aircraft_airline)
+                session.close()
+                return jsonify(response), status
 
 
 
 @airline_bp.route("/add/block/aircraft/<int:id_aircraft_airline>", methods=["POST"])
 #@airline_check_body("airline_code")
 def new_block(id_aircraft_airline: int):
+    """
+    Add seat block to aircraft
+    ---
+    tags:
+      - Airline
+    summary: Insert a block of seats for an aircraft in the airline fleet
+    parameters:
+      - in: path
+        name: id_aircraft_airline
+        schema:
+          type: integer
+        required: true
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AircraftBlock'
+    responses:
+      200:
+        description: Block inserted successfully
+    """
     session = SessionLocal()
     if (session.get(Aircraft_airline, id_aircraft_airline) is None):
         return jsonify({"message": "id_aircraft_airline not found"}), 404
@@ -104,21 +161,44 @@ def new_block(id_aircraft_airline: int):
 @airline_bp.route("/<airline_code>/aircraft/<int:id_aircraft_airline>/seat_map", methods=["GET"])
 #@airline_check_param("airline_code")
 def get_seat_map(airline_code: str, id_aircraft_airline: int):
+    """
+    Get seat map for aircraft
+    ---
+    tags:
+        - Airline
+    
+    """
     session = SessionLocal()
     if (session.get(Aircraft_airline, id_aircraft_airline) is None):
-        return jsonify({"message": "id_aircraft_airline not found"}), 404
+            return jsonify({"message": "id_aircraft_airline not found"}), 404
     else:
-        seat_map = get_aircraft_seat_map_JSON(session, id_aircraft_airline)
-        seats_number = number_seat_aircraft(session, id_aircraft_airline)
-        seats_remaining = get_max_economy_seats(session, id_aircraft_airline) - seats_number
-        session.close()
-        return jsonify(
-            {"additional_seats_remaining": seats_remaining, "seats_number": seats_number, "seat_map": seat_map}), 200
+            seat_map = get_aircraft_seat_map_JSON(session, id_aircraft_airline)
+            seats_number = number_seat_aircraft(session, id_aircraft_airline)
+            seats_remaining = get_max_economy_seats(session, id_aircraft_airline) - seats_number
+            session.close()
+            return jsonify(
+                    {"additional_seats_remaining": seats_remaining, "seats_number": seats_number, "seat_map": seat_map}), 200
 
 
 @airline_bp.route("/aircraft/clone-seatmap", methods=["POST"])
 #@airline_check_body("airline_code")
 def clone_seatmap():
+    """
+    Clone aircraft seatmap
+    ---
+    tags:
+      - Airline
+    summary: Copy seatmap from one aircraft to another
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CloneSeatmap'
+    responses:
+      201:
+        description: Operation successful
+    """
     session = SessionLocal()
     try:
         data = Clone_aircraft_seat_map_schema(**request.get_json())
@@ -139,6 +219,22 @@ def clone_seatmap():
 @airline_bp.route("/add/route", methods=["POST"])
 #@airline_check_body("airline_code")
 def add_route():
+    """
+    Add route to airline
+    ---
+    tags:
+      - Airline
+    summary: Create a new route for an airline
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RouteAirlineCreate'
+    responses:
+      200:
+        description: Route created successfully
+    """
     session = SessionLocal()
     try:
         data = Route_airline_schema(**request.get_json())
@@ -160,12 +256,20 @@ def add_route():
 @airline_bp.route("/route/<code>/change-deadline", methods=["PUT"])
 #@airline_check_body("airline_code")
 def change_route_deadline(code: str):
+    """
+    Change route deadline
+    ---
+    tags:
+        - Airline
+    summary: Update the end date for a route
+    
+    """
     session = SessionLocal()
     try:
-        data = Route_deadline_schema(**request.get_json())
+            data = Route_deadline_schema(**request.get_json())
     except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
+            session.close()
+            return jsonify({"message": str(e)}), 400
 
     controller = Airline_controller(session)
     response, status = controller.change_deadline(code, data.end_date)
@@ -175,26 +279,55 @@ def change_route_deadline(code: str):
 @airline_bp.route("/<airline_code>/route", methods=["GET"])
 #@airline_check_param("airline_code")
 def get_routes(airline_code: str):
-    session = SessionLocal()
-    if session.get(Airline, airline_code) is None:
-        return jsonify({"message": "airline_code not found"}), 404
-    routes = get_all_route_airline(session, airline_code)
-    session.close()
-    return jsonify({"routes": routes}), 200
+        """
+        Get routes for airline
+        ---
+    
+        """
+        session = SessionLocal()
+        if session.get(Airline, airline_code) is None:
+                return jsonify({"message": "airline_code not found"}), 404
+        routes = get_all_route_airline(session, airline_code)
+        session.close()
+        return jsonify({"routes": routes}), 200
 
 @airline_bp.route("/<airline_code>/route/<code>/info", methods=["GET"])
 #@airline_check_param("airline_code")
 def get_route_info(airline_code: str,code: str):
-    session = SessionLocal()
-    if session.get(Route, code) is None:
-        return jsonify({"message": "route not found"}), 404
-    route = get_route(session, code)
-    session.close()
-    return jsonify({"routes": route}), 200
+        """
+        Get route info
+        ---
+        tags:
+            - Airline
+        """
+        session = SessionLocal()
+        if session.get(Route, code) is None:
+                return jsonify({"message": "route not found"}), 404
+        route = get_route(session, code)
+        session.close()
+        return jsonify({"routes": route}), 200
 
 @airline_bp.route("/route/<code>/add-flight", methods=["POST"])
 #@airline_check_body("airline_code")
 def new_route_flight(code: str):
+    """
+    Add flights to a route
+    ---
+    tags:
+      - Airline
+    summary: Insert flight schedule for a route (Airline-Admin)
+    parameters:
+      - in: path
+        name: code
+        schema:
+          type: integer
+        required: true
+        description: Route code
+    responses:
+        200:   
+            description: Flights added successfully
+    
+    """
     session = SessionLocal()
     try:
         data = Flight_schedule_request_schema(**request.get_json())
@@ -355,9 +488,59 @@ def get_routes_total_revenue(airline_code: str):
     session.close()
     return jsonify({"total_revenue": analytics}), 200
 
-@airline_bp.route("/<airline_code>/flights", methods=["GET"])
+@airline_bp.route("/<airline_code>/flight", methods=["GET"])
 #@airline_check_param("airline_code")
 def get_airline_flights(airline_code: str):
+    """
+    Ritorna i voli di una compagnia
+    Ruoli -> Airline-Admin
+    Authorization: Bearer token_utente
+    API che mostra inserendo il codice della compagnia aerea (es AZ, TK ecc...) tutti i voli della compagnia.
+    ---
+    tags:
+       - Airline
+    responses:
+      200:
+        description: Esempio di risposta (un elemento della lista dei voli)
+        schema:
+          type: object
+          properties:
+            Route_code:
+              type: string
+            airline_iata_code:
+              type: string
+            arrival_day:
+              type: string
+            arrival_time:
+              type: string
+            base_price:
+              type: number
+            departure_day:
+              type: string
+            departure_time:
+              type: string
+            destination:
+              type: string
+            duration:
+              type: string
+            id_flight:
+              type: integer
+            origin:
+              type: string
+        examples:
+          application/json:
+            Route_code: "AZ9"
+            airline_iata_code: "AZ"
+            arrival_day: "Thu, 01 Jan 2026 00:00:00 GMT"
+            arrival_time: "09:50"
+            base_price: 135
+            departure_day: "Thu, 01 Jan 2026 00:00:00 GMT"
+            departure_time: "08:30"
+            destination: "LHR"
+            duration: "01:20"
+            id_flight: 267
+            origin: "VCE"
+    """
     session = SessionLocal()
     flights = get_flights_by_airline(session, airline_code)
     session.close()

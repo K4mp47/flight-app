@@ -295,7 +295,7 @@ def get_flights_by_airline(session, airline_code: str):
             Flight.scheduled_departure_day.label("departure_day"),
             Flight.scheduled_arrival_day.label("arrival_day"),
             Route.airline_iata_code.label("airline_iata_code"),
-            Route.code.label("Route_code"),
+            Route.code.label("route_code"),
             Route_section.code_departure_airport.label("origin"),
             Route_section.code_arrival_airport.label("destination"),
             Route_detail.departure_time.label("departure_time"),

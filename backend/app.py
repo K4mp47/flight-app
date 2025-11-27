@@ -11,24 +11,21 @@ from flasgger import Swagger
 
 def create_app():
     app = Flask(__name__)
-    # Basic OpenAPI template to expose bearerAuth and API info in Swagger UI
     template = {
-        
+        "swagger": "2.0", 
         "info": {
             "title": "Flight App API",
             "version": "1.0",
-            "description": "API for managing airlines, flights, bookings and related resources",
         },
-        "components": {
-            "securitySchemes": {
-                "bearerAuth": {
-                    "type": "http",
-                    "scheme": "bearer",
-                    "bearerFormat": "JWT"
-                }
+        "securityDefinitions": {  
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <token>'"
             }
         },
-        "security": [{"bearerAuth": []}],
+        "security": [{"Bearer": []}],
     }
     swagger = Swagger(app, template=template)
     app.config.from_object(Config)

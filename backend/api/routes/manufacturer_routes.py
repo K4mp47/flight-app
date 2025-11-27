@@ -9,14 +9,40 @@ manufacturer_bp = Blueprint("manufacturer_bp", __name__)
 @role_required("Admin", "Airline-Admin")
 def get_all_manufacturer():
         """
-        Get all manufacturers
+        Get All Manufacturers
         ---
         tags:
-            - Manufacturer
-        summary: Return list of aircraft manufacturers
+          - Manufacturers
+        summary: Retrieve all aircraft manufacturers
+        description: |
+          Returns a list of all aircraft manufacturers available in the database.
+
+          **Authorization required:** Bearer JWT Token  
+          **Allowed roles:** Admin, Airline-Admin
+
+        security:
+          - Bearer: []
+
         responses:
-            200:
-                description: Array of manufacturers
+          200:
+            description: List of manufacturers
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id_manufacturer:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "Airbus"
+
+          401:
+            description: Missing or invalid authentication token
+
+          403:
+            description: User does not have the required role
         """
         session = SessionLocal()
         manufacturer = all_manufacturer(session)

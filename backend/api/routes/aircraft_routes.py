@@ -10,14 +10,55 @@ aircraft_bp = Blueprint("aircraft_bp", __name__)
 #@role_required("Admin", "Airline-Admin")
 def get_all_aircraft():
     """
-    Get all aircraft
+    Get All Aircraft
     ---
     tags:
-        - Aircraft
-    summary: Return all aircraft available in the database
+      - Aircraft
+    summary: Retrieve all aircraft available in the database
+    description: |
+      This endpoint returns all aircraft stored in the system.
+
+      **Authorization required:** Bearer JWT Token  
+      **Allowed roles:** Admin, Airline-Admin
+
+    security:
+      - Bearer: []
+
     responses:
-        200:
-            description: Array of aircraft objects
+      200:
+        description: List of aircraft
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id_aircraft:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: "A320"
+              max_seats:
+                type: integer
+                example: 180
+              cabin_max_cols:
+                type: integer
+                example: 7
+              manufacturer:
+                type: object
+                properties:
+                  id_manufacturer:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "Airbus"
+
+      401:
+        description: Missing or invalid JWT token
+
+      403:
+        description: User does not have the required role
     """
     session = SessionLocal()
     aircraft = all_aircraft(session)
@@ -28,21 +69,54 @@ def get_all_aircraft():
 #@role_required("Admin", "Airline-Admin")
 def get_all_aircraft_by_manufacturer(id_manufacturer):
     """
-    Get aircraft by manufacturer
+    Get Aircraft by Manufacturer
     ---
     tags:
-        - Aircraft
-    summary: Return aircraft filtered by manufacturer id
+      - Aircraft
+    summary: Retrieve aircraft filtered by manufacturer
+    description: |
+      Returns all aircraft belonging to the specified manufacturer.
+
+      **Authorization required:** Bearer JWT Token  
+      **Allowed roles:** Admin, Airline-Admin
+
     parameters:
-      - in: path
-        name: id_manufacturer
-        schema:
-          type: integer
+      - name: id_manufacturer
+        in: path
+        type: integer
         required: true
-        description: ID of the manufacturer to filter by
+        description: ID of the manufacturer whose aircraft should be retrieved
+        example: 1
+
+    security:
+      - Bearer: []
+
     responses:
-        200:
-            description: Array of aircraft for the given manufacturer
+      200:
+        description: List of aircraft from the specified manufacturer
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id_aircraft:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: "A320"
+              max_economy_seats:
+                type: integer
+                example: 180
+
+      401:
+        description: Missing or invalid authentication token
+
+      403:
+        description: User does not have the required role
+
+      404:
+        description: Manufacturer not found
     """
     session = SessionLocal()
     aircraft = all_aircraft_by_manufacturer(session, id_manufacturer)

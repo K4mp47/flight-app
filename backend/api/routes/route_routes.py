@@ -32,17 +32,65 @@ def new_route():
         Create a new route
         ---
         tags:
-            - Routes
-        summary: Create route (Admin / Airline-Admin)
-        requestBody:
+          - Routes
+        summary: Insert a new route segment
+        description: |
+          Creates a new **route segment** between two airports.
+
+          **Note:**  
+          This API only creates route *segments*.  
+          It does **not** create airline-specific routes.  
+          It is primarily used for internal setup, not by the frontend.
+
+          **Authorization required:** Bearer JWT  
+          **Allowed roles:** Admin, Airline-Admin
+
+        security:
+          - Bearer: []
+
+        parameters:
+          - name: body
+            in: body
             required: true
-            content:
-                application/json:
-                    schema:
-                        $ref: '#/components/schemas/RouteCreate'
+            schema:
+              type: object
+              required:
+                - departure_airport
+                - arrival_airport
+              properties:
+                departure_airport:
+                    type: string
+                    example: "IST"
+                arrival_airport:
+                    type: string
+                    example: "HND"
         responses:
-            200:
-                description: Route created
+          "200":
+            description: Route segment successfully inserted
+            schema:
+              type: object
+              properties:
+                message:
+                    type: string
+                    example: "route inserted successfully"
+            route:
+              type: object
+              properties:
+                id_routes_section:
+                  type: integer
+                  example: 2
+                code_departure_airport:
+                  type: string
+                  example: "IST"
+                code_arrival_airport:
+                  type: string
+                  example: "HND"
+            "400":
+                description: Invalid input data
+            "401":
+                description: Missing or invalid token
+            "403":
+                description: Access denied — Admin or Airline-Admin role required
         """
         session = SessionLocal()
         try:

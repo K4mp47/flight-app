@@ -19,7 +19,7 @@ class User_controller:
 
     def register_user(self, data:dict):
         if get_user_by_email(self.session,data['email']):
-            return {"message": "Email already registered"}, 400
+            return {"message": "Email already registered"}, 409
 
         hashed_password = generate_password_hash(data['password'])
 

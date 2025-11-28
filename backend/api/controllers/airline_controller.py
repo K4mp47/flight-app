@@ -229,6 +229,16 @@ class Airline_controller:
 
             if not dep_airport or not arr_airport:
                 raise ValueError("Airport not found")
+            
+            if arr_airport == dep_airport:
+                raise ValueError("You cannot enter the same airport for both departure and arrival.")
+            
+            next_sess = current_section.next_session
+
+            if next_sess:
+                next_dep = next_sess.departure_airport
+                if arr_airport != next_dep:
+                    raise ValueError ("The arrival airport is different from the departure airport of the stopover.")
 
             route_section = get_route_by_airport(self.session, dep_airport, arr_airport)
 

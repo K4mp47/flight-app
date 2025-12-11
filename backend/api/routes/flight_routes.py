@@ -3,7 +3,7 @@ from pydantic import ValidationError
 from ..validations.flight_validation import Flight_search_schema, Ticket_reservation_schema
 from ..controllers.flight_controller import Flight_controller
 from ..models.flight import Flight
-from ..query.flight_query import get_flight_seat_blocks
+from ..query.flight_query import get_flight_seat_blocks, get_flight_seat_map
 from db import SessionLocal
 
 
@@ -252,7 +252,76 @@ def flight_seats_occupied(id_flight: int):
     if flight is None:
         return jsonify({"message": f"Flight {id_flight} not found"}), 404
 
-    data = get_flight_seat_blocks(session, id_flight)
+    data = get_flight_seat_map(session, id_flight)
+    session.close()
+    return jsonify(data), 200
+
+
+@flight_bp.route("/<int:id_flight>/seat-availability", methods=["GET"])
+def flight_seat_availability(id_flight: int):
+    """
+    Get full seat map with occupancy status for a flight
+    ---
+    tags:
+      - Flights
+    summary: Retrieve complete seat map (occupied + available)
+    description: |
+      Returns **all seats** for the flight's aircraft with an `occupied` flag per seat. No authentication required.
+
+    parameters:
+      - name: id_flight
+        in: path
+        required: true
+        type: integer
+        description: ID of the flight
+        example: 123
+
+    responses:
+      200:
+        description: Seat map returned successfully
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id_cabin:
+                type: integer
+                example: 5
+              id_class:
+                type: integer
+                example: 1
+              occupied_seats:
+                type: integer
+                example: 2
+              seats:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_cell:
+                      type: integer
+                      example: 3
+                    x:
+                      type: integer
+                      example: 2
+                    y:
+                      type: integer
+                      example: 0
+                    occupied:
+                      type: boolean
+                      example: false
+      404:
+        description: Flight not found
+
+    """
+    session = SessionLocal()
+    flight = session.get(Flight, id_flight)
+    if flight is None:
+        session.close()
+        return jsonify({"message": f"Flight {id_flight} not found"}), 404
+
+    data = get_flight_seat_map(session, id_flight)
+    session.close()
     return jsonify(data), 200
 
 

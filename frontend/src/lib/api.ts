@@ -11,7 +11,7 @@ async function fetcher<T>(url: string, method: HttpMethod = "GET", body?: Record
     .find((row) => row.startsWith("token="))
     ?.split("=")[1];
 
-  console.log('API Request:', method, url, body ? JSON.stringify(body) : '');
+  console.log('API Request:', method, `${API_BASE_URL}${url}`, body ? JSON.stringify(body, null, 2) : '');
 
   const res = await fetch(`${API_BASE_URL}${url}`, {
     method,
@@ -22,13 +22,24 @@ async function fetcher<T>(url: string, method: HttpMethod = "GET", body?: Record
     body: body && (method === 'POST' || method === 'PUT' || method === 'DELETE') ? JSON.stringify(body) : undefined,
   });
 
+  console.log('API Response status:', res.status, res.statusText);
+
   if (!res.ok) {
-    toast.error(`API error: ${res.status} ${res.statusText}`);
-    console.error(`API error: ${res.status} ${res.statusText}`);
-    throw new Error(`${res.status} ${res.statusText}`);
+    let errorMessage = `${res.status} ${res.statusText}`;
+    try {
+      const errorData = await res.json();
+      console.error('API error data:', errorData);
+      errorMessage = errorData.message || errorMessage;
+    } catch (e) {
+      console.error('Could not parse error response:', e);
+    }
+    toast.error(`API error: ${errorMessage}`);
+    throw new Error(errorMessage);
   }
 
-  return res.json() as T;
+  const data = await res.json() as T;
+  console.log('API Response data:', data);
+  return data;
 }
 
 export const api = {

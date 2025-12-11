@@ -555,10 +555,10 @@ export function DataTable({
   }, [initialData]);
 
   async function handleAddFlight() {
-    const user = await api
+    await api
       .get<{ airline_code?: string }>("/users/me")
       .catch(() => null);
-    const userIataCode = user?.airline_code ?? null;
+    // const userIataCode = user?.airline_code ?? null;
   }
 
   function TableSkeleton() {

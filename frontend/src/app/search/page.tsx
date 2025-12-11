@@ -14,10 +14,41 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
+interface FlightSection {
+  id_airline_routes: number;
+  next_id: number | null;
+  arrival_time: string;
+  departure_time: string;
+  section: {
+    code_arrival_airport: string;
+    code_departure_airport: string;
+    id_routes_section: number;
+  };
+}
+
+interface Flight {
+  id_flight: number;
+  airline: {
+    iata_code: string;
+    name: string;
+  };
+  price: number | null;
+  route_code: string;
+  scheduled_arrival_day: string;
+  scheduled_departure_day: string;
+  sections: FlightSection[];
+}
+
+interface FlightSearchResponse {
+  outbound_flights: Flight[];
+  return_flights?: Flight[];
+}
+
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [flights, setFlights] = useState<Flight[]>([]);
+  const [outboundFlights, setOutboundFlights] = useState<Flight[]>([]);
+  const [returnFlights, setReturnFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('departure_time');
@@ -50,27 +81,56 @@ export default function SearchResultsPage() {
         const origin = searchParams.get('origin') || '';
         const destination = searchParams.get('destination') || '';
         const departure_date = searchParams.get('departure_date') || '';
+        const return_date = searchParams.get('return_date') || '';
+        const flightClass = searchParams.get('class') || 'Economy';
 
-        const query = new URLSearchParams();
-        if (origin) query.append('origin', origin);
-        if (destination) query.append('destination', destination);
-        if (departure_date) query.append('departure_date', departure_date);
-        query.append('sort_by', sortBy);
-        query.append('sort_order', sortOrder);
+        console.log('Search params:', { origin, destination, departure_date, return_date, flightClass });
 
-        const data = await api.get<Flight[]>(`/flights/search?${query.toString()}`);
-        setFlights(data);
+        if (!origin || !destination || !departure_date) {
+          toast.error('Missing required search parameters');
+          setLoading(false);
+          return;
+        }
+
+        const classMapping: Record<string, number> = {
+          Economy: 1,
+          Premium: 2,
+          Business: 3,
+          First: 4,
+        };
+
+        // Check if return_date exists and is a valid date string
+        const hasReturnDate = Boolean(return_date && return_date.trim() !== '');
+
+        const requestBody = {
+          departure_airport: origin,
+          arrival_airport: destination,
+          departure_date_outbound: departure_date,
+          departure_date_return: hasReturnDate ? return_date : null,
+          round_trip_flight: hasReturnDate,
+          direct_flights: false,
+          id_class: classMapping[flightClass] || 1,
+        };
+
+        console.log('Searching flights with:', requestBody);
+
+        const data = await api.post<FlightSearchResponse>('/flight/search', requestBody);
+        
+        console.log('Flight search response:', data);
+        
+        setOutboundFlights(data.outbound_flights || []);
+        setReturnFlights(data.return_flights || []);
         setLoading(false);
       } catch (error: Error | unknown) {
+        console.error('Flight search error:', error);
+        setError((error as Error).message || 'Failed to fetch flights');
         toast.error((error as Error).message || 'Failed to fetch flights');
+        setLoading(false);
       }
-        // } finally {
-      //   setLoading(false);
-      // }
     };
 
     fetchFlights();
-  }, [searchParams, sortBy, sortOrder]);
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen">
@@ -126,16 +186,99 @@ export default function SearchResultsPage() {
 
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      {!loading && flights.length === 0 && !error && (
+      {!loading && outboundFlights.length === 0 && !error && (
         <p className="text-center text-muted-foreground">No flights found matching your criteria.</p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-        {flights.map((flight) => (
-          <></>
-          // <FlightCard key={flight.id} flight={flight} />
-        ))}
-      </div>
+      {!loading && outboundFlights.length > 0 && (
+        <div className="space-y-8 px-4">
+          <div>
+            <h2 className="text-3xl font-bold mb-4">Outbound Flights</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {outboundFlights.map((flight, idx) => (
+                <div key={idx} className="p-6 border rounded-lg bg-card hover:shadow-lg transition">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-bold text-lg">{flight.airline.name}</h3>
+                      <p className="text-sm text-muted-foreground">{flight.airline.iata_code}</p>
+                    </div>
+                    {flight.price && (
+                      <p className="text-2xl font-bold">${flight.price.toFixed(2)}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm"><strong>Route:</strong> {flight.route_code}</p>
+                    <p className="text-sm"><strong>Departure:</strong> {new Date(flight.scheduled_departure_day).toLocaleDateString()}</p>
+                    <p className="text-sm"><strong>Arrival:</strong> {new Date(flight.scheduled_arrival_day).toLocaleDateString()}</p>
+                    <p className="text-sm"><strong>Segments:</strong> {flight.sections.length}</p>
+                  </div>
+                  <div className="mt-4">
+                    {flight.sections.map((section, sIdx) => (
+                      <div key={sIdx} className="text-xs text-muted-foreground mb-1">
+                        {section.section.code_departure_airport} → {section.section.code_arrival_airport}
+                        <span className="ml-2">
+                          {new Date(section.departure_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                          {new Date(section.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <Button 
+                    className="w-full mt-4" 
+                    onClick={() => router.push(`/flight/book/${flight.id_flight}?type=outbound&origin=${searchParams.get('origin')}&destination=${searchParams.get('destination')}&departure_date=${flight.scheduled_departure_day}&class=${searchParams.get('class')}`)}
+                  >
+                    Select Flight
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {returnFlights.length > 0 && (
+            <div>
+              <h2 className="text-3xl font-bold mb-4">Return Flights</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {returnFlights.map((flight, idx) => (
+                  <div key={idx} className="p-6 border rounded-lg bg-card hover:shadow-lg transition">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg">{flight.airline.name}</h3>
+                        <p className="text-sm text-muted-foreground">{flight.airline.iata_code}</p>
+                      </div>
+                      {flight.price && (
+                        <p className="text-2xl font-bold">${flight.price.toFixed(2)}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm"><strong>Route:</strong> {flight.route_code}</p>
+                      <p className="text-sm"><strong>Departure:</strong> {new Date(flight.scheduled_departure_day).toLocaleDateString()}</p>
+                      <p className="text-sm"><strong>Arrival:</strong> {new Date(flight.scheduled_arrival_day).toLocaleDateString()}</p>
+                      <p className="text-sm"><strong>Segments:</strong> {flight.sections.length}</p>
+                    </div>
+                    <div className="mt-4">
+                      {flight.sections.map((section, sIdx) => (
+                        <div key={sIdx} className="text-xs text-muted-foreground mb-1">
+                          {section.section.code_departure_airport} → {section.section.code_arrival_airport}
+                          <span className="ml-2">
+                            {new Date(section.departure_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                            {new Date(section.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button 
+                      className="w-full mt-4"
+                      onClick={() => router.push(`/flight/book/${flight.id_flight}?type=return&origin=${searchParams.get('destination')}&destination=${searchParams.get('origin')}&departure_date=${flight.scheduled_departure_day}&class=${searchParams.get('class')}`)}
+                    >
+                      Select Flight
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

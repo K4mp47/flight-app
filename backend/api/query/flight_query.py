@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import sqlalchemy
 from sqlalchemy import select, or_, and_, true, func
-from flask_sqlalchemy.session import Session
+from sqlalchemy.orm import Session
 from collections import defaultdict, Counter
 
 from sqlalchemy.orm import aliased
@@ -39,7 +39,7 @@ def get_routes_assigned_to_aircraft(session: Session, id_aircraft: int) -> list[
         .distinct()
     )
     result = session.scalars(stmt).all()
-    return result if result else None
+    return list(result) if result else None
 
 def get_flight_for_search(session: Session, departure_airport: str, arrival_airport: str, departure_date, direct_flights, id_class: int):
     # STEP 1: Ottieni tutti i dettagli delle rotte
@@ -170,6 +170,70 @@ def get_flight_seat_blocks(session: Session, id_flight: int):
         for row in results
     ]
 
+def get_flight_seat_map(session: Session, id_flight: int):
+    """
+    Returns ALL seats for a flight's aircraft with occupancy status.
+    This includes available and occupied seats.
+    """
+    # Get the flight's aircraft
+    flight_stmt = select(Flight.id_aircraft).where(Flight.id_flight == id_flight)
+    id_aircraft = session.scalar(flight_stmt)
+    
+    if not id_aircraft:
+        return []
+    
+    # Get all seats for this aircraft's cabins
+    all_seats_stmt = (
+        select(
+            Cabin.id_cabin.label("id_cabin"),
+            Cabin.id_class.label("id_class"),
+            Cell.id_cell,
+            Cell.x,
+            Cell.y
+        )
+        .join(Cabin, Cell.id_cabin == Cabin.id_cabin)
+        .where(
+            Cabin.id_aircraft == id_aircraft,
+            Cell.is_seat == true()
+        )
+        .order_by(Cabin.id_cabin, Cell.y, Cell.x)
+    )
+    
+    all_seats = session.execute(all_seats_stmt).all()
+    
+    # Get occupied seats for this flight
+    occupied_seats_stmt = (
+        select(Ticket.id_seat)
+        .where(Ticket.id_flight == id_flight)
+    )
+    occupied_seat_ids = set(session.scalars(occupied_seats_stmt).all())
+    
+    # Group seats by cabin
+    cabin_map: dict[int, dict] = {}
+    
+    for seat in all_seats:
+        cabin_key = seat.id_cabin
+        is_occupied = seat.id_cell in occupied_seat_ids
+        
+        if cabin_key not in cabin_map:
+            cabin_map[cabin_key] = {
+                "id_cabin": seat.id_cabin,
+                "id_class": seat.id_class,
+                "occupied_seats": 0,
+                "seats": []
+            }
+        
+        if is_occupied:
+            cabin_map[cabin_key]["occupied_seats"] += 1
+        
+        cabin_map[cabin_key]["seats"].append({
+            "id_cell": seat.id_cell,
+            "x": seat.x,
+            "y": seat.y,
+            "occupied": is_occupied
+        })
+    
+    return list(cabin_map.values())
 def get_aircraft_by_seat_id(session: Session, id_seat: int) -> int | None:
     stmt = (
         select(Cabin.id_aircraft)

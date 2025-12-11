@@ -7,6 +7,7 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { CalendarIcon, ChevronsUpDown, PlaneTakeoff, PlaneLanding, Users } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,8 +32,10 @@ import {
 const FormSchema = z.object({
   dod: z.date({ required_error: "Date of departure required" }),
   dor: z.date({ required_error: "Date of return required" }),
-  dpc: z.string({ required_error: "Departure city required" }),
-  dpa: z.string({ required_error: "Arrival city required" }),
+  // dpc: z.string({ required_error: "Departure city required" }),
+  dpc: z.string().optional(),
+  // dpa: z.string({ required_error: "Arrival city required" }),
+  dpa: z.string().optional(),
   class: z.string({ required_error: "Class required" }),
   terms: z.boolean().default(false).optional(),
   adults: z.number().int().min(1, "At least 1 adult required."),
@@ -41,14 +44,22 @@ const FormSchema = z.object({
 });
 
 const cities = [
-  { value: "new-york", label: "New York" },
-  { value: "los-angeles", label: "Los Angeles" },
-  { value: "chicago", label: "Chicago" },
-  { value: "houston", label: "Houston" },
-  { value: "miami", label: "Miami" },
+  { value: "ABE", label: "Allentown (ABE)" },
+  { value: "ABJ", label: "Abidjan (ABJ)" },
+  { value: "ABQ", label: "Albuquerque (ABQ)" },
+  { value: "ABZ", label: "Aberdeen (ABZ)" },
+  { value: "ACC", label: "Accra (ACC)" },
+  { value: "ADA", label: "Adana (ADA)" },
+  { value: "ADD", label: "Addis Ababa (ADD)" },
+  { value: "ADL", label: "Adelaide (ADL)" },
+  { value: "AEP", label: "Buenos Aires Aeroparque (AEP)" },
+  { value: "AGP", label: "Malaga (AGP)" },
+  { value: "VCE", label: "Venice (VCE)" },
+  { value: "LHR", label: "London Heathrow (LHR)" },
 ];
 
 export function MainForm() {
+  const router = useRouter();
   const [openDeparture, setOpenDeparture] = useState(false);
   const [openArrival, setOpenArrival] = useState(false);
 
@@ -58,12 +69,41 @@ export function MainForm() {
       adults: 1,
       children: 0,
       infants: 0,
+      class: 'Economy',
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast.success("Flight search initiated!");
-    console.log(data);
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    if (!data.dpc || !data.dpa) {
+      toast.error("Please select departure and arrival cities");
+      return;
+    }
+
+    if (!data.class) {
+      toast.error("Please select a travel class");
+      return;
+    }
+
+    try {
+      const searchParams = new URLSearchParams({
+        origin: data.dpc,
+        destination: data.dpa,
+        departure_date: format(data.dod, "yyyy-MM-dd"),
+        return_date: format(data.dor, "yyyy-MM-dd"),
+        class: data.class,
+        adults: data.adults.toString(),
+        children: data.children.toString(),
+        infants: data.infants.toString(),
+      });
+
+      // Navigate to search results page with query parameters
+      router.push(`/search?${searchParams.toString()}`);
+      toast.success("Searching for flights...");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("An error occurred. Please try again.");
+    }
   }
 
   return (

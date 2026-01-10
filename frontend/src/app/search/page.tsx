@@ -82,7 +82,7 @@ export default function SearchResultsPage() {
         const destination = searchParams.get('destination') || '';
         const departure_date = searchParams.get('departure_date') || '';
         const return_date = searchParams.get('return_date') || '';
-        const flightClass = searchParams.get('class') || 'Economy';
+        const flightClass = searchParams.get('id_class');
 
         console.log('Search params:', { origin, destination, departure_date, return_date, flightClass });
 
@@ -91,13 +91,6 @@ export default function SearchResultsPage() {
           setLoading(false);
           return;
         }
-
-        const classMapping: Record<string, number> = {
-          Economy: 1,
-          Premium: 2,
-          Business: 3,
-          First: 4,
-        };
 
         // Check if return_date exists and is a valid date string
         const hasReturnDate = Boolean(return_date && return_date.trim() !== '');
@@ -109,7 +102,7 @@ export default function SearchResultsPage() {
           departure_date_return: hasReturnDate ? return_date : null,
           round_trip_flight: hasReturnDate,
           direct_flights: false,
-          id_class: classMapping[flightClass] || 1,
+          id_class: flightClass,
         };
 
         console.log('Searching flights with:', requestBody);

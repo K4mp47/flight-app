@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,40 +28,71 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { api } from "@/lib/api";
 
 const FormSchema = z.object({
   dod: z.date({ required_error: "Date of departure required" }),
   dor: z.date({ required_error: "Date of return required" }),
-  // dpc: z.string({ required_error: "Departure city required" }),
   dpc: z.string().optional(),
-  // dpa: z.string({ required_error: "Arrival city required" }),
   dpa: z.string().optional(),
-  class: z.string({ required_error: "Class required" }),
+  id_class: z.number({ required_error: "Class required" }),
   terms: z.boolean().default(false).optional(),
   adults: z.number().int().min(1, "At least 1 adult required."),
   children: z.number().int().min(0),
   infants: z.number().int().min(0),
 });
 
-const cities = [
-  { value: "ABE", label: "Allentown (ABE)" },
-  { value: "ABJ", label: "Abidjan (ABJ)" },
-  { value: "ABQ", label: "Albuquerque (ABQ)" },
-  { value: "ABZ", label: "Aberdeen (ABZ)" },
-  { value: "ACC", label: "Accra (ACC)" },
-  { value: "ADA", label: "Adana (ADA)" },
-  { value: "ADD", label: "Addis Ababa (ADD)" },
-  { value: "ADL", label: "Adelaide (ADL)" },
-  { value: "AEP", label: "Buenos Aires Aeroparque (AEP)" },
-  { value: "AGP", label: "Malaga (AGP)" },
-  { value: "VCE", label: "Venice (VCE)" },
-  { value: "LHR", label: "London Heathrow (LHR)" },
-];
-
 export function MainForm() {
   const router = useRouter();
   const [openDeparture, setOpenDeparture] = useState(false);
   const [openArrival, setOpenArrival] = useState(false);
+  const [cities, setCities] = useState<{ label: string; value: string }[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+    loadCities(page);
+  }, [page]);
+
+  async function loadCities(pageToLoad: number) {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+
+    try {
+      const res = await api.get<{
+        airports: Airport[];
+        total_pages: number;
+      }>(`/airports/?page=${pageToLoad}&per_page=50`);
+
+      const mapped = res.airports.map(airport => ({
+        label: `${airport.city.name} (${airport.iata_code})`,
+        value: airport.iata_code,
+      }));
+
+      setCities(prev => [...prev, ...mapped]);
+
+      if (pageToLoad >= res.total_pages) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Error loading airports:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      if (hasMore && !loading) {
+        setPage(prev => prev + 1);
+      }
+    }
+  };
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -69,7 +100,7 @@ export function MainForm() {
       adults: 1,
       children: 0,
       infants: 0,
-      class: 'Economy',
+      id_class: 4,
     },
   });
 
@@ -80,7 +111,7 @@ export function MainForm() {
       return;
     }
 
-    if (!data.class) {
+    if (!data.id_class) {
       toast.error("Please select a travel class");
       return;
     }
@@ -91,7 +122,7 @@ export function MainForm() {
         destination: data.dpa,
         departure_date: format(data.dod, "yyyy-MM-dd"),
         return_date: format(data.dor, "yyyy-MM-dd"),
-        class: data.class,
+        id_class: data.id_class.toString(),
         adults: data.adults.toString(),
         children: data.children.toString(),
         infants: data.infants.toString(),
@@ -139,7 +170,8 @@ export function MainForm() {
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-full bg-[#1e2022]  p-0">
-                      <div className="flex flex-col">
+                      <div 
+                        className="flex flex-col max-h-90 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600" onScroll={handleScroll}>
                         {cities.map(city => (
                           <Button
                             key={city.value}
@@ -188,7 +220,7 @@ export function MainForm() {
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-full bg-[#1e2022]  p-0">
-                      <div className="flex flex-col">
+                      <div className="flex flex-col max-h-90 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600">
                         {cities.map(city => (
                           <Button
                             key={city.value}
@@ -267,28 +299,28 @@ export function MainForm() {
             {/* Class */}
             <FormField
               control={form.control}
-              name="class"
+              name="id_class"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-gray-300">Class</FormLabel>
                   <FormControl>
                     <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={field.value?.toString()}
                       className="grid grid-cols-2 gap-2 mt-2"
                     >
-                      {["First", "Business", "Premium", "Economy"].map(cls => (
-                        <FormItem
-                          key={cls}
+                      {["First", "Business", "Premium", "Economy"].map((cls, i) => (
+                        <div
+                          key={i}
                           className="flex items-center space-x-2 rounded-md bg-[#1e2022] border px-3 py-2 hover:bg-[#303336] transition"
                         >
                           <FormControl>
-                            <RadioGroupItem value={cls} />
+                            <RadioGroupItem value={(i+1).toString()} />
                           </FormControl>
-                          <FormLabel className="text-sm text-gray-200 font-normal">
+                          <label className="text-sm text-gray-200 font-normal cursor-pointer flex-1">
                             {cls}
-                          </FormLabel>
-                        </FormItem>
+                          </label>
+                        </div>
                       ))}
                     </RadioGroup>
                   </FormControl>

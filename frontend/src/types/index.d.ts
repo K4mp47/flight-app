@@ -6,6 +6,17 @@ interface User {
   airline_code: string
 }
 
+interface Airport {
+  city: {
+    id_city: number
+    name: string
+  }
+  iata_code: string
+  latitude: number
+  longitude: number
+  name: string
+}
+
 interface Data {
   access_token: string
   message?: string
@@ -26,7 +37,7 @@ interface Aircraft {
       id_manufacturer: number;
       name: string;
     };
-    max_economy_seats: number;
+    max_seats: number;
     name: string;
   };
   airline: {

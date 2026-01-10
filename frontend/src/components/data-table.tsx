@@ -130,7 +130,7 @@ export function DataTable({
       ),
     },
     {
-      accessorKey: "aircraft.max_economy_seats",
+      accessorKey: "aircraft.max_seats",
       header: () => <div className="w-full">Max Economy Seats</div>,
       cell: ({ row }) => (
         <form
@@ -153,7 +153,7 @@ export function DataTable({
             variant="outline"
             className="text-muted-foreground px-1.5 mr-2"
           >
-            {row.original?.aircraft?.max_economy_seats || 0}
+            {row.original?.aircraft?.max_seats || 0}
           </Badge>
         </form>
       ),

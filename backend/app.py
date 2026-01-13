@@ -29,7 +29,12 @@ def create_app():
     }
     swagger = Swagger(app, template=template)
     app.config.from_object(Config)
-    CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+    CORS(app, 
+         resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"]}},
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+         expose_headers=["Content-Type", "Authorization"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"])
     register_routes(app)
     jwt = JWTManager(app)
 
@@ -41,4 +46,4 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run()
+    app.run(port=5001)

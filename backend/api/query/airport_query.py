@@ -1,4 +1,5 @@
 from sqlalchemy import select, func
+from sqlalchemy.orm import joinedload
 from flask_sqlalchemy.session import Session
 from ..models.airport import Airport
 
@@ -11,7 +12,13 @@ def get_airport_by_iata_code(session: Session,iata_code):
 def get_all_airports_paginated(session: Session, page: int = 1, per_page: int = 50):
     """Get all airports with pagination"""
     offset = (page - 1) * per_page
-    stmt = select(Airport).offset(offset).limit(per_page)
+    stmt = select(Airport).options(joinedload(Airport.city)).offset(offset).limit(per_page)
+    result = session.scalars(stmt).all()
+    return result
+
+def get_all_airports_without_pagination(session: Session):
+    """Get all airports without pagination"""
+    stmt = select(Airport).options(joinedload(Airport.city))
     result = session.scalars(stmt).all()
     return result
 

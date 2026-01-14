@@ -29,15 +29,23 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { api } from "@/lib/api";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 const FormSchema = z.object({
-  dod: z.date({ required_error: "Date of departure required" }),
-  dor: z.date({ required_error: "Date of return required" }),
-  dpc: z.string().optional(),
-  dpa: z.string().optional(),
-  id_class: z.number({ required_error: "Class required" }),
+  dod: z.date({ required_error: "Date of departure is required." }),
+  dor: z.date().optional(),
+  dpc: z.string({ required_error: "Departure city is required." }),
+  dpa: z.string({ required_error: "Arrival city is required." }),
+  id_class: z.number({ required_error: "Class selection is required." }),
   terms: z.boolean().default(false).optional(),
-  adults: z.number().int().min(1, "At least 1 adult required."),
+  adults: z.number().int().min(1, "At least one adult is required."),
   children: z.number().int().min(0),
   infants: z.number().int().min(0),
 });
@@ -47,52 +55,33 @@ export function MainForm() {
   const [openDeparture, setOpenDeparture] = useState(false);
   const [openArrival, setOpenArrival] = useState(false);
   const [cities, setCities] = useState<{ label: string; value: string }[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
 
 
   useEffect(() => {
-    loadCities(page);
-  }, [page]);
+    loadCities();
+  }, []);
 
-  async function loadCities(pageToLoad: number) {
-    if (loading || !hasMore) return;
-
-    setLoading(true);
-
+  async function loadCities() {
+    setLoadingCities(true);
     try {
       const res = await api.get<{
         airports: Airport[];
-        total_pages: number;
-      }>(`/airports/?page=${pageToLoad}&per_page=50`);
+      }>(`/airports/?all=true`);
 
       const mapped = res.airports.map(airport => ({
         label: `${airport.city.name} (${airport.iata_code})`,
         value: airport.iata_code,
       }));
 
-      setCities(prev => [...prev, ...mapped]);
+      setCities(mapped);
 
-      if (pageToLoad >= res.total_pages) {
-        setHasMore(false);
-      }
     } catch (error) {
       console.error("Error loading airports:", error);
     } finally {
-      setLoading(false);
+      setLoadingCities(false);
     }
   }
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
-      if (hasMore && !loading) {
-        setPage(prev => prev + 1);
-      }
-    }
-  };
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -121,7 +110,7 @@ export function MainForm() {
         origin: data.dpc,
         destination: data.dpa,
         departure_date: format(data.dod, "yyyy-MM-dd"),
-        return_date: format(data.dor, "yyyy-MM-dd"),
+        ...(data.dor && { return_date: format(data.dor, "yyyy-MM-dd") }),
         id_class: data.id_class.toString(),
         adults: data.adults.toString(),
         children: data.children.toString(),
@@ -157,6 +146,7 @@ export function MainForm() {
                       <FormControl>
                         <Button
                           variant="outline"
+                          role="combobox"
                           className={cn(
                             "w-full justify-between text-left font-normal h-12 bg-[#1e2022] text-white hover:bg-gray-700 transition",
                             !field.value && "text-gray-400"
@@ -169,23 +159,27 @@ export function MainForm() {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full bg-[#1e2022]  p-0">
-                      <div 
-                        className="flex flex-col max-h-90 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600" onScroll={handleScroll}>
-                        {cities.map(city => (
-                          <Button
-                            key={city.value}
-                            variant="ghost"
-                            className="justify-start text-gray-200 hover:bg-gray-800"
-                            onClick={() => {
-                              field.onChange(city.value);
-                              setOpenDeparture(false);
-                            }}
-                          >
-                            {city.label}
-                          </Button>
-                        ))}
-                      </div>
+                    <PopoverContent className="w-full bg-[#1e2022] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search city..." />
+                        <CommandList>
+                          <CommandEmpty>No city found.</CommandEmpty>
+                          <CommandGroup>
+                            {cities.map(city => (
+                              <CommandItem
+                                key={city.value}
+                                value={city.value}
+                                onSelect={currentValue => {
+                                  field.onChange(currentValue === field.value ? "" : currentValue);
+                                  setOpenDeparture(false);
+                                }}
+                              >
+                                {city.label}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -207,6 +201,7 @@ export function MainForm() {
                       <FormControl>
                         <Button
                           variant="outline"
+                          role="combobox"
                           className={cn(
                             "w-full justify-between text-left font-normal h-12 bg-[#1e2022] text-white hover:bg-gray-700 transition",
                             !field.value && "text-gray-400"
@@ -219,22 +214,27 @@ export function MainForm() {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full bg-[#1e2022]  p-0">
-                      <div className="flex flex-col max-h-90 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600">
-                        {cities.map(city => (
-                          <Button
-                            key={city.value}
-                            variant="ghost"
-                            className="justify-start text-gray-200 hover:bg-gray-800"
-                            onClick={() => {
-                              field.onChange(city.value);
-                              setOpenArrival(false);
-                            }}
-                          >
-                            {city.label}
-                          </Button>
-                        ))}
-                      </div>
+                    <PopoverContent className="w-full bg-[#1e2022] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search city..." />
+                        <CommandList>
+                          <CommandEmpty>No city found.</CommandEmpty>
+                          <CommandGroup>
+                            {cities.map(city => (
+                              <CommandItem
+                                key={city.value}
+                                value={city.value}
+                                onSelect={currentValue => {
+                                  field.onChange(currentValue === field.value ? "" : currentValue);
+                                  setOpenArrival(false);
+                                }}
+                              >
+                                {city.label}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -315,7 +315,7 @@ export function MainForm() {
                           className="flex items-center space-x-2 rounded-md bg-[#1e2022] border px-3 py-2 hover:bg-[#303336] transition"
                         >
                           <FormControl>
-                            <RadioGroupItem value={(i+1).toString()} />
+                            <RadioGroupItem value={(i + 1).toString()} />
                           </FormControl>
                           <label className="text-sm text-gray-200 font-normal cursor-pointer flex-1">
                             {cls}

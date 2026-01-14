@@ -42,7 +42,14 @@ def get_fleet_aircraft_by_id(session: Session, id_aircraft_airline: int):
 def get_fleet_by_airline_code(session: Session,airline_code: str):
     stmt = select(Aircraft_airline).where(Aircraft_airline.airline_code == airline_code)
     result = session.execute(stmt).scalars().all()
-    return [aircraft_airline.to_dict() for aircraft_airline in result]
+    
+    fleet_data = []
+    for aircraft_airline in result:
+        aircraft_dict = aircraft_airline.to_dict()
+        aircraft_dict['used_seats'] = number_seat_aircraft(session, aircraft_airline.id_aircraft_airline)
+        fleet_data.append(aircraft_dict)
+        
+    return fleet_data
 
 def number_seat_aircraft(session: Session,id_aircraft_airline: int) -> int:
    

@@ -171,14 +171,32 @@ responses:
 @airport_bp.route("/", methods=["GET"])
 def get_all_airports():
     """
-Get all airports with pagination
+Get all airports with pagination or all airports
 ---
 tags:
   - Airports
 summary: Get all airports
 description: |
   Returns a list of all airports in the database, including city, IATA code, latitude, and longitude.
+  Supports pagination by default. To retrieve all airports at once, include the query parameter `all=true`.
 
+parameters:
+  - name: page
+    in: query
+    type: integer
+    description: Page number for pagination (default: 1)
+    default: 1
+  - name: per_page
+    in: query
+    type: integer
+    description: Number of items per page for pagination (default: 50)
+    default: 50
+  - name: all
+    in: query
+    type: boolean
+    description: If true, returns all airports without pagination.
+    default: false
+    
 security:
   - Bearer: []
 
@@ -226,8 +244,10 @@ responses:
     session = SessionLocal()
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 50, type=int)
+    get_all = request.args.get('all', 'false').lower() == 'true'
+
     controller = Airport_controller(session)
-    result, status_code = controller.get_all_airports(page, per_page)
+    result, status_code = controller.get_all_airports(page, per_page, all=get_all)
     session.close()
     return jsonify(result), status_code
 

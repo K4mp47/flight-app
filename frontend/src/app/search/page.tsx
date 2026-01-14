@@ -1,5 +1,5 @@
-'use client';
-
+"use client";
+import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
@@ -54,6 +54,8 @@ export default function SearchResultsPage() {
   const [sortBy, setSortBy] = useState('departure_time');
   const [sortOrder, setSortOrder] = useState('asc'); // 'asc' or 'desc'
   const [companyuser, setCompanyuser] = useState(false);
+  const [selectedOutboundFlight, setSelectedOutboundFlight] = useState<Flight | null>(null);
+  const [selectedReturnFlight, setSelectedReturnFlight] = useState<Flight | null>(null);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -108,9 +110,9 @@ export default function SearchResultsPage() {
         console.log('Searching flights with:', requestBody);
 
         const data = await api.post<FlightSearchResponse>('/flight/search', requestBody);
-        
+
         console.log('Flight search response:', data);
-        
+
         setOutboundFlights(data.outbound_flights || []);
         setReturnFlights(data.return_flights || []);
         setLoading(false);
@@ -125,43 +127,45 @@ export default function SearchResultsPage() {
     fetchFlights();
   }, [searchParams]);
 
+  const total_price = (selectedOutboundFlight?.price || 0) + (selectedReturnFlight?.price || 0);
+
   return (
     <div className="min-h-screen">
       <Button variant="outline" className="fixed left-4 top-4 z-50 hover:cursor-pointer" onClick={() => router.back()}><IconArrowLeft /></Button>
       <MainNavBar companyuser={companyuser} />
-            <div className="relative">
-              <Image
-                src="/banner.svg"
-                alt="Logo"
-                width={1920}
-                height={1080}
-                className="w-full h-40 sm:h-60 md:h-80 object-cover"
-              />
-              <div className="absolute bottom-0 left-0 w-full h-30 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
-            </div>
+      <div className="relative">
+        <Image
+          src="/banner.svg"
+          alt="Logo"
+          width={1920}
+          height={1080}
+          className="w-full h-40 sm:h-60 md:h-80 object-cover"
+        />
+        <div className="absolute bottom-0 left-0 w-full h-30 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
+      </div>
       <h1 className="text-5 xl font-bold mb-6 w-full flex justify-center">Search Results</h1>
 
-      <div className="flex items-center space-x-4 mb-6 justify-center">
-        <div className="grid gap-2 dark:bg-gray-950 dark:shadow-gray-600">
+      <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 mb-6 justify-center">
+        <div className="grid gap-2">
           <Label htmlFor="sortBy">Sort By</Label>
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger id="sortBy" className="w-[180px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
-            <SelectContent className='dark:bg-gray-950 '>
+            <SelectContent>
               <SelectItem value="departure_time">Departure Time</SelectItem>
               <SelectItem value="price">Price</SelectItem>
               <SelectItem value="duration">Duration</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <div className="grid gap-1 dark:bg-gray-950 dark:shadow-gray-700">
+        <div className="grid gap-1">
           <Label htmlFor="sortOrder">Order</Label>
           <Select value={sortOrder} onValueChange={setSortOrder}>
             <SelectTrigger id="sortOrder" className="w-[180px]">
               <SelectValue placeholder="Order" />
             </SelectTrigger>
-            <SelectContent className='dark:bg-gray-950 '>
+            <SelectContent>
               <SelectItem value="asc">Ascending</SelectItem>
               <SelectItem value="desc">Descending</SelectItem>
             </SelectContent>
@@ -184,12 +188,18 @@ export default function SearchResultsPage() {
       )}
 
       {!loading && outboundFlights.length > 0 && (
-        <div className="space-y-8 px-4">
+        <div className="space-y-8 px-4 sm:px-6 lg:px-8">
           <div>
             <h2 className="text-3xl font-bold mb-4">Outbound Flights</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {outboundFlights.map((flight, idx) => (
-                <div key={idx} className="p-6 border rounded-lg bg-card hover:shadow-lg transition">
+                <div
+                  key={idx}
+                  className={cn(
+                    "p-6 border rounded-lg bg-card hover:shadow-lg transition",
+                    selectedOutboundFlight?.id_flight === flight.id_flight && "border-primary ring-2 ring-primary"
+                  )}
+                >
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="font-bold text-lg">{flight.airline.name}</h3>
@@ -210,17 +220,21 @@ export default function SearchResultsPage() {
                       <div key={sIdx} className="text-xs text-muted-foreground mb-1">
                         {section.section.code_departure_airport} → {section.section.code_arrival_airport}
                         <span className="ml-2">
-                          {new Date(section.departure_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                          {new Date(section.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                          {new Date(section.departure_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
+                          {new Date(section.arrival_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                     ))}
                   </div>
-                  <Button 
-                    className="w-full mt-4" 
-                    onClick={() => router.push(`/flight/book/${flight.id_flight}?type=outbound&origin=${searchParams.get('origin')}&destination=${searchParams.get('destination')}&departure_date=${flight.scheduled_departure_day}&class=${searchParams.get('class')}`)}
+                  <Button
+                    className="w-full mt-4"
+                    onClick={() =>
+                      setSelectedOutboundFlight(prev =>
+                        prev?.id_flight === flight.id_flight ? null : flight
+                      )
+                    }
                   >
-                    Select Flight
+                    {selectedOutboundFlight?.id_flight === flight.id_flight ? 'Deselect' : 'Select Flight'}
                   </Button>
                 </div>
               ))}
@@ -232,7 +246,13 @@ export default function SearchResultsPage() {
               <h2 className="text-3xl font-bold mb-4">Return Flights</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {returnFlights.map((flight, idx) => (
-                  <div key={idx} className="p-6 border rounded-lg bg-card hover:shadow-lg transition">
+                  <div
+                    key={idx}
+                    className={cn(
+                      "p-6 border rounded-lg bg-card hover:shadow-lg transition",
+                      selectedReturnFlight?.id_flight === flight.id_flight && "border-primary ring-2 ring-primary"
+                    )}
+                  >
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h3 className="font-bold text-lg">{flight.airline.name}</h3>
@@ -253,23 +273,52 @@ export default function SearchResultsPage() {
                         <div key={sIdx} className="text-xs text-muted-foreground mb-1">
                           {section.section.code_departure_airport} → {section.section.code_arrival_airport}
                           <span className="ml-2">
-                            {new Date(section.departure_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                            {new Date(section.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            {new Date(section.departure_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
+                            {new Date(section.arrival_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
                       ))}
                     </div>
-                    <Button 
+                    <Button
                       className="w-full mt-4"
-                      onClick={() => router.push(`/flight/book/${flight.id_flight}?type=return&origin=${searchParams.get('destination')}&destination=${searchParams.get('origin')}&departure_date=${flight.scheduled_departure_day}&class=${searchParams.get('class')}`)}
+                      onClick={() =>
+                        setSelectedReturnFlight(prev =>
+                          prev?.id_flight === flight.id_flight ? null : flight
+                        )
+                      }
                     >
-                      Select Flight
+                      {selectedReturnFlight?.id_flight === flight.id_flight ? 'Deselect' : 'Select Flight'}
                     </Button>
                   </div>
                 ))}
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Booking Summary */}
+      {selectedOutboundFlight && (
+        <div className="fixed bottom-0 left-0 right-0 bg-card border-t p-4 shadow-lg">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h3 className="font-bold">Your Selection</h3>
+              <div className="text-sm text-muted-foreground">
+                <p>Outbound: {selectedOutboundFlight.airline.name} ({selectedOutboundFlight.route_code})</p>
+                {selectedReturnFlight && (
+                  <p>Return: {selectedReturnFlight.airline.name} ({selectedReturnFlight.route_code})</p>
+                )}
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-lg font-bold">Total: ${total_price.toFixed(2)}</p>
+              <Button
+                onClick={() => router.push(`/flight/book?outboundFlightId=${selectedOutboundFlight.id_flight}${selectedReturnFlight ? `&returnFlightId=${selectedReturnFlight.id_flight}` : ''}`)}
+              >
+                Book Now
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -47,6 +47,7 @@ interface Aircraft {
   current_position: string;
   flying_towards: string | null;
   id_aircraft_airline: number;
+  used_seats?: number;
 }
 
 /** compatibilità col codice che usa `Routes[]` */

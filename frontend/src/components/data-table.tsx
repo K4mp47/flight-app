@@ -131,7 +131,7 @@ export function DataTable({
     },
     {
       accessorKey: "aircraft.max_seats",
-      header: () => <div className="w-full">Max Economy Seats</div>,
+      header: () => <div className="w-full">Max Seats</div>,
       cell: ({ row }) => (
         <form
           onSubmit={(e) => {
@@ -144,10 +144,10 @@ export function DataTable({
           }}
         >
           <Label
-            htmlFor={`${row.original.id_aircraft_airline}-max_economy_seats`}
+            htmlFor={`${row.original.id_aircraft_airline}-max_seats`}
             className="sr-only"
           >
-            Max Economy Seats
+            Max Seats
           </Label>
           <Badge
             variant="outline"
@@ -157,6 +157,18 @@ export function DataTable({
           </Badge>
         </form>
       ),
+    },
+    {
+      accessorKey: "used_seats",
+      header: "Used Seats",
+      cell: ({ row }) => (
+        <Badge
+          variant="outline"
+          className="text-muted-foreground px-1.5 mr-2"
+        >
+          {row.original?.used_seats || 0}
+        </Badge>
+      )
     },
     {
       accessorKey: "airline.name",
@@ -406,7 +418,7 @@ export function DataTable({
     pageIndex: 0,
     pageSize: 10,
   });
-  
+
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
@@ -415,7 +427,7 @@ export function DataTable({
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(() => {
     if (!Array.isArray(data)) return [];
-    
+
     return data.map((item, index) => {
       if ('id_aircraft_airline' in item) {
         return String((item as Aircraft).id_aircraft_airline);
@@ -682,7 +694,7 @@ export function DataTable({
               </Dialog>
             )}
             {view === "Flights" && (
-               <Dialog>
+              <Dialog>
                 <DialogTrigger asChild>
                   <Button
                     className="hidden lg:flex"
@@ -733,9 +745,9 @@ export function DataTable({
                               {header.isPlaceholder
                                 ? null
                                 : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                  )}
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
                             </TableHead>
                           );
                         })}
@@ -850,7 +862,7 @@ export function DataTable({
 
       {/* Dialogs */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="min-w-4xl">
+        <DialogContent className="min-w-4xl max-h-[80vh] overflow-y-auto p-6">
           <DialogHeader>
             <DialogTitle>SeatMap Setup</DialogTitle>
             <DialogDescription>

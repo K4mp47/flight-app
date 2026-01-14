@@ -53,19 +53,29 @@ class Airport_controller:
         except Exception as e:
             return {"message": f"Error retrieving airport: {str(e)}"}, 500
 
-    def get_all_airports(self, page: int = 1, per_page: int = 50):
-        """Get all airports with pagination - All roles"""
+    def get_all_airports(self, page: int = 1, per_page: int = 50, all: bool = False):
+        """Get all airports with pagination or all airports if 'all' is True - All roles"""
         try:
-            airports = get_all_airports_paginated(self.session, page, per_page)
-            total_count = get_airports_count(self.session)
+            if all:
+                airports = get_all_airports_without_pagination(self.session)
+                return {
+                    "airports": [airport.to_dict() for airport in airports],
+                    "total": len(airports),
+                    "page": 1,
+                    "per_page": len(airports),
+                    "total_pages": 1
+                }, 200
+            else:
+                airports = get_all_airports_paginated(self.session, page, per_page)
+                total_count = get_airports_count(self.session)
 
-            return {
-                "airports": [airport.to_dict() for airport in airports],
-                "total": total_count,
-                "page": page,
-                "per_page": per_page,
-                "total_pages": (total_count + per_page - 1) // per_page
-            }, 200
+                return {
+                    "airports": [airport.to_dict() for airport in airports],
+                    "total": total_count,
+                    "page": page,
+                    "per_page": per_page,
+                    "total_pages": (total_count + per_page - 1) // per_page
+                }, 200
 
         except Exception as e:
             return {"message": f"Error retrieving airports: {str(e)}"}, 500

@@ -13,75 +13,147 @@ import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2, Check, ChevronsUpDown } from "lucide-react"; // Added Loader2, Check, ChevronsUpDown
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { useState } from "react";
+import React, { useState, useEffect } from "react"; // Changed import to React, { useState, useEffect }
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command"; // Added Command imports
 
 const formSchema = z.object({
   airline_code: z.string().min(2).max(3),
-  aircraft_id: z.coerce.number().min(1).max(9999),
-  number_route: z.string().min(1).max(9999),
+  aircraft_id: z.number({ required_error: "Aircraft is required" }), // Changed to number and required
+  route_code: z.string({ required_error: "Route is required" }), // Changed to required
   outbound: z.date({
     required_error: "Departure date is required",
   }),
   return_: z.date({
-    required_error: "Return date is required", 
+    required_error: "Return date is required",
   }),
 });
 
 type FlightFormValues = z.infer<typeof formSchema>;
 
-export default function FlightCreationForm({
-  airlineCode,
-}: {
-  airlineCode?: string;
-}) {
+export default function FlightCreationForm() { // Removed airlineCode prop
   const form = useForm<FlightFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      airline_code: airlineCode || "AZ",
-      aircraft_id: undefined ,
-      number_route: undefined,
+      airline_code: "", // Will be fetched
+      aircraft_id: undefined,
+      route_code: "",
       outbound: undefined,
       return_: undefined,
     },
   });
 
-  // Separate state for each date picker
   const [dodOpen, setDodOpen] = useState(false);
   const [dorOpen, setDorOpen] = useState(false);
+  const [userAirlineCode, setUserAirlineCode] = useState<string | null>(null);
+  const [availableAircraft, setAvailableAircraft] = useState<any[]>([]);
+  const [availableRoutes, setAvailableRoutes] = useState<any[]>([]);
+  const [loadingAircraft, setLoadingAircraft] = useState(true);
+  const [loadingRoutes, setLoadingRoutes] = useState(true);
+  const [loadingAirlineCode, setLoadingAirlineCode] = useState(true);
+
+  // Fetch user's airline code
+  useEffect(() => {
+    async function fetchUserAirlineCode() {
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1];
+
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (payload.airline_code) {
+            setUserAirlineCode(payload.airline_code);
+            form.setValue("airline_code", payload.airline_code);
+          } else {
+            toast.error("User is not assigned to an airline.");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        toast.error("Failed to retrieve user airline information.");
+      } finally {
+        setLoadingAirlineCode(false);
+      }
+    }
+    fetchUserAirlineCode();
+  }, []);
+
+  // Fetch available aircraft and routes when userAirlineCode is set
+  useEffect(() => {
+    async function fetchData() {
+      if (!userAirlineCode) return;
+
+      // Fetch aircraft
+      setLoadingAircraft(true);
+      try {
+        const aircraftRes = await api.get<any[]>(`/airline/${userAirlineCode}/fleet`);
+        setAvailableAircraft(aircraftRes);
+      } catch (error) {
+        console.error("Error fetching aircraft:", error);
+        toast.error("Failed to load available aircraft.");
+      } finally {
+        setLoadingAircraft(false);
+      }
+
+      // Fetch routes
+      setLoadingRoutes(true);
+      try {
+        const routesRes = await api.get<{routes: any[]}>(`/airline/${userAirlineCode}/route`);
+        setAvailableRoutes(routesRes.routes);
+      } catch (error) {
+        console.error("Error fetching routes:", error);
+        toast.error("Failed to load available routes.");
+      } finally {
+        setLoadingRoutes(false);
+      }
+    }
+    fetchData();
+  }, [userAirlineCode]);
 
   async function onSubmit(data: FlightFormValues) {
     try {
+      if (!userAirlineCode) {
+        toast.error("Airline code not found for user.");
+        return;
+      }
       console.log("Submitting flight data:", data);
       
-      // Format the dates for API
       const payload = {
-        airline_code: data.airline_code.toUpperCase(),
+        airline_code: userAirlineCode,
         aircraft_id: data.aircraft_id,
         flight_schedule: [
           {
             outbound: format(data.outbound, "yyyy-MM-dd"),
             return_: format(data.return_, "yyyy-MM-dd"),
-          }
-          // Add more objects here if you want to support multiple flight schedules
+          },
         ],
       };
 
       console.log("API Payload:", payload);
 
-      // Make the API callflights/create
-      await api.post(`/airline/route/${data.number_route.toUpperCase()}/add-flight`, payload); // Update with your actual endpoint
+      await api.post(`/airline/route/${data.route_code}/add-flight`, payload);
       
       toast.success("Flight created successfully!");
+      form.reset({
+        airline_code: userAirlineCode,
+        aircraft_id: undefined,
+        route_code: "",
+        outbound: undefined,
+        return_: undefined,
+      }); // Reset form with airline_code preserved
       
-      // Reset form after successful submission
-      form.reset();
-      
-      // Close dialog if needed
       document.getElementById("close-flight-dialog")?.click();
       
     } catch (error: unknown) {
@@ -97,40 +169,146 @@ export default function FlightCreationForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 w-full items-center gap-4">
-          {/* NUMBER OF AIRCRAFT */}
+          {/* Airline Code (Read-only/Hidden) */}
           <FormField
             control={form.control}
-            name="aircraft_id"
+            name="airline_code"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Number of Aircraft</FormLabel>
+              <FormItem className="col-span-2">
+                <FormLabel>Airline Code</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="e.g., 10" 
-                    {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                  />
+                  <Input {...field} disabled readOnly />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* NUMBER OF ROUTES */}
+          {/* Aircraft ID Dropdown */}
           <FormField
             control={form.control}
-            name="number_route"
+            name="aircraft_id"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Code of the Route</FormLabel>
-                <FormControl>
-                  <Input  
-                    placeholder="e.g., 20" 
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                  />
-                </FormControl>
+              <FormItem className="flex flex-col">
+                <FormLabel>Aircraft</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground"
+                        )}
+                        disabled={loadingAircraft || loadingAirlineCode}
+                      >
+                        {loadingAircraft ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : field.value ? (
+                          availableAircraft.find(
+                            (aircraft) => aircraft.id_aircraft_airline === field.value
+                          )?.aircraft.name + " (" + availableAircraft.find(
+                            (aircraft) => aircraft.id_aircraft_airline === field.value
+                          )?.id_aircraft_airline + ")"
+                        ) : (
+                          "Select aircraft"
+                        )}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search aircraft..." />
+                      <CommandEmpty>No aircraft found.</CommandEmpty>
+                      <CommandGroup>
+                        {availableAircraft.map((aircraft) => (
+                          <CommandItem
+                            value={aircraft.aircraft.name + " (" + aircraft.id_aircraft_airline + ")"}
+                            key={aircraft.id_aircraft_airline}
+                            onSelect={() => {
+                              form.setValue("aircraft_id", aircraft.id_aircraft_airline);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                aircraft.id_aircraft_airline === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {aircraft.aircraft.name} ({aircraft.id_aircraft_airline})
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Route Code Dropdown */}
+          <FormField
+            control={form.control}
+            name="route_code"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Route</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground"
+                        )}
+                        disabled={loadingRoutes || loadingAirlineCode}
+                      >
+                        {loadingRoutes ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : field.value ? (
+                          availableRoutes.find(
+                            (route) => route.route_code === field.value
+                          )?.route_code
+                        ) : (
+                          "Select route"
+                        )}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search route..." />
+                      <CommandEmpty>No route found.</CommandEmpty>
+                      <CommandGroup>
+                        {availableRoutes.map((route) => (
+                          <CommandItem
+                            value={route.route_code}
+                            key={route.route_code}
+                            onSelect={() => {
+                              form.setValue("route_code", route.route_code);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                route.route_code === field.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {route.route_code}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
@@ -254,9 +432,9 @@ export default function FlightCreationForm({
           <Button 
             type="submit" 
             className="w-full md:w-auto"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || loadingAirlineCode || loadingAircraft || loadingRoutes}
           >
-            {form.formState.isSubmitting ? "Creating..." : "Create Flight"}
+            {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create Flight"}
           </Button>
         </div>
       </form>

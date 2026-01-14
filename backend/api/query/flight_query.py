@@ -366,7 +366,11 @@ def get_flights_by_airline(session, airline_code: str):
             Route_detail.arrival_time.label("arrival_time"),
             Route.base_price.label("base_price"),
             func.to_char(
-                (Route_detail.arrival_time - Route_detail.departure_time),
+                (
+                    (Flight.scheduled_arrival_day + Route_detail.arrival_time)
+                    -
+                    (Flight.scheduled_departure_day + Route_detail.departure_time)
+                ),
                 "HH24:MI"
             ).label("duration"),
         )

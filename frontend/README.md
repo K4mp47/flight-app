@@ -1,36 +1,222 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend Codebase Structure
 
-## Getting Started
+This document describes the organization and architecture of the frontend codebase.
 
-First, run the development server:
+## Directory Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── dashboard/         # Admin/Airline dashboard
+│   ├── flight/           # Flight-related pages
+│   │   └── book/        # Flight booking page
+│   ├── login/           # Authentication page
+│   ├── profile/         # User profile page
+│   └── search/          # Flight search page
+│
+├── components/            # React components organized by feature
+│   ├── auth/            # Authentication components
+│   │   ├── login-form.tsx
+│   │   └── index.ts
+│   │
+│   ├── booking/         # Booking-related components
+│   │   ├── booking-summary-sidebar.tsx
+│   │   └── index.ts
+│   │
+│   ├── dashboard/       # Dashboard-specific components
+│   │   ├── chart-area-interactive.tsx
+│   │   ├── dashboard-form-flight.tsx
+│   │   ├── dashboard-form-routes.tsx
+│   │   ├── dashboard-form-seatmap.tsx
+│   │   ├── data-table.tsx
+│   │   ├── section-cards.tsx
+│   │   ├── site-header.tsx
+│   │   └── index.ts
+│   │
+│   ├── flight/          # Flight search and display components
+│   │   ├── airport-search-input.tsx
+│   │   ├── flight-card.tsx
+│   │   ├── flight-search-form.tsx
+│   │   └── index.ts
+│   │
+│   ├── layout/          # Navigation and layout components
+│   │   ├── app-sidebar.tsx
+│   │   ├── app-sidebar-user.tsx
+│   │   ├── MainNavBar.tsx
+│   │   ├── nav-main.tsx
+│   │   ├── nav-secondary.tsx
+│   │   ├── nav-user.tsx
+│   │   └── index.ts
+│   │
+│   ├── shared/          # Shared/reusable components
+│   │   ├── MainForm.tsx
+│   │   └── index.ts
+│   │
+│   └── ui/              # Shadcn UI components (primitives)
+│       ├── button.tsx
+│       ├── card.tsx
+│       └── ...
+│
+├── hooks/               # Custom React hooks
+│   ├── use-debounce.ts
+│   └── use-mobile.ts
+│
+├── lib/                 # Utility libraries
+│   ├── api.ts          # API client
+│   ├── constants.ts    # Application constants
+│   ├── token.ts        # Token utilities
+│   └── utils.ts        # General utilities
+│
+├── types/              # TypeScript type definitions
+│   └── index.d.ts
+│
+└── middleware.ts       # Next.js middleware
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Component Organization
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Feature-based Structure
+Components are organized by feature/domain rather than by type. This makes it easier to:
+- Find related components
+- Understand component responsibilities
+- Maintain feature-specific code
+- Scale the application
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Import Patterns
 
-## Learn More
+#### Preferred (using index exports):
+```typescript
+import { LoginForm } from '@/components/auth';
+import { FlightCard, FlightSearchForm } from '@/components/flight';
+import { MainNavBar } from '@/components/layout';
+```
 
-To learn more about Next.js, take a look at the following resources:
+#### Also acceptable (direct imports):
+```typescript
+import { LoginForm } from '@/components/auth/login-form';
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Directories Explained
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### `/app` - Next.js Pages
+- Uses App Router (Next.js 13+)
+- Each folder represents a route
+- `page.tsx` files are the route components
 
-## Deploy on Vercel
+### `/components/auth`
+Components related to authentication and authorization:
+- Login forms
+- Protected route wrappers
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### `/components/booking`
+Components specific to the flight booking flow:
+- Booking summary
+- Seat selection helpers
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### `/components/dashboard`
+Admin/Airline dashboard components:
+- Data tables
+- Forms for creating flights, routes, seatmaps
+- Charts and analytics
+
+### `/components/flight`
+Flight search and display components:
+- Flight cards
+- Search forms
+- Airport selection
+
+### `/components/layout`
+Navigation and app-wide layout components:
+- Sidebars
+- Navigation menus
+- Top navigation bar
+
+### `/components/shared`
+Truly shared components used across multiple features:
+- Generic forms
+- Common utilities
+
+### `/components/ui`
+Shadcn UI primitive components:
+- Buttons, inputs, cards, etc.
+- Should not be modified directly
+- Regenerated by Shadcn CLI
+
+## Best Practices
+
+### Adding New Components
+
+1. **Determine the feature domain** - Where does this component belong?
+2. **Create in appropriate directory** - Place in `auth/`, `flight/`, `booking/`, etc.
+3. **Export from index.ts** - Add to the feature's index file for clean imports
+4. **Use TypeScript** - Always type your props and state
+
+### Component Naming
+- Use PascalCase for component files: `FlightCard.tsx`
+- Match component name to file name
+- Be descriptive but concise
+
+### Import Organization
+```typescript
+// 1. External libraries
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
+// 2. Internal components (grouped by domain)
+import { FlightCard } from '@/components/flight';
+import { MainNavBar } from '@/components/layout';
+
+// 3. UI components
+import { Button } from '@/components/ui/button';
+
+// 4. Utilities and types
+import { api } from '@/lib/api';
+import type { Flight } from '@/types';
+
+// 5. Styles
+import styles from './styles.module.css';
+```
+
+### Constants and Configuration
+- Use `src/lib/constants.ts` for app-wide constants
+- Avoid magic numbers and strings in components
+- Type your constants with `as const` for type safety
+
+## File Naming Conventions
+
+- **Components**: PascalCase - `FlightCard.tsx`
+- **Utilities**: kebab-case - `use-debounce.ts`
+- **Types**: kebab-case - `index.d.ts`
+- **Config**: kebab-case - `next.config.ts`
+
+## State Management
+
+Currently using:
+- React hooks (`useState`, `useEffect`)
+- URL search params for shareable state
+- Cookies for authentication tokens
+
+Consider adding a state management library (Zustand, Redux) if state complexity grows.
+
+## API Integration
+
+- All API calls go through `src/lib/api.ts`
+- API client handles authentication headers
+- Error handling is centralized
+
+## TypeScript
+
+- Use strict mode
+- Define interfaces for all props
+- Avoid `any` types
+- Use type inference where appropriate
+
+## Future Improvements
+
+- [ ] Add unit tests for components
+- [ ] Implement E2E testing with Playwright
+- [ ] Add Storybook for component documentation
+- [ ] Consider state management library for complex state
+- [ ] Add error boundary components
+- [ ] Implement suspense boundaries for better loading states

@@ -30,10 +30,11 @@ type FlightCardProps = {
   className?: string;
   selectedClass?: number;
   onSelect?: () => void;
+  onDeselect?: () => void;
   isSelected?: boolean;
 }
 
-export function FlightCard({ flight, className, selectedClass = 4, onSelect, isSelected }: FlightCardProps) {
+export function FlightCard({ flight, className, selectedClass = 4, onSelect, onDeselect, isSelected }: FlightCardProps) {
   const router = useRouter();
 
   const departureTime = flight.sections?.[0]?.departure_time;
@@ -67,8 +68,15 @@ export function FlightCard({ flight, className, selectedClass = 4, onSelect, isS
   const duration = (departureTime && arrivalTime) ? calculateDuration(departureTime, arrivalTime) : "N/A";
 
   const handleSelectFlight = () => {
-    if (onSelect) {
-      // Selection mode for round-trip booking
+    if (onSelect && onDeselect) {
+      // Selection mode for round-trip booking - toggle
+      if (isSelected) {
+        onDeselect();
+      } else {
+        onSelect();
+      }
+    } else if (onSelect) {
+      // Selection mode without deselect
       onSelect();
     } else if (flight.id_flight) {
       // Direct navigation mode for one-way booking
@@ -79,44 +87,44 @@ export function FlightCard({ flight, className, selectedClass = 4, onSelect, isS
   };
 
   return (
-    <Card className={cn("w-full max-w-4xl mx-auto transition-all hover:shadow-lg hover:-translate-y-1", className)}>
-      <CardContent className="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+    <Card className={cn("w-full transition-all hover:shadow-lg hover:-translate-y-1", className)}>
+      <CardContent className="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 items-center">
 
         {/* Airline Info */}
-        <div className="md:col-span-3 flex items-center gap-4">
+        <div className="sm:col-span-2 lg:col-span-3 flex items-center gap-3 sm:gap-4">
           {/* If there were airline logos, they would go here. For now, just text. */}
-          <div className="flex flex-col">
-            <span className="font-semibold text-sm">{flight.airline.name}</span>
-            <span className="text-xs text-muted-foreground">Flight {flight.route_code}</span>
+          <div className="flex flex-col min-w-0">
+            <span className="font-semibold text-sm truncate">{flight.airline.name}</span>
+            <span className="text-xs text-muted-foreground truncate">Flight {flight.route_code}</span>
           </div>
         </div>
 
-        {/* Flight Timeline */}
-        <div className="md:col-span-6 flex items-center justify-center text-sm">
+        {/* Flight Timeline - Responsive */}
+        <div className="sm:col-span-2 lg:col-span-6 flex items-center justify-center text-xs sm:text-sm">
           <div className="flex flex-col items-center text-center">
-            <span className="font-bold text-lg">{departureTime?.substring(0, 5)}</span> {/* Display HH:MM */}
-            <span className="text-muted-foreground">{departureCode}</span>
+            <span className="font-bold text-base sm:text-lg">{departureTime?.substring(0, 5)}</span> {/* Display HH:MM */}
+            <span className="text-muted-foreground text-xs truncate">{departureCode}</span>
           </div>
-          <div className="flex-1 mx-4 flex flex-col items-center">
-            <div className="w-full h-px bg-border relative">
-              <Plane className="w-12 h-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-card px-1 text-primary" />
+          <div className="flex-1 mx-2 sm:mx-4 flex flex-col items-center">
+            <div className="w-full h-px bg-border relative md:mb-5 mb-3">
+              <Plane className="w-8 h-8 sm:w-12 sm:h-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-card px-1 text-primary" />
             </div>
             <span className="text-xs text-muted-foreground mt-1">{duration}</span>
           </div>
           <div className="flex flex-col items-center text-center">
-            <span className="font-bold text-lg">{arrivalTime?.substring(0, 5)}</span> {/* Display HH:MM */}
-            <span className="text-muted-foreground">{arrivalCode}</span>
+            <span className="font-bold text-base sm:text-lg">{arrivalTime?.substring(0, 5)}</span> {/* Display HH:MM */}
+            <span className="text-muted-foreground text-xs truncate">{arrivalCode}</span>
           </div>
         </div>
 
-        {/* Price and CTA */}
-        <div className="md:col-span-3 flex flex-col items-end justify-center gap-2 text-right">
+        {/* Price and CTA - Responsive */}
+        <div className="sm:col-span-2 lg:col-span-3 flex flex-col items-end justify-center gap-2 text-right">
           <div className="flex flex-col items-end">
-            <span className="font-bold text-xl">${flight.base_price}</span>
+            <span className="font-bold text-lg sm:text-xl">${flight.base_price}</span>
             <span className="text-xs text-muted-foreground">per person</span>
           </div>
           {/* isBestValue is not available from backend */}
-          <Button className="w-full mt-2 md:w-auto" onClick={handleSelectFlight}>
+          <Button className="w-full sm:w-auto mt-2" onClick={handleSelectFlight} size="sm">
             {isSelected ? 'Selected ✓' : (onSelect ? 'Select Flight' : 'Book Flight')}
           </Button>
         </div>

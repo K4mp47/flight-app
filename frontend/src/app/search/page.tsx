@@ -47,6 +47,8 @@ export default function SearchPage() {
     const [isRoundTrip, setIsRoundTrip] = useState(false);
     const [selectedOutbound, setSelectedOutbound] = useState<number | null>(null);
     const [selectedReturn, setSelectedReturn] = useState<number | null>(null);
+    const [adults, setAdults] = useState<number>(1);
+    const [children, setChildren] = useState<number>(0);
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -85,6 +87,8 @@ export default function SearchPage() {
         setSelectedReturn(null);
         setSelectedFlightClass(params.flightClass); // Store selected class
         setIsRoundTrip(params.tripType === 'round-trip');
+        setAdults(params.adults);
+        setChildren(params.children);
         try {
             const payload = {
                 departure_airport: params.origin,
@@ -117,7 +121,7 @@ export default function SearchPage() {
             <MainNavBar companyuser={companyuser} />
             
             {/* Hero Section */}
-            <div className="relative h-[400px] md:h-[450px] flex items-center justify-center">
+            <div className="relative h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] flex items-center justify-center shadow-2xl">
                 <Image
                     src="/banner.svg"
                     alt="Scenic landscape"
@@ -126,33 +130,38 @@ export default function SearchPage() {
                     className="z-0"
                 />
                 <div className="absolute inset-0 bg-black/50 z-0" /> {/* Darker overlay */}
-                <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">Find Your Next Adventure</h1>
-                    <p className="text-lg md:text-xl text-gray-200 mb-8">Book flights to anywhere in the world.</p>
+                {/* Shadow gradient at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-black/60 to-transparent z-1" />
+                <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-3 sm:px-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 drop-shadow-lg">Find Your Next Adventure</h1>
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 mb-4 sm:mb-8">Book flights to anywhere in the world.</p>
                 </div>
                 {/* Search Form positioned slightly overlapping the hero */}
-                <div className="absolute bottom-0 translate-y-3/4 w-full max-w-6xl z-20">
-                    <FlightSearchForm onSearch={handleSearch} />
+                <div className="absolute bottom-0 translate-y-3/4 w-full px-3 sm:px-4 z-20 flex justify-center">
+                    <div className="w-full max-w-6xl">
+                        <FlightSearchForm onSearch={handleSearch} />
+                    </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8 bg-background"> {/* Adjusted padding-top */}
+            <main className="w-full pt-32 sm:pt-36 md:pt-40 pb-8 sm:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 bg-background">
+                <div className="max-w-7xl mx-auto md:mt-8 mt-40">
                 
                 {/* Outbound Flights */}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold mb-6">{isRoundTrip ? 'Outbound Flights' : 'Available Flights'}</h2>
-                    <div className="space-y-4">
+                <div className="mb-8 sm:mb-12">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">{isRoundTrip ? 'Outbound Flights' : 'Available Flights'}</h2>
+                    <div className="space-y-3 sm:space-y-4">
                         {loading ? (
                             Array.from({ length: 4 }).map((_, i) => (
-                               <Card key={i} className="p-4">
-                                   <div className="flex items-center space-x-4">
-                                       <Skeleton className="h-12 w-12 rounded-full" />
-                                       <div className="space-y-2 flex-1">
+                               <Card key={i} className="p-3 sm:p-4">
+                                   <div className="flex items-center space-x-3 sm:space-x-4">
+                                       <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex-shrink-0" />
+                                       <div className="space-y-2 flex-1 min-w-0">
                                            <Skeleton className="h-4 w-3/4" />
-                                           <Skeleton className="h-4 w-1/2" />
+                                           <Skeleton className="h-3 w-1/2" />
                                        </div>
-                                       <Skeleton className="h-10 w-24" />
+                                       <Skeleton className="h-9 w-20 sm:h-10 sm:w-24 flex-shrink-0" />
                                    </div>
                                </Card>
                             ))
@@ -160,13 +169,14 @@ export default function SearchPage() {
                             outboundFlights.map((flight, idx) => (
                                 <div 
                                     key={idx}
-                                    className={selectedOutbound === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
                                 >
                                     <FlightCard 
                                         flight={flight} 
                                         selectedClass={selectedFlightClass}
                                         onSelect={() => setSelectedOutbound(flight.id_flight)}
+                                        onDeselect={() => setSelectedOutbound(null)}
                                         isSelected={selectedOutbound === flight.id_flight}
+                                        className={selectedOutbound === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
                                     />
                                 </div>
                             ))
@@ -176,19 +186,20 @@ export default function SearchPage() {
 
                 {/* Return Flights */}
                 {isRoundTrip && returnFlights.length > 0 && (
-                    <div className="mb-8">
-                        <h2 className="text-2xl font-bold mb-6">Return Flights</h2>
-                        <div className="space-y-4">
+                    <div className="mb-8 sm:mb-12">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">Return Flights</h2>
+                        <div className="space-y-3 sm:space-y-4">
                             {returnFlights.map((flight, idx) => (
                                 <div 
                                     key={idx}
-                                    className={selectedReturn === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
                                 >
                                     <FlightCard 
                                         flight={flight} 
                                         selectedClass={selectedFlightClass}
                                         onSelect={() => setSelectedReturn(flight.id_flight)}
+                                        onDeselect={() => setSelectedReturn(null)}
                                         isSelected={selectedReturn === flight.id_flight}
+                                        className={selectedReturn === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
                                     />
                                 </div>
                             ))}
@@ -198,14 +209,14 @@ export default function SearchPage() {
 
                 {/* Book Button */}
                 {((selectedOutbound && !isRoundTrip) || (selectedOutbound && selectedReturn && isRoundTrip)) && (
-                    <div className="fixed bottom-8 right-8 z-50">
+                    <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50">
                         <Button 
                             size="lg"
-                            className="shadow-lg"
+                            className="shadow-lg w-full sm:w-auto"
                             onClick={() => {
                                 const url = isRoundTrip
-                                    ? `/flight/book?outboundFlightId=${selectedOutbound}&returnFlightId=${selectedReturn}&baseFlightPrice=${outboundFlights.find(f => f.id_flight === selectedOutbound)?.base_price || 0}&flightClass=${selectedFlightClass}`
-                                    : `/flight/book?outboundFlightId=${selectedOutbound}&baseFlightPrice=${outboundFlights.find(f => f.id_flight === selectedOutbound)?.base_price || 0}&flightClass=${selectedFlightClass}`;
+                                    ? `/flight/book?outboundFlightId=${selectedOutbound}&returnFlightId=${selectedReturn}&baseFlightPrice=${outboundFlights.find(f => f.id_flight === selectedOutbound)?.base_price || 0}&flightClass=${selectedFlightClass}&adults=${adults}&children=${children}`
+                                    : `/flight/book?outboundFlightId=${selectedOutbound}&baseFlightPrice=${outboundFlights.find(f => f.id_flight === selectedOutbound)?.base_price || 0}&flightClass=${selectedFlightClass}&adults=${adults}&children=${children}`;
                                 router.push(url);
                             }}
                         >
@@ -213,6 +224,7 @@ export default function SearchPage() {
                         </Button>
                     </div>
                 )}
+                </div>
             </main>
         </div>
     );

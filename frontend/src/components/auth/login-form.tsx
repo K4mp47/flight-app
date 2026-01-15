@@ -100,7 +100,7 @@ export function LoginForm({
             <Input id="password2" type="password" required />
           </div>) : null}
         </div>
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full bg-input text-white hover:bg-input hover:cursor-pointer">
           { signup ? (<><span>Sign up</span></>) : (<><span>Login</span></>)}
         </Button>
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">

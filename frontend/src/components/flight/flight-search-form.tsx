@@ -72,14 +72,14 @@ export function FlightSearchForm({ onSearch }: FlightSearchFormProps) {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 bg-card rounded-xl shadow-lg -mt-16 z-10 relative">
+    <div className="w-full mx-auto p-3 sm:p-4 md:p-6 bg-card rounded-lg sm:rounded-xl shadow-lg -mt-12 sm:-mt-16 z-10 relative">
       {/* Trip Type Selection */}
-      <div className="mb-4 flex gap-2">
+      <div className="mb-3 sm:mb-4 flex gap-2">
         <Button
           type="button"
           variant={tripType === 'round-trip' ? 'default' : 'outline'}
           onClick={() => setTripType('round-trip')}
-          className="flex-1 sm:flex-none"
+          className="flex-1 text-xs sm:text-sm"
         >
           Round Trip
         </Button>
@@ -87,20 +87,20 @@ export function FlightSearchForm({ onSearch }: FlightSearchFormProps) {
           type="button"
           variant={tripType === 'one-way' ? 'default' : 'outline'}
           onClick={() => setTripType('one-way')}
-          className="flex-1 sm:flex-none"
+          className="flex-1 text-xs sm:text-sm"
         >
           One Way
         </Button>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-4 items-center flex-row-reverse justify-end">
-        <div className="flex items-center space-x-2">
+      <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 items-stretch sm:items-center">
+        <div className="flex items-center space-x-2 order-2 sm:order-1">
           <Checkbox id="direct-flights" checked={directFlights} onCheckedChange={(checked) => setDirectFlights(checked === true)} />
-          <Label htmlFor="direct-flights">Direct Flights Only</Label>
+          <Label htmlFor="direct-flights" className="text-xs sm:text-sm cursor-pointer">Direct Only</Label>
         </div>
 
         <Select value={String(flightClass)} onValueChange={(value) => setFlightClass(Number(value))}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-auto text-xs sm:text-sm order-1 sm:order-2">
             <SelectValue placeholder="Select Class" />
           </SelectTrigger>
           <SelectContent>
@@ -112,9 +112,9 @@ export function FlightSearchForm({ onSearch }: FlightSearchFormProps) {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-10 gap-2 sm:gap-3 md:gap-4">
         
-        <div className="md:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-4 relative">
+        <div className="sm:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4 relative">
           <AirportSearchInput 
             placeholder="Origin" 
             value={originDisplay}
@@ -127,38 +127,42 @@ export function FlightSearchForm({ onSearch }: FlightSearchFormProps) {
             onValueChange={setDestinationDisplay}
             onSelectAirport={(airport: Airport | null) => setDestinationCode(airport ? airport.iata_code : '')}
           />
-          <div className="absolute top-1/2 left-1/2 -translate-x-[1.3rem] -translate-y-1/2 hidden sm:flex items-center justify-center w-10 h-10 bg-card rounded-full border">
-             <ArrowRight className="h-5 w-5 text-gray-500" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-[1.3rem] -translate-y-1/2 hidden sm:flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 bg-card rounded-full border">
+             <ArrowRight className="h-4 sm:h-5 w-4 sm:w-5 text-gray-500" />
           </div>
         </div>
 
-        <div className="md:col-span-3">
+        <div className="sm:col-span-2 lg:col-span-3">
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 id="date"
                 variant={"outline"}
                 className={cn(
-                  "w-full justify-start text-left font-normal",
+                  "w-full justify-start text-left font-normal text-xs sm:text-sm",
                   !date?.from && "text-muted-foreground"
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date?.from ? (
-                  date.to && tripType === 'round-trip' ? (
-                    <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
-                    </>
+                <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">
+                  {date?.from ? (
+                    date.to && tripType === 'round-trip' ? (
+                      <>
+                        {format(date.from, "LLL dd")} - {format(date.to, "LLL dd")}
+                      </>
+                    ) : (
+                      format(date.from, "LLL dd, y")
+                    )
                   ) : (
-                    format(date.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>Pick a date</span>
-                )}
+                    <span>Pick a date</span>
+                  )}
+                </span>
+                <span className="sm:hidden">
+                  {date?.from ? format(date.from, "MMM dd") : "Pick date"}
+                </span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 text-xs sm:text-sm" align="center" side="bottom" sideOffset={8}>
               {tripType === "one-way" ? (
                 <Calendar
                   initialFocus
@@ -168,6 +172,7 @@ export function FlightSearchForm({ onSearch }: FlightSearchFormProps) {
                   onSelect={(selectedDate) => setDate({ from: selectedDate })}
                   numberOfMonths={1}
                   disabled={(day) => day < new Date()}
+                  className="rounded-md"
                 />
               ) : (
                 <Calendar
@@ -176,45 +181,47 @@ export function FlightSearchForm({ onSearch }: FlightSearchFormProps) {
                   defaultMonth={date?.from}
                   selected={date}
                   onSelect={setDate}
-                  numberOfMonths={2}
+                  numberOfMonths={1}
                   disabled={(day) => day < new Date()}
+                  className="rounded-md"
                 />
               )}
             </PopoverContent>
           </Popover>
         </div>
         
-        <div className="md:col-span-2">
+        <div className="sm:col-span-2 lg:col-span-2">
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>{passengers.adults} Adults, {passengers.children} Children</span>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal text-xs sm:text-sm">
+                        <Users className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="hidden sm:inline">{passengers.adults}A, {passengers.children}C</span>
+                        <span className="sm:hidden">{passengers.adults + passengers.children}</span>
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-64 p-4">
+                <PopoverContent className="w-56 p-4 text-sm">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="adults">Adults</Label>
+                            <Label htmlFor="adults" className="text-sm">Adults</Label>
                             <div className="flex items-center gap-2">
-                                <Button size="icon" variant="outline" onClick={() => handlePassengerChange('adults', -1)} disabled={passengers.adults <= 1}>
-                                    <Minus className="h-4 w-4" />
+                                <Button size="sm" variant="outline" onClick={() => handlePassengerChange('adults', -1)} disabled={passengers.adults <= 1}>
+                                    <Minus className="h-3 w-3" />
                                 </Button>
-                                <span className="w-8 text-center">{passengers.adults}</span>
-                                <Button size="icon" variant="outline" onClick={() => handlePassengerChange('adults', 1)}>
-                                    <Plus className="h-4 w-4" />
+                                <span className="w-6 text-center text-sm">{passengers.adults}</span>
+                                <Button size="sm" variant="outline" onClick={() => handlePassengerChange('adults', 1)}>
+                                    <Plus className="h-3 w-3" />
                                 </Button>
                             </div>
                         </div>
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="children">Children</Label>
+                            <Label htmlFor="children" className="text-sm">Children</Label>
                             <div className="flex items-center gap-2">
-                                <Button size="icon" variant="outline" onClick={() => handlePassengerChange('children', -1)} disabled={passengers.children <= 0}>
-                                    <Minus className="h-4 w-4" />
+                                <Button size="sm" variant="outline" onClick={() => handlePassengerChange('children', -1)} disabled={passengers.children <= 0}>
+                                    <Minus className="h-3 w-3" />
                                 </Button>
-                                <span className="w-8 text-center">{passengers.children}</span>
-                                <Button size="icon" variant="outline" onClick={() => handlePassengerChange('children', 1)}>
-                                    <Plus className="h-4 w-4" />
+                                <span className="w-6 text-center text-sm">{passengers.children}</span>
+                                <Button size="sm" variant="outline" onClick={() => handlePassengerChange('children', 1)}>
+                                    <Plus className="h-3 w-3" />
                                 </Button>
                             </div>
                         </div>
@@ -223,7 +230,7 @@ export function FlightSearchForm({ onSearch }: FlightSearchFormProps) {
             </Popover>
         </div>
 
-        <Button className="md:col-span-1 w-full" onClick={handleSearchClick}>Search</Button>
+        <Button className="sm:col-span-2 lg:col-span-1 w-full text-xs sm:text-sm" onClick={handleSearchClick}>Search</Button>
       </div>
     </div>
   )

@@ -7,8 +7,8 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { ChartAreaInteractive } from "@/components/dashboard"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { IconPlane, IconPlaneDeparture, IconPlaneArrival } from "@tabler/icons-react"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { IconPlane, IconPlaneDeparture, IconPlaneArrival, IconMenu2 } from "@tabler/icons-react"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebarUser } from "@/components/layout"
 
 
@@ -168,7 +168,12 @@ export default function ProfilePage() {
         <SidebarProvider>
         <AppSidebarUser onSelect={(view) => typeof view === 'string' && setActiveView(view.toLowerCase())} />
         <main className="overflow-auto w-full p-4 md:p-8"> {/* Adjusted padding for responsiveness */}
-          <h1 className="text-2xl font-bold mb-6">Welcome, {user?.name}</h1>
+          {/* Mobile Sidebar Trigger */}
+          <div className="flex items-center gap-3 mb-4">
+            <SidebarTrigger className="lg:hidden" />
+            <h1 className="text-2xl font-bold">Welcome, {user?.name}</h1>
+          </div>
+          <h1 className="text-2xl font-bold mb-6 hidden lg:block">Welcome, {user?.name}</h1>
           {activeView === "profile" && (
             <>
               <Card className="mb-6">

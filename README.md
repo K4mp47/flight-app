@@ -1,6 +1,6 @@
 # Flight Booking Application
 
-A comprehensive flight booking system with a modern web interface and robust backend API. This application enables users to search for flights, book tickets, manage baggage, and handle airline operations through an intuitive dashboard.
+A comprehensive flight booking system with a modern web interface and robust backend API. This application enables users to search for flights, book tickets, and handle airline operations through an intuitive dashboard.
 
 ## 🚀 Features
 

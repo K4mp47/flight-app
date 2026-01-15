@@ -266,21 +266,6 @@ The frontend uses shadcn/ui and Radix UI for accessible, customizable components
 - Date pickers
 - Search inputs with autocomplete
 
-## 🔧 Development
-
-### Backend Development
-
-- **Linting**: Code follows PEP 8 standards
-- **Database Migrations**: Use SQLAlchemy for schema changes
-- **Testing**: Write tests for controllers and queries
-
-### Frontend Development
-
-- **Linting**: Run `npm run lint`
-- **Formatting**: Run `npm run format` (Prettier)
-- **Type Checking**: TypeScript ensures type safety
-- **Component Organization**: Feature-based structure
-
 ## 📝 Environment Variables
 
 ### Backend (.env)
@@ -295,45 +280,7 @@ FLASK_ENV=development
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
-## 🚀 Production Build
-
-### Backend
-```bash
-# Use a production-grade WSGI server
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
-```
-
-### Frontend
-```bash
-npm run build
-npm start
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
 ## 👥 Authors
 
 - Alberto Campagnolo
-
-## 🐛 Known Issues
-
-- None currently documented
-
-## 📞 Support
-
-For questions or issues, please open an issue in the repository.
-
----
-
-**Happy Flying! ✈️**
+- Marco Stevanato

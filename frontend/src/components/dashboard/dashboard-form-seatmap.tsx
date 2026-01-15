@@ -136,9 +136,6 @@ export function CreateSeatBlockDialog({
       matrix,
       airline_code,
       id_class: parseInt(selectedClass),
-      total_seats: totalSeats,
-      rows,
-      cols
     }
 
     console.log("Seat matrix configuration:", result)

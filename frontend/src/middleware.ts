@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
   // check if the user is a passenger trying to access admin_routes
   if (token && request.nextUrl.pathname.startsWith("/dashboard")) {
      if (!await companyToken(token)) {
-       return NextResponse.redirect(new URL('/', request.url))
+       return NextResponse.redirect(new URL('/search', request.url))
      }
   }
 
@@ -26,9 +26,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/search', request.url))
+  }
+
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/seatmap/:path*', '/profile/:path*'], // Protegge tutto sotto /dashboard
+  matcher: ['/dashboard/:path*', '/profile/:path*', '/'], // Protegge tutto sotto /dashboard e home
 }

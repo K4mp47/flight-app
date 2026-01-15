@@ -7,8 +7,8 @@ import {
   IconPlaneInflight
 } from "@tabler/icons-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "./nav-main"
+import { NavUser } from "./nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -21,11 +21,6 @@ import { api } from "@/lib/api"
 
 
 const data = {
-  user: {
-    name: "",
-    email: "",
-    avatar: "",
-  },
   navMain: [
     {
       title: "Fleet",
@@ -67,7 +62,7 @@ export function AppSidebar({ onSelect, ...props }: React.ComponentProps<typeof S
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 font-medium p-2">
-              <IconDashboard className="!size-5" />
+              <IconDashboard className="size-5!" />
               <span className="text-base font-semibold">Company Dashboard</span>
             </div>
           </SidebarMenuItem>
@@ -77,7 +72,7 @@ export function AppSidebar({ onSelect, ...props }: React.ComponentProps<typeof S
         <NavMain items={data.navMain} onSelect={onSelect} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user ?? data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

@@ -70,7 +70,6 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 
-import aircraftList from "@/app/dashboard/aircraft.json";
 import { api } from "@/lib/api";
 // Removed the direct import from @radix-ui/react-dialog to avoid context mismatch
 import {
@@ -81,11 +80,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger, // Imported from local ui/dialog
-} from "./ui/dialog";
+} from "@/components/ui/dialog";
 import { RouteCreationForm } from "./dashboard-form-routes";
 import { SeatmapCreationForm } from "./dashboard-form-seatmap";
 import FlightCreationForm from "./dashboard-form-flight";
-import { Input } from "./ui/input";
+import { Input } from "@/components/ui/input";
 
 export function DataTable({
   initialData,
@@ -98,6 +97,7 @@ export function DataTable({
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [selectedAircraft, setSelectedAircraft] = React.useState<Aircraft | null>(null);
   const [copyAircraftId, setCopyAircraftId] = React.useState<number | null>(null);
+  const [aircraftList, setAircraftList] = React.useState<Aircraft[] | null>(null);
 
   // Fleet columns
   const fleetColumns: ColumnDef<Aircraft>[] = [
@@ -564,6 +564,22 @@ export function DataTable({
 
   React.useEffect(() => {
     setData((initialData ?? []) as (Aircraft | Route | Flight)[]);
+    // retrieve aircraft list for adding new aircraft
+    const fetchAircraftList = async () => {
+      try {
+        const user = await api.get<{ airline_code?: string }>("/users/me");
+        const userIataCode = user?.airline_code ?? null;
+        if (userIataCode) {
+          const response = await api.get<Aircraft[]>(
+            `/airline/${userIataCode}/fleet`
+          );
+          setAircraftList(response ?? []);
+        }
+      } catch (error) {
+        console.error("Error fetching aircraft list:", error);
+      }
+    };
+    fetchAircraftList();
   }, [initialData]);
 
   async function handleAddFlight() {
@@ -645,18 +661,14 @@ export function DataTable({
                 >
                   {Array.isArray(aircraftList) && aircraftList.length > 0 ? (
                     aircraftList.map(
-                      (aircraft: {
-                        id_aircraft: number;
-                        name: string;
-                        [key: string]: unknown;
-                      }) => (
+                      (aircraft: Aircraft, i) => (
                         <DropdownMenuItem
-                          key={aircraft.id_aircraft}
+                          key={i}
                           onClick={() =>
-                            handleAddAircraft(aircraft.id_aircraft)
+                            handleAddAircraft(aircraft.aircraft.id_aircraft)
                           }
                         >
-                          {aircraft.name}
+                          {aircraft.aircraft?.name || "Unknown Aircraft"}
                         </DropdownMenuItem>
                       )
                     )

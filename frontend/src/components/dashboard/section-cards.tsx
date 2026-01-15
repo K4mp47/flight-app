@@ -25,17 +25,7 @@ export function SectionCards() {
         const res = await api.get<{ total_revenue: number }>(
           `/airline/${encodeURIComponent(airlineCode)}/analytics/routes/total_revenue`,
         )
-        try {
-          console.log(res)
-          const data =
-            typeof res === "string" ? JSON.parse(res) : (res) ?? null
-          // const value =
-          //   typeof data === "number" ? data : data?.total_revenue ?? null
-          if (mounted) setRevenue(data?.total_revenue ?? null)
-        } catch {
-          // ignore parse errors / bad responses for now
-          if (mounted) setRevenue(null)
-        }
+          if (mounted) setRevenue(res?.total_revenue ?? null)
       } catch {
         // ignore fetch errors for now
       }

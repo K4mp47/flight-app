@@ -1,17 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { AppSidebar } from "@/components/app-sidebar"
-import { DataTable } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
-import { SiteHeader } from "@/components/site-header"
+import { AppSidebar } from "@/components/layout"
+import { DataTable, SectionCards, SiteHeader } from "@/components/dashboard"
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
 
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
+import { ChartAreaInteractive } from "@/components/dashboard"
 import { api } from "@/lib/api"
 
 export default function Page() {
@@ -37,7 +35,7 @@ export default function Page() {
           console.log(route_res)
           if (mounted) setTableData(route_res.routes)
         } else if (view === "Flights") {
-          const flight_res = await api.get<Flights>(`/airline/${encodeURIComponent(code)}/flight`)
+          const flight_res = await api.get<Flight[]>(`/airline/${encodeURIComponent(code)}/flight`)
           console.log(flight_res)
           // backend returns the flights array directly (not { flights: [...] }).
           // Handle both shapes for compatibility without using `any`.
@@ -86,7 +84,7 @@ export default function Page() {
                 <h2 className="mb-4 text-lg font-semibold">{view}</h2>
               </div>
 
-              <DataTable view={view} initialData={tableData} />
+              <DataTable key={view} view={view} initialData={tableData} />
             </div>
           </div>
         </div>

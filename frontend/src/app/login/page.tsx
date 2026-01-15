@@ -1,7 +1,7 @@
 import { Plane } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { LoginForm } from "@/components/login-form";
+import { LoginForm } from "@/components/auth";
 
 export default function LoginPage() {
   return (

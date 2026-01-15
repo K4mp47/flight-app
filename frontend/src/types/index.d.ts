@@ -2,8 +2,7 @@ interface User {
   email: string
   lastname: string
   name: string
-  avatar: string
-  airline_code: string
+  airline_code?: string
 }
 
 interface Airport {
@@ -15,6 +14,10 @@ interface Airport {
   latitude: number
   longitude: number
   name: string
+}
+
+interface AirportSearchResponse {
+  airports: Airport[];
 }
 
 interface Data {
@@ -79,6 +82,7 @@ interface Ticket {
   id_buyer: number
   id_passenger_ticket: number
   passenger: {
+    id_passengers: number
     date_birth: string
     email: string
     lastname: string
@@ -115,9 +119,7 @@ interface Ticket {
   }
 } 
 
-interface Flights {
-  flights: Flight[];
-}
+// interface Flights extends Array<Flight> {}
  
 interface Flight {
   id_flight: string,

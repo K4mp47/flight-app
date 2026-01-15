@@ -131,12 +131,14 @@
   grid-template-columns: repeat(10, 40px);
   gap: 8px;
   margin-top: 2rem;
+
 }
 
 .seat {
   width: 40px;
   height: 40px;
-  background-color: #ccc;
+  background-color: var(--muted);
+  color: var(--foreground);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,11 +146,15 @@
 }
 
 .seat.AVAILABLE {
-  background-color: rgb(30, 121, 30);
+  background-color: oklch(0.55 0.15 140); /* Greenish */
+}
+.dark .seat.AVAILABLE {
+  background-color: oklch(0.40 0.15 140) important;
 }
 
 .seat.OCCUPIED {
-  background-color: rgb(173, 8, 8);
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
 }
 
 .hide-scrollbar {

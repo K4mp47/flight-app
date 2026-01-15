@@ -55,7 +55,7 @@ export function MainForm() {
   const [openDeparture, setOpenDeparture] = useState(false);
   const [openArrival, setOpenArrival] = useState(false);
   const [cities, setCities] = useState<{ label: string; value: string }[]>([]);
-  const [loadingCities, setLoadingCities] = useState(false);
+  const [, setLoadingCities] = useState(false);
 
 
   useEffect(() => {

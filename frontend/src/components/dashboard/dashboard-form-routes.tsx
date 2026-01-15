@@ -15,7 +15,7 @@ import { IconTrash, IconPlaneArrival, IconPlaneDeparture, IconPlus } from "@tabl
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { Button } from "./ui/button"
+import { Button } from "@/components/ui/button"
 import { api } from "@/lib/api"
 
 // Schema di validazione per una singola sezione

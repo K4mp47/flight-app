@@ -28,7 +28,7 @@ export function MainNavBar({ companyuser }: MainNavBarProps) {
   }, []);
 
   return (
-    <div className="fixed top-0 w-full z-40 left-0 justify-center flex">
+    <div className="fixed top-2 w-full z-40 left-0 justify-center flex">
       <NavigationMenu
         className={`transition-opacity bg-card rounded-2xl mt-2 duration-300 px-4 py-2 flex justify-center ${visible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >

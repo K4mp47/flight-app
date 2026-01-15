@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Input } from "./ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Calendar } from "./ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Loader2, Check, ChevronsUpDown } from "lucide-react"; // Added Loader2, Check, ChevronsUpDown
 import { cn } from "@/lib/utils";
@@ -56,8 +56,8 @@ export default function FlightCreationForm() { // Removed airlineCode prop
   const [dodOpen, setDodOpen] = useState(false);
   const [dorOpen, setDorOpen] = useState(false);
   const [userAirlineCode, setUserAirlineCode] = useState<string | null>(null);
-  const [availableAircraft, setAvailableAircraft] = useState<any[]>([]);
-  const [availableRoutes, setAvailableRoutes] = useState<any[]>([]);
+  const [availableAircraft, setAvailableAircraft] = useState<Aircraft[]>([]);
+  const [availableRoutes, setAvailableRoutes] = useState<Route[]>([]);
   const [loadingAircraft, setLoadingAircraft] = useState(true);
   const [loadingRoutes, setLoadingRoutes] = useState(true);
   const [loadingAirlineCode, setLoadingAirlineCode] = useState(true);
@@ -98,7 +98,7 @@ export default function FlightCreationForm() { // Removed airlineCode prop
       // Fetch aircraft
       setLoadingAircraft(true);
       try {
-        const aircraftRes = await api.get<any[]>(`/airline/${userAirlineCode}/fleet`);
+        const aircraftRes = await api.get<Aircraft[]>(`/airline/${userAirlineCode}/fleet`);
         setAvailableAircraft(aircraftRes);
       } catch (error) {
         console.error("Error fetching aircraft:", error);
@@ -110,7 +110,7 @@ export default function FlightCreationForm() { // Removed airlineCode prop
       // Fetch routes
       setLoadingRoutes(true);
       try {
-        const routesRes = await api.get<{routes: any[]}>(`/airline/${userAirlineCode}/route`);
+        const routesRes = await api.get<{routes: Route[]}>(`/airline/${userAirlineCode}/route`);
         setAvailableRoutes(routesRes.routes);
       } catch (error) {
         console.error("Error fetching routes:", error);

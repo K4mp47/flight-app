@@ -98,23 +98,21 @@ def new_airline():
     responses:
       200:
         description: Airline successfully inserted
-        content:
-          application/json:
-            schema:
+        schema:
+          type: object
+          properties:
+            airline:
               type: object
               properties:
-                airline:
-                  type: object
-                  properties:
-                    iata_code:
-                      type: string
-                      example: "S9"
-                    name:
-                      type: string
-                      example: "Straw-hats Airline"
-                message:
+                iata_code:
                   type: string
-                  example: "airline inserted"
+                  example: "S9"
+                name:
+                  type: string
+                  example: "Straw-hats Airline"
+            message:
+              type: string
+              example: "airline inserted"
 
       400:
         description: Invalid input (e.g., iata_code not 2 characters)
@@ -1644,7 +1642,7 @@ def new_price_policy(airline_code: str):
     session.close()
     return jsonify(response), status
 
-@airline_bp.route("<airline_code>/price-policy/modify", methods=["PUT"])
+@airline_bp.route("/<airline_code>/price-policy/modify", methods=["PUT"])
 #@airline_check_param("airline_code")
 def modify_price_policy(airline_code: str):
     """
@@ -1800,7 +1798,7 @@ def change_base_price(code: str):
   summary: Modify the base price of a route
   description: Update the base price for a specific route. Only Airline-Admin role can perform this action.
   parameters:
-    - name: route_code
+    - name: code
       in: path
       type: string
       required: true
@@ -1987,8 +1985,8 @@ def flight_analytics(airline_code: str,id_flight: int):
               type: object
               properties:
                 id_flight:
-                  type: string
-                  example: "21"
+                  type: integer
+                  example: 21
                 route_code:
                   type: string
                   example: "AZ5"

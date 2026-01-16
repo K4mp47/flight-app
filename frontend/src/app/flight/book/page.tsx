@@ -6,12 +6,16 @@ import { api } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { IconArrowLeft, IconChevronDown, IconChevronUp, IconPlaneInflight, IconCheck, IconReceipt } from '@tabler/icons-react';
+import { Input } from '@/components/ui/input'; 
+import { ArrowLeft, ChevronDown, ChevronUp, PlaneTakeoff, Check, Receipt } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { MainNavBar } from '@/components/layout';
 import { toast } from 'sonner';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
 export interface PassengerInfo {
   name: string;
@@ -46,7 +50,7 @@ const SeatIcon = ({ status, size = 'md' }: { status: 'available' | 'occupied' | 
 
   const colors = {
     available: '#E5E7EB',
-    occupied: '#6B7280', 
+    occupied: '#6B7280',
     selected: '#10B981'
   };
 
@@ -62,21 +66,21 @@ const SeatIcon = ({ status, size = 'md' }: { status: 'available' | 'occupied' | 
         strokeWidth="2"
         strokeLinecap="round"
       />
-      <rect x="6" y="18" width="12" height="2" rx="1" fill={colors[status]} opacity="0.6"/>
+      <rect x="6" y="18" width="12" height="2" rx="1" fill={colors[status]} opacity="0.6" />
     </svg>
   );
 };
 
 // Modern Simplified Seat Grid
-const SimplifiedSeatGrid = ({ 
-  flightType, 
-  seatBlocks, 
-  passengers, 
+const SimplifiedSeatGrid = ({
+  flightType,
+  seatBlocks,
+  passengers,
   onSeatSelect,
   selectedPassengerIndex
-}: { 
-  flightType: 'outbound' | 'return', 
-  seatBlocks: SeatBlock[], 
+}: {
+  flightType: 'outbound' | 'return',
+  seatBlocks: SeatBlock[],
   passengers: PassengerInfo[],
   onSeatSelect: (seatId: number) => void,
   selectedPassengerIndex: number
@@ -110,7 +114,7 @@ const SimplifiedSeatGrid = ({
   const getRowLabel = (y: number) => String.fromCharCode(65 + y);
 
   const getClassLabel = (classType: number) => {
-    switch(classType) {
+    switch (classType) {
       case 1: return 'First Class';
       case 2: return 'Business Class';
       case 3: return 'Premium Economy';
@@ -176,17 +180,17 @@ const SimplifiedSeatGrid = ({
             return (
               <div key={classType}>
                 <h4 className="text-xs sm:text-sm font-semibold text-gray-200 mb-3 sm:mb-4">{getClassLabel(Number(classType))}</h4>
-                
-                <div className="inline-block min-w-full">
+
+                <div className="inline-flex min-w-full flex-col justify-center items-center">
                   {/* Column numbers */}
-                  <div className="flex mb-2 ml-6 sm:ml-10">
+                  <div className="flex mb-2 ml-6 sm:ml-8">
                     {Array.from({ length: classCols }, (_, i) => (
                       <div key={i} className="w-10 sm:w-14 text-center text-xs font-medium text-gray-200">
                         {minX + i + 1}
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Rows */}
                   {Array.from({ length: classRows }, (_, y) => {
                     const actualY = minY + y;
@@ -198,14 +202,14 @@ const SimplifiedSeatGrid = ({
                         {Array.from({ length: classCols }, (_, x) => {
                           const actualX = minX + x;
                           const seat = getSeatAtPosition(actualX, actualY);
-                          
+
                           if (!seat) {
-                            return <div key={x} className="w-14 h-14"></div>;
+                            return <div key={x} className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center"></div>;
                           }
-                          
+
                           const status = getSeatStatus(seat);
                           const isDisabled = status === 'occupied';
-                          
+
                           return (
                             <button
                               key={x}
@@ -220,10 +224,10 @@ const SimplifiedSeatGrid = ({
                               title={`${getRowLabel(actualY)}${actualX + 1}`}
                             >
                               <div className="relative">
-                                <SeatIcon status={status} size="sm" />
+                                <SeatIcon status={status} size="md" />
                                 {status === 'selected' && (
                                   <div className="absolute inset-0 flex items-center justify-center">
-                                    <IconCheck className="w-3 sm:w-5 h-3 sm:h-5 text-white mt-0.5 sm:mt-1" strokeWidth={3} />
+                                    <Check className="w-3 sm:w-5 h-3 sm:h-5 text-white mt-0.5 sm:mt-1" strokeWidth={3} />
                                   </div>
                                 )}
                               </div>
@@ -238,7 +242,7 @@ const SimplifiedSeatGrid = ({
             );
           })}
         </div>
-        
+
         {/* Selected Seat Info */}
         {passengers[selectedPassengerIndex]?.[seatField] && (
           <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200/20">
@@ -277,7 +281,7 @@ function FlightBookingContent() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedPassengerIndex, setSelectedPassengerIndex] = useState(0);
   const [currentStep, setCurrentStep] = useState<'seats' | 'info'>('seats');
-  
+
   // Initialize passengers array with correct count from search
   const totalPassengers = adultsCount + childrenCount;
   const [passengers, setPassengers] = useState<PassengerInfo[]>(
@@ -332,7 +336,7 @@ function FlightBookingContent() {
         const filteredOutbound = outboundData.filter(block => block.id_class === selectedFlightClass);
         console.log('Filtered blocks:', filteredOutbound.map(b => ({ id_class: b.id_class, seats: b.seats.length })));
         setOutboundSeatBlocks(filteredOutbound);
-        
+
         if (returnFlightId) {
           const returnData = await api.get<SeatBlock[]>(`/flight/${returnFlightId}/seat-availability`);
           // Filter to only show seats for the selected class
@@ -349,7 +353,7 @@ function FlightBookingContent() {
     };
 
     fetchSeats();
-  }, [outboundFlightId, returnFlightId, router]);
+  }, [outboundFlightId, returnFlightId, router, selectedFlightClass]);
 
   const addPassenger = () => {
     setPassengers([
@@ -391,17 +395,17 @@ function FlightBookingContent() {
   const handleSeatSelect = (seatId: number, type: 'outbound' | 'return') => {
     const seatField = type === 'outbound' ? 'id_seat_outbound' : 'id_seat_return';
     const updated = [...passengers];
-    
+
     // Check if seat is already assigned to another passenger
-    const seatAlreadyAssigned = passengers.some((p, idx) => 
+    const seatAlreadyAssigned = passengers.some((p, idx) =>
       idx !== selectedPassengerIndex && p[seatField] === seatId
     );
-    
+
     if (seatAlreadyAssigned) {
       toast.error('This seat is already selected by another passenger');
       return;
     }
-    
+
     // Toggle seat selection for current passenger
     if (updated[selectedPassengerIndex][seatField] === seatId) {
       updated[selectedPassengerIndex][seatField] = null;
@@ -410,19 +414,19 @@ function FlightBookingContent() {
       updated[selectedPassengerIndex][seatField] = seatId;
       toast.success('Seat selected');
     }
-    
+
     setPassengers(updated);
   };
 
   const canProceedToInfo = () => {
-    const allSeatsSelected = passengers.every(p => 
+    const allSeatsSelected = passengers.every(p =>
       p.id_seat_outbound && (!returnFlightId || p.id_seat_return)
     );
-    
+
     if (!allSeatsSelected && passengers.length > 0) {
       return false;
     }
-    
+
     return passengers.length > 0;
   };
 
@@ -444,7 +448,7 @@ function FlightBookingContent() {
         setExpandedPassengerIndex(i);
         return;
       }
-      
+
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(p.email)) {
@@ -453,7 +457,7 @@ function FlightBookingContent() {
         setExpandedPassengerIndex(i);
         return;
       }
-      
+
       // Validate date of birth (must be in the past)
       const birthDate = new Date(p.date_birth);
       if (birthDate >= new Date()) {
@@ -468,7 +472,7 @@ function FlightBookingContent() {
       .split("; ")
       .find((row) => row.startsWith("token="))
       ?.split("=")[1];
-    
+
     if (!token) {
       toast.error('You must be logged in to book a flight');
       router.push('/login');
@@ -479,7 +483,7 @@ function FlightBookingContent() {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       id_buyer = payload.sub || payload.id;
-      
+
       if (!id_buyer) {
         throw new Error('Invalid user ID in token');
       }
@@ -504,7 +508,7 @@ function FlightBookingContent() {
         };
 
         const ticketsList = [];
-        
+
         // Add outbound ticket
         if (p.id_seat_outbound) {
           ticketsList.push({
@@ -516,7 +520,7 @@ function FlightBookingContent() {
             },
           });
         }
-        
+
         // Add return ticket if applicable
         if (returnFlightId && p.id_seat_return) {
           ticketsList.push({
@@ -528,7 +532,7 @@ function FlightBookingContent() {
             },
           });
         }
-        
+
         return ticketsList;
       });
 
@@ -538,9 +542,9 @@ function FlightBookingContent() {
       };
 
       await api.post('/flight/book', bookingData);
-      
+
       toast.success(' uccessful! Redirecting to your profile...');
-      
+
       // Delay redirect to let user see success message
       setTimeout(() => {
         router.push('/profile');
@@ -557,7 +561,7 @@ function FlightBookingContent() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
-        <IconPlaneInflight className="w-16 h-16 mx-auto mb-4 text-input" />
+        <PlaneTakeoff className="w-16 h-16 mx-auto mb-4 text-input" />
         <p className="text-lg font-medium text-primary">Loading seats...</p>
       </div>
     </div>
@@ -566,11 +570,11 @@ function FlightBookingContent() {
   return (
     <div className="min-h-screen bg-background mt-20">
       <Button variant="outline" className="hidden lg:flex lg:fixed  left-2 sm:left-4 top-2 sm:top-4 z-50 border-0! p-2 sm:p-3 justify-center" onClick={() => router.back()}>
-        <IconArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4" />
       </Button>
       <MainNavBar companyuser={companyuser} />
-      
-      <div className="container mx-auto my-4 sm:my-6 px-2 sm:px-4">
+
+      <div className="container mx-auto my-4 sm:my-6 px-2 sm:px-4 justify-around flex w-full">
         <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-6">
           {/* Left Sidebar - Steps - Hidden on mobile, show as tabs */}
           <div className="hidden lg:block lg:w-64 shrink-0">
@@ -581,16 +585,14 @@ function FlightBookingContent() {
               <div className="p-4">
                 <button
                   onClick={() => setCurrentStep('seats')}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                    currentStep === 'seats' 
-                      ? 'bg-input text-white' 
-                      : 'text-gray-200 hover:bg-secondary'
-                  }`}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${currentStep === 'seats'
+                    ? 'bg-input text-white'
+                    : 'text-gray-200 hover:bg-secondary'
+                    }`}
                 >
                   <div className="flex items-center gap-2">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      currentStep === 'seats' ? 'bg-white text-ring' : 'bg-input'
-                    }`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'seats' ? 'bg-white text-ring' : 'bg-input'
+                      }`}>
                       1
                     </div>
                     <span>Pick Your Seat</span>
@@ -599,18 +601,16 @@ function FlightBookingContent() {
                 <button
                   onClick={() => canProceedToInfo() && setCurrentStep('info')}
                   disabled={!canProceedToInfo()}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors mt-1 ${
-                    currentStep === 'info' 
-                      ? 'bg-input text-white' 
-                      : !canProceedToInfo()
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors mt-1 ${currentStep === 'info'
+                    ? 'bg-input text-white'
+                    : !canProceedToInfo()
                       ? 'text-gray-500 cursor-not-allowed opacity-80'
                       : 'text-gray-200 hover:bg-secondary'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      currentStep === 'info' ? 'bg-white text-ring' : 'bg-input'
-                    }`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'info' ? 'bg-white text-ring' : 'bg-input'
+                      }`}>
                       2
                     </div>
                     <span>Passenger Info</span>
@@ -619,19 +619,17 @@ function FlightBookingContent() {
               </div>
             </div>
           </div>
-          
+
           {/* Mobile Step Indicator */}
           <div className="lg:hidden bg-card rounded-lg p-3 mb-3">
             <div className="flex items-center justify-center gap-4">
               <button
                 onClick={() => setCurrentStep('seats')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                  currentStep === 'seats' ? 'bg-input text-white' : 'text-gray-400'
-                }`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${currentStep === 'seats' ? 'bg-input text-white' : 'text-gray-400'
+                  }`}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                  currentStep === 'seats' ? 'bg-white text-ring' : 'bg-input'
-                }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'seats' ? 'bg-white text-ring' : 'bg-input'
+                  }`}>
                   1
                 </div>
                 <span className="text-xs font-medium">Seats</span>
@@ -640,13 +638,11 @@ function FlightBookingContent() {
               <button
                 onClick={() => canProceedToInfo() && setCurrentStep('info')}
                 disabled={!canProceedToInfo()}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                  currentStep === 'info' ? 'bg-input text-white' : !canProceedToInfo() ? 'text-gray-600' : 'text-gray-400'
-                }`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${currentStep === 'info' ? 'bg-input text-white' : !canProceedToInfo() ? 'text-gray-600' : 'text-gray-400'
+                  }`}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                  currentStep === 'info' ? 'bg-white text-ring' : 'bg-input'
-                }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'info' ? 'bg-white text-ring' : 'bg-input'
+                  }`}>
                   2
                 </div>
                 <span className="text-xs font-medium">Info</span>
@@ -655,7 +651,7 @@ function FlightBookingContent() {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 max-w-lg">
             {currentStep === 'seats' ? (
               <div className="space-y-4 sm:space-y-6">
                 <div>
@@ -670,11 +666,10 @@ function FlightBookingContent() {
                       <button
                         key={index}
                         onClick={() => setSelectedPassengerIndex(index)}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium text-xs sm:text-sm transition-colors flex-shrink-0 ${
-                          selectedPassengerIndex === index
-                            ? 'bg-secondary text-muted-foreground border-gray-200/20'
-                            : 'bg-card text-ring hover:bg-gray-400/20'
-                        }`}
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium text-xs sm:text-sm transition-colors shrink-0 ${selectedPassengerIndex === index
+                          ? 'bg-secondary text-muted-foreground border-gray-200/20'
+                          : 'bg-card text-ring hover:bg-gray-400/20'
+                          }`}
                       >
                         <span className="sm:hidden">P{index + 1}</span>
                         <span className="hidden sm:inline">Passenger {index + 1}</span>
@@ -683,7 +678,7 @@ function FlightBookingContent() {
                     ))}
                     <button
                       onClick={addPassenger}
-                      className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium text-xs sm:text-sm bg-secondary text-ring hover:bg-secondary/60 border-2 border-dashed border-gray-200/20 flex-shrink-0"
+                      className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium text-xs sm:text-sm bg-secondary text-ring hover:bg-secondary/60 border-2 border-dashed border-gray-200/20 shrink-0"
                     >
                       + Add
                     </button>
@@ -708,7 +703,7 @@ function FlightBookingContent() {
                     <button
                       onClick={addPassenger}
                       className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium text-xs sm:text-sm bg-secondary text-ring hover:bg-secondary/60 border-2 border-dashed border-gray-200/20"
-                    > 
+                    >
                       + Add Passenger
                     </button>
                   </div>
@@ -719,8 +714,8 @@ function FlightBookingContent() {
                   {outboundSeatBlocks.length === 0 && returnSeatBlocks.length === 0 ? (
                     <div className="bg-card rounded-lg p-6 text-center">
                       <p className="text-destructive font-medium">No seats available for the selected flight(s)</p>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="mt-4 border-0!"
                         onClick={() => router.push('/search')}
                       >
@@ -783,16 +778,16 @@ function FlightBookingContent() {
                       <CardHeader className="cursor-pointer p-3 sm:p-6">
                         <CardTitle className="flex items-center justify-between text-sm sm:text-lg">
                           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-input text-white flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0">
+                            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-input text-white flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
                               {index + 1}
                             </div>
                             <span className="truncate text-xs sm:text-base">
-                              {passenger.name || passenger.lastname 
-                                ? `${passenger.name} ${passenger.lastname}` 
+                              {passenger.name || passenger.lastname
+                                ? `${passenger.name} ${passenger.lastname}`
                                 : `Passenger ${index + 1}`}
                             </span>
                           </div>
-                          {expandedPassengerIndex === index ? <IconChevronUp size={18} className="flex-shrink-0" /> : <IconChevronDown size={18} className="flex-shrink-0" />}
+                          {expandedPassengerIndex === index ? <ChevronUp size={18} className="shrink-0" /> : <ChevronDown size={18} className="shrink-0" />}
                         </CardTitle>
                       </CardHeader>
                       {expandedPassengerIndex === index && (
@@ -852,14 +847,32 @@ function FlightBookingContent() {
                             </div>
                             <div className="space-y-1 sm:space-y-2">
                               <Label htmlFor={`dob-${index}`} className="text-xs sm:text-sm">Date of Birth *</Label>
-                              <Input
-                                id={`dob-${index}`}
-                                type="date"
-                                value={passenger.date_birth}
-                                onChange={(e) => updatePassenger(index, 'date_birth', e.target.value)}
-                                className="text-xs sm:text-sm"
-                                required
-                              />
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className="w-full justify-start text-left font-normal"
+                                  >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {passenger.date_birth ? passenger.date_birth : "Pick a date"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                  <Calendar
+                                    mode="single"
+                                    selected={passenger.date_birth ? new Date(passenger.date_birth) : undefined}
+                                    onSelect={(date) => {
+                                      if (date) {
+                                        updatePassenger(index, 'date_birth', format(date, 'yyyy-MM-dd'));
+                                      }
+                                    }}
+                                    captionLayout="dropdown"
+                                    fromYear={1900}
+                                    toYear={new Date().getFullYear()}
+                                    defaultMonth={new Date(2005, 6)}
+                                  />
+                                </PopoverContent>
+                              </Popover>
                             </div>
                             <div className="space-y-1 sm:space-y-2">
                               <Label htmlFor={`gender-${index}`} className="text-xs sm:text-sm">Gender *</Label>
@@ -903,13 +916,15 @@ function FlightBookingContent() {
 
           {/* Right Sidebar - Summary - Desktop */}
           <div className="hidden lg:block w-80 shrink-0">
-            <BookingSummarySidebar
-              passengers={passengers}
-              outboundFlightId={outboundFlightId}
-              returnFlightId={returnFlightId}
-              baseFlightPrice={baseFlightPrice}
-              numPassengers={passengers.length}
-            />
+            <div className="sticky top-4">
+              <BookingSummarySidebar
+                passengers={passengers}
+                outboundFlightId={outboundFlightId}
+                returnFlightId={returnFlightId}
+                baseFlightPrice={baseFlightPrice}
+                numPassengers={passengers.length}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -919,10 +934,10 @@ function FlightBookingContent() {
         <Sheet open={showMobileSummary} onOpenChange={setShowMobileSummary}>
           <SheetTrigger asChild>
             <Button size="lg" className="shadow-lg rounded-full h-14 w-14 sm:h-16 sm:w-16">
-              <IconReceipt className="h-6 w-6 sm:h-7 sm:w-7" />
+              <Receipt className="h-6 w-6 sm:h-7 sm:w-7" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:w-[400px] p-0 overflow-y-auto">
+          <SheetContent side="right" className="w-full sm:w-100 p-0 overflow-y-auto">
             <SheetHeader className="p-4 sm:p-6 border-b">
               <SheetTitle>Booking Summary</SheetTitle>
             </SheetHeader>

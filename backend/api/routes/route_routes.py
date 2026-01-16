@@ -65,7 +65,7 @@ def new_route():
                     type: string
                     example: "HND"
         responses:
-          "200":
+          200:
             description: Route segment successfully inserted
             schema:
               type: object
@@ -73,24 +73,24 @@ def new_route():
                 message:
                     type: string
                     example: "route inserted successfully"
-            route:
-              type: object
-              properties:
-                id_routes_section:
-                  type: integer
-                  example: 2
-                code_departure_airport:
-                  type: string
-                  example: "IST"
-                code_arrival_airport:
-                  type: string
-                  example: "HND"
-            "400":
-                description: Invalid input data
-            "401":
-                description: Missing or invalid token
-            "403":
-                description: Access denied — Admin or Airline-Admin role required
+                route:
+                  type: object
+                  properties:
+                    id_routes_section:
+                      type: integer
+                      example: 2
+                    code_departure_airport:
+                      type: string
+                      example: "IST"
+                    code_arrival_airport:
+                      type: string
+                      example: "HND"
+          400:
+            description: Invalid input data
+          401:
+            description: Missing or invalid token
+          403:
+            description: Access denied — Admin or Airline-Admin role required
         """
         session = SessionLocal()
         try:

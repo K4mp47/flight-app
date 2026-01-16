@@ -95,6 +95,8 @@ export function DataTable({
 }) {
   const [isCopying, setIsCopying] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isAddRouteOpen, setIsAddRouteOpen] = React.useState(false);
+  const [isAddFlightOpen, setIsAddFlightOpen] = React.useState(false);
   const [selectedAircraft, setSelectedAircraft] = React.useState<Aircraft | null>(null);
   const [copyAircraftId, setCopyAircraftId] = React.useState<number | null>(null);
   const [aircraftList, setAircraftList] = React.useState<Aircraft[] | null>(null);
@@ -681,52 +683,54 @@ export function DataTable({
               </DropdownMenu>
             )}
             {view === "Routes" && (
-              <Dialog>
+              <Dialog open={isAddRouteOpen} onOpenChange={setIsAddRouteOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="hidden lg:flex"
                     variant="outline"
                     size="sm"
-                    onClick={() => handleAddRoute()}
+                    onClick={() => {
+                      handleAddRoute()
+                      setIsAddRouteOpen(true)
+                    }}
                   >
-                    <IconPlus />
-                    <span className="hidden lg:inline">Add Route</span>
+                    <IconPlus className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-2">Add Route</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="min-w-4xl">
+                <DialogContent className="w-[95vw] sm:max-w-3xl lg:max-w-5xl xl:max-w-6xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 no-scrollbar">
                   <DialogHeader>
                     <DialogTitle>Add New Route</DialogTitle>
                     <DialogDescription>
                       Enter the details for your new route.
                     </DialogDescription>
                   </DialogHeader>
-                  {/* Moved OUTSIDE of DialogDescription */}
-                  <RouteCreationForm />
+                  <RouteCreationForm onClose={() => setIsAddRouteOpen(false)} />
                 </DialogContent>
               </Dialog>
             )}
             {view === "Flights" && (
-              <Dialog>
+              <Dialog open={isAddFlightOpen} onOpenChange={setIsAddFlightOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="hidden lg:flex"
                     variant="outline"
                     size="sm"
-                    onClick={() => handleAddFlight()}
+                    onClick={() => {
+                      handleAddFlight()
+                      setIsAddFlightOpen(true)
+                    }}
                   >
-                    <IconPlus />
-                    <span className="hidden lg:inline">Add Flight</span>
+                    <IconPlus className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-2">Add Flight</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="min-w-4xl">
+                <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
                   <DialogHeader>
                     <DialogTitle>Add New Flight</DialogTitle>
                     <DialogDescription>
                       Schedule a new flight.
                     </DialogDescription>
                   </DialogHeader>
-                  {/* Moved OUTSIDE of DialogDescription */}
-                  <FlightCreationForm />
+                  <FlightCreationForm onClose={() => setIsAddFlightOpen(false)} />
                 </DialogContent>
               </Dialog>
             )}
@@ -874,7 +878,7 @@ export function DataTable({
 
       {/* Dialogs */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="min-w-4xl max-h-[80vh] overflow-y-auto p-6">
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>SeatMap Setup</DialogTitle>
             <DialogDescription>
@@ -891,13 +895,16 @@ export function DataTable({
         </DialogContent>
       </Dialog>
       <Dialog open={isCopying} onOpenChange={setIsCopying}>
-        <DialogContent className="min-w-4xl">
+        <DialogContent className="w-[95vw] max-w-lg p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Copy Aircraft</DialogTitle>
             <DialogDescription>
               Choose on which aircraft copy the selected seatmap
               <Input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                min="1"
+                max=""
                 placeholder="Enter aircraft ID"
                 onChange={(e) => setCopyAircraftId(Number(e.target.value))}
               />

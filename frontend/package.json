@@ -39,6 +39,8 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "dotted-map": "^2.2.3",
+    "framer-motion": "^12.26.2",
     "lucide-react": "^0.503.0",
     "motion": "^12.9.2",
     "next": "^15.5.5",

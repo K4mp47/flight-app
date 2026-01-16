@@ -6,8 +6,8 @@ import { api } from "@/lib/api"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { ChartAreaInteractive } from "@/components/dashboard"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { IconPlane, IconPlaneDeparture, IconPlaneArrival, IconMenu2 } from "@tabler/icons-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar" // This line is already present
+import { Plane, PlaneLanding, PlaneTakeoff } from "lucide-react"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebarUser } from "@/components/layout"
 
@@ -171,7 +171,6 @@ export default function ProfilePage() {
           {/* Mobile Sidebar Trigger */}
           <div className="flex items-center gap-3 mb-4">
             <SidebarTrigger className="lg:hidden" />
-            <h1 className="text-2xl font-bold">Welcome, {user?.name}</h1>
           </div>
           <h1 className="text-2xl font-bold mb-6 hidden lg:block">Welcome, {user?.name}</h1>
           {activeView === "profile" && (
@@ -219,15 +218,15 @@ export default function ProfilePage() {
                             </CardHeader>
                             <CardContent className="p-0 text-sm grid grid-cols-1 md:grid-cols-2 gap-2">
                               <div className="flex items-center gap-2">
-                                <IconPlane className="h-4 w-4 text-muted-foreground" />
+                                <Plane className="h-4 w-4 text-muted-foreground" />
                                 <p><strong>Airline:</strong> {flight.airline.name} ({flight.airline.iata_code})</p>
                               </div>
                               <div className="flex items-center gap-2">
-                                <IconPlaneDeparture className="h-4 w-4 text-muted-foreground" />
+                                <PlaneTakeoff className="h-4 w-4 text-muted-foreground" />
                                 <p><strong>From:</strong> {section?.section?.code_departure_airport ?? ''}</p>
                               </div>
                               <div className="flex items-center gap-2">
-                                <IconPlaneArrival className="h-4 w-4 text-muted-foreground" />
+                                <PlaneLanding className="h-4 w-4 text-muted-foreground" />
                                 <p><strong>To:</strong> {section?.section?.code_arrival_airport ?? ''}</p>
                               </div>
                               <div className="flex items-center gap-2">

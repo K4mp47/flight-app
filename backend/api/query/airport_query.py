@@ -1,7 +1,8 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case, or_
 from sqlalchemy.orm import joinedload
 from flask_sqlalchemy.session import Session
 from ..models.airport import Airport
+from ..models.city import City
 
 
 def get_airport_by_iata_code(session: Session,iata_code):
@@ -37,11 +38,57 @@ def get_airports_by_city_id(session: Session, city_id: int):
     return result
 
 
-def search_airports_by_name_or_code(session: Session, query: str):
-    """Search airports by name or IATA code"""
-    stmt = select(Airport).where(
-        (Airport.name.ilike(f'%{query}%')) |
-        (Airport.iata_code.ilike(f'%{query}%'))
+def search_airports_by_name_or_code(session: Session, query: str, limit: int = 20):
+    """Search airports by name, IATA code, or city name with optimized matching"""
+    query_upper = query.upper()
+    
+    # Get city IDs that match the query
+    matching_city_ids_stmt = select(City.id_city).where(City.name.ilike(f'%{query}%'))
+    matching_city_ids = session.execute(matching_city_ids_stmt).scalars().all()
+    
+    # Build the main query
+    conditions = [
+        Airport.name.ilike(f'%{query}%'),
+        Airport.iata_code.ilike(f'%{query}%')
+    ]
+    
+    # Add city condition if we found matching cities
+    if matching_city_ids:
+        conditions.append(Airport.id_city.in_(matching_city_ids))
+    
+    stmt = (
+        select(Airport)
+        .where(or_(*conditions))
+        .order_by(
+            # Exact IATA match first (highest priority)
+            case(
+                (Airport.iata_code == query_upper, 1),
+                else_=2
+            ),
+            # Then starts-with matches
+            case(
+                (Airport.name.ilike(f'{query}%'), 1),
+                (Airport.iata_code.ilike(f'{query}%'), 1),
+                else_=2
+            ),
+            # Finally alphabetical by airport name
+            Airport.name
+        )
+        .limit(limit)
     )
+    
     result = session.scalars(stmt).all()
+    
+    # Eagerly load city for each airport
+    for airport in result:
+        _ = airport.city
+    
+    return result
+    
+    result = session.scalars(stmt).all()
+    
+    # Eagerly load city for each airport
+    for airport in result:
+        _ = airport.city
+    
     return result

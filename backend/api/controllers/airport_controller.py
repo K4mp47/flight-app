@@ -134,10 +134,14 @@ class Airport_controller:
             self.session.rollback()
             return {"message": f"Error deleting airport: {str(e)}"}, 500
 
-    def search_airports(self, query: str):
-        """Search airports by name or IATA code - All roles"""
+    def search_airports(self, query: str, limit: int = 20):
+        """Search airports by name, IATA code, or city name - All roles"""
         try:
-            airports = search_airports_by_name_or_code(self.session, query)
+            # Require at least 2 characters for search
+            if len(query.strip()) < 2:
+                return {"airports": []}, 200
+            
+            airports = search_airports_by_name_or_code(self.session, query.strip(), limit)
             return {"airports": [airport.to_dict() for airport in airports]}, 200
 
         except Exception as e:

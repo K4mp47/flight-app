@@ -12,10 +12,14 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { IconTrash, IconPlaneArrival, IconPlaneDeparture, IconPlus } from "@tabler/icons-react"
+import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { TimePicker } from "@/components/ui/time-picker"
 import { api } from "@/lib/api"
 
 // Schema di validazione per una singola sezione
@@ -46,7 +50,7 @@ const formSchema = z.object({
 
 type RouteFormValues = z.infer<typeof formSchema>
 
-export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
+export function RouteCreationForm({ airlineCode, onClose }: { airlineCode?: string, onClose?: () => void }) {
   const form = useForm<RouteFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -138,8 +142,7 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
       await api.post("/airline/add/route", apiPayload);
       toast.success(`Route ${data.airline_code.toUpperCase()}${data.number_route} created successfully!`);
       
-      // Chiudi il dialog se necessario
-      document.getElementById("close-route-dialog")?.click();
+      onClose?.();
 
     } catch (error: unknown) {
       console.error("Error creating route:", error);
@@ -168,20 +171,21 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         {/* Informazioni base della route */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <FormField
             control={form.control}
             name="airline_code"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col space-y-2">
                 <FormLabel>Airline Code</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="AZ" 
                     {...field} 
                     onChange={e => field.onChange(e.target.value.toUpperCase())} 
+                    className="h-10"
                   />
                 </FormControl>
                 <FormMessage />
@@ -193,14 +197,15 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
             control={form.control}
             name="number_route"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col space-y-2">
                 <FormLabel>Route Number</FormLabel>
                 <FormControl>
                   <Input 
-                    type="number" 
+                    type="text" 
+                    inputMode="numeric"
                     placeholder="1930" 
                     {...field} 
-                    onChange={e => field.onChange(parseInt(e.target.value) || 0)} 
+                    className="h-10"
                   />
                 </FormControl>
                 <FormMessage />
@@ -210,33 +215,44 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
         </div>
 
         {/* Date */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <FormField
             control={form.control}
             name="start_date"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col space-y-2">
                 <FormLabel>Start Date</FormLabel>
-                
+                <Popover>
+                  <PopoverTrigger asChild>
                     <FormControl>
-                      
-                    <Input 
-                      type="date" 
-                      {...field} 
-                      value={
-                        (() => {
-                          const d = field.value instanceof Date ? field.value : field.value ? new Date(field.value) : null;
-                          return d && !isNaN(d.getTime()) ? format(d, "yyyy-MM-dd") : "";
-                        })()
-                      }
-                      onChange={e => {
-                        const val = e.target.value;
-                        const parsed = val ? new Date(val) : null;
-                        field.onChange(parsed);
-                      }}
-                      min={format(new Date(), "yyyy-MM-dd")}
-                    />
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-10",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
                     </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
@@ -246,27 +262,39 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
             control={form.control}
             name="end_date"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col space-y-2">
                 <FormLabel>End Date</FormLabel>
-                <FormControl>
-                      
-                    <Input 
-                      type="date" 
-                      {...field} 
-                      value={
-                        (() => {
-                          const d = field.value instanceof Date ? field.value : field.value ? new Date(field.value) : null;
-                          return d && !isNaN(d.getTime()) ? format(d, "yyyy-MM-dd") : "";
-                        })()
-                      }
-                      onChange={e => {
-                        const val = e.target.value;
-                        const parsed = val ? new Date(val) : null;
-                        field.onChange(parsed);
-                      }}
-                      min={format(new Date(), "yyyy-MM-dd")}
-                    />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-10",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
                     </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
@@ -274,19 +302,20 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
         </div>
 
         {/* Prezzi e delta */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <FormField
             control={form.control}
             name="base_price"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col space-y-2">
                 <FormLabel>Base Price (€)</FormLabel>
                 <FormControl>
                   <Input 
-                    type="number" 
+                    type="text" 
+                    inputMode="decimal"
                     placeholder="10" 
                     {...field} 
-                    onChange={e => field.onChange(parseFloat(e.target.value) || 0)} 
+                    className="h-10"
                   />
                 </FormControl>
                 <FormMessage />
@@ -298,17 +327,20 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
             control={form.control}
             name="delta_for_return_route"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col space-y-2">
                 <FormLabel>Return Route Delta (min)</FormLabel>
                 <FormControl>
                   <Input 
-                    type="number" 
+                    type="text" 
+                    inputMode="numeric"
                     placeholder="120" 
                     {...field} 
-                    onChange={e => field.onChange(parseInt(e.target.value) || 0)} 
+                    className="h-10"
                   />
                 </FormControl>
-                <FormDescription>Minutes after arrival for return route departure</FormDescription>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Minutes after arrival for return route departure
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -316,12 +348,13 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
         </div>
 
         {/* Sezioni del volo */}
-        <div className="space-y-6 pt-6 border-t">
-          <div className="flex justify-between items-center">
+        <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 border-t">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
             <h4 className="font-semibold text-lg">Flight Segments</h4>
             <Button 
               type="button" 
               variant="outline" 
+              size="sm"
               onClick={addSegment}
               disabled={fields.length === 0 || !form.getValues(`sections.${fields.length - 1}.arrival_airport`)}
             >
@@ -331,40 +364,43 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
           </div>
 
           {fields.map((field, index) => (
-            <div key={field.id} className="relative p-6 border rounded-lg space-y-4 bg-card">
-              <div className="flex items-center gap-2 mb-4">
+            <div key={field.id} className="relative p-3 sm:p-4 md:p-6 border rounded-lg space-y-3 sm:space-y-4 bg-card">
+              <div className="flex items-center gap-2">
                 {index === 0 ? (
-                  <IconPlaneDeparture className="h-5 w-5 text-blue-600" />
+                  <IconPlaneDeparture className="h-4 w-4 sm:h-5 sm:w-5 text-ring shrink-0" />
                 ) : (
-                  <IconPlaneArrival className="h-5 w-5 text-orange-600" />
+                  <IconPlaneArrival className="h-4 w-4 sm:h-5 sm:w-5 text-ring shrink-0" />
                 )}
-                <h5 className="font-medium">
-                  {index === 0 ? `Flight Segment 1 (Departure)` : `Stopover Segment ${index + 1}`}
+                <h5 className="font-medium text-sm sm:text-base line-clamp-1">
+                  {index === 0 ? `Flight Segment` : `Stopover Segment ${index + 1}`}
                 </h5>
                 {index > 0 && (
                   <Button 
                     type="button" 
                     variant="destructive" 
-                    size="sm"
+                    size="icon"
                     onClick={() => remove(index)}
-                    className="ml-auto h-8 w-8"
+                    className="ml-auto h-7 w-7 sm:h-8 sm:w-8 shrink-0 bg-input!"
                   >
-                    <IconTrash className="h-4 w-4" />
+                    <IconTrash className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </Button>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {/* Tempo: departure_time per primo segmento, waiting_time per altri */}
                 {index === 0 ? (
                   <FormField
                     control={form.control}
                     name={`sections.${index}.departure_time`}
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="flex flex-col space-y-2">
                         <FormLabel>Departure Time</FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} />
+                          <TimePicker 
+                            value={field.value} 
+                            onChange={field.onChange}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -375,17 +411,17 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
                     control={form.control}
                     name={`sections.${index}.waiting_time`}
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="flex flex-col space-y-2">
                         <FormLabel>Waiting Time (min)</FormLabel>
                         <FormControl>
                           <Input 
-                            type="number" 
+                            type="text"
+                            inputMode="numeric"
                             placeholder="120" 
                             {...field} 
-                            onChange={e => field.onChange(parseInt(e.target.value) || 0)} 
                           />
                         </FormControl>
-                        <FormDescription>Min 120 minutes</FormDescription>
+                        <FormDescription className="text-xs">Min 120 minutes</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -397,7 +433,7 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
                   control={form.control}
                   name={`sections.${index}.departure_airport`}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col space-y-2">
                       <FormLabel>Departure Airport</FormLabel>
                       <FormControl>
                         <Input 
@@ -418,7 +454,7 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
                   control={form.control}
                   name={`sections.${index}.arrival_airport`}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col space-y-2">
                       <FormLabel>Arrival Airport</FormLabel>
                       <FormControl>
                         <Input 
@@ -436,11 +472,11 @@ export function RouteCreationForm({ airlineCode }: { airlineCode?: string }) {
           ))}
         </div>
 
-        <div className="flex justify-end gap-3 pt-6">
-          <Button type="button" variant="outline" onClick={() => document.getElementById("close-route-dialog")?.click()}>
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-t">
+          <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto h-10">
             Cancel
           </Button>
-          <Button type="submit" disabled={form.formState.isSubmitting}>
+          <Button type="submit" disabled={form.formState.isSubmitting} className="w-full sm:w-auto h-10">
             {form.formState.isSubmitting ? "Creating..." : "Create Route"}
           </Button>
         </div>

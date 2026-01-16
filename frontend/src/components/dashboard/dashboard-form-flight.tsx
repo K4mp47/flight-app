@@ -13,19 +13,18 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Loader2, Check, ChevronsUpDown } from "lucide-react"; // Added Loader2, Check, ChevronsUpDown
+import { CalendarIcon, Loader2, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import React, { useState, useEffect } from "react"; // Changed import to React, { useState, useEffect }
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"; // Added Command imports
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const formSchema = z.object({
   airline_code: z.string().min(2).max(3),
@@ -41,7 +40,7 @@ const formSchema = z.object({
 
 type FlightFormValues = z.infer<typeof formSchema>;
 
-export default function FlightCreationForm() { // Removed airlineCode prop
+export default function FlightCreationForm({ onClose }: { onClose?: () => void }) {
   const form = useForm<FlightFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -110,7 +109,7 @@ export default function FlightCreationForm() { // Removed airlineCode prop
       // Fetch routes
       setLoadingRoutes(true);
       try {
-        const routesRes = await api.get<{routes: Route[]}>(`/airline/${userAirlineCode}/route`);
+        const routesRes = await api.get<{ routes: Route[] }>(`/airline/${userAirlineCode}/route`);
         setAvailableRoutes(routesRes.routes);
       } catch (error) {
         console.error("Error fetching routes:", error);
@@ -129,7 +128,7 @@ export default function FlightCreationForm() { // Removed airlineCode prop
         return;
       }
       console.log("Submitting flight data:", data);
-      
+
       const payload = {
         airline_code: userAirlineCode,
         aircraft_id: data.aircraft_id,
@@ -144,7 +143,7 @@ export default function FlightCreationForm() { // Removed airlineCode prop
       console.log("API Payload:", payload);
 
       await api.post(`/airline/route/${data.route_code}/add-flight`, payload);
-      
+
       toast.success("Flight created successfully!");
       form.reset({
         airline_code: userAirlineCode,
@@ -153,13 +152,13 @@ export default function FlightCreationForm() { // Removed airlineCode prop
         outbound: undefined,
         return_: undefined,
       }); // Reset form with airline_code preserved
-      
-      document.getElementById("close-flight-dialog")?.click();
-      
+
+      onClose?.();
+
     } catch (error: unknown) {
       console.error("Error creating flight:", error);
       toast.error(
-        "Error creating flight: " + 
+        "Error creating flight: " +
         (error instanceof Error ? error.message : "Unknown error")
       );
     }
@@ -191,8 +190,8 @@ export default function FlightCreationForm() { // Removed airlineCode prop
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Aircraft</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
                     <FormControl>
                       <Button
                         variant="outline"
@@ -217,35 +216,20 @@ export default function FlightCreationForm() { // Removed airlineCode prop
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search aircraft..." />
-                      <CommandEmpty>No aircraft found.</CommandEmpty>
-                      <CommandGroup>
-                        {availableAircraft.map((aircraft) => (
-                          <CommandItem
-                            value={aircraft.aircraft.name + " (" + aircraft.id_aircraft_airline + ")"}
-                            key={aircraft.id_aircraft_airline}
-                            onSelect={() => {
-                              form.setValue("aircraft_id", aircraft.id_aircraft_airline);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                aircraft.id_aircraft_airline === field.value
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {aircraft.aircraft.name} ({aircraft.id_aircraft_airline})
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[--radix-popover-trigger-width] no-scrollbar max-h-48 overflow-y-auto">
+                    {availableAircraft.map((aircraft) => (
+                      <DropdownMenuItem
+                        key={aircraft.id_aircraft_airline}
+                        onSelect={() => {
+                          form.setValue("aircraft_id", aircraft.id_aircraft_airline);
+                        }}
+                      >
+                        {aircraft.aircraft.name} ({aircraft.id_aircraft_airline})
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <FormMessage />
               </FormItem>
             )}
@@ -258,8 +242,8 @@ export default function FlightCreationForm() { // Removed airlineCode prop
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Route</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
                     <FormControl>
                       <Button
                         variant="outline"
@@ -282,33 +266,20 @@ export default function FlightCreationForm() { // Removed airlineCode prop
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search route..." />
-                      <CommandEmpty>No route found.</CommandEmpty>
-                      <CommandGroup>
-                        {availableRoutes.map((route) => (
-                          <CommandItem
-                            value={route.route_code}
-                            key={route.route_code}
-                            onSelect={() => {
-                              form.setValue("route_code", route.route_code);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                route.route_code === field.value ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {route.route_code}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[--radix-popover-trigger-width] no-scrollbar max-h-48 overflow-y-auto">
+                    {availableRoutes.map((route) => (
+                      <DropdownMenuItem
+                        key={route.route_code}
+                        onSelect={() => {
+                          form.setValue("route_code", route.route_code);
+                        }}
+                      >
+                        {route.route_code}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <FormMessage />
               </FormItem>
             )}
@@ -344,8 +315,8 @@ export default function FlightCreationForm() { // Removed airlineCode prop
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent 
-                    className="w-auto p-2" 
+                  <PopoverContent
+                    className="w-auto p-2"
                     onOpenAutoFocus={(e) => e.preventDefault()}
                   >
                     <Calendar
@@ -397,7 +368,7 @@ export default function FlightCreationForm() { // Removed airlineCode prop
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent 
+                  <PopoverContent
                     className="w-auto p-2"
                     onOpenAutoFocus={(e) => e.preventDefault()}
                   >
@@ -428,10 +399,12 @@ export default function FlightCreationForm() { // Removed airlineCode prop
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end">
-          <Button 
-            type="submit" 
-            className="w-full md:w-auto"
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
             disabled={form.formState.isSubmitting || loadingAirlineCode || loadingAircraft || loadingRoutes}
           >
             {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create Flight"}

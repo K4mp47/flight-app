@@ -214,8 +214,13 @@ export function CreateSeatBlockDialog({
       {/* Matrix Grid */}
       <div className="space-y-2">
         <Label>Seat Matrix</Label>
-        <div className="max-h-[400px] overflow-y-auto">
-          <div className="border rounded-lg p-2 sm:p-4 bg-muted/30 overflow-x-auto">
+        <p className="text-xs sm:text-sm text-muted-foreground">
+            Click cells to toggle individual seats between seat (green) and aisle (gray).
+            <span className="hidden sm:inline"> Click column letters (A, B, C...) to toggle entire columns.</span>
+            Green cells represent seats, gray cells represent aisles or empty spaces.
+          </p>
+        <div className="max-h-70 overflow-y-auto no-scrollbar">
+          <div className="border rounded-lg p-2 sm:p-4 bg-muted/30 flex justify-center overflow-x-auto w-full">
             <div className="min-w-fit">
               {/* Column headers */}
               <div className="flex mb-2">
@@ -224,7 +229,7 @@ export function CreateSeatBlockDialog({
                   <button
                     key={i}
                     onClick={() => toggleColumn(i)}
-                    className="w-6 h-5 sm:w-8 sm:h-6 flex items-center justify-center text-xs font-medium hover:bg-blue-100 rounded transition-colors cursor-pointer border border-transparent hover:border-blue-300"
+                    className="w-6 h-5 sm:w-9 sm:h-6 flex items-center justify-center text-xs font-medium hover:bg-input rounded transition-colors cursor-pointer border border-transparent hover:border-0"
                     title={`Click to toggle entire column ${String.fromCharCode(65 + i)}`}
                   >
                     {String.fromCharCode(65 + i)}
@@ -258,11 +263,6 @@ export function CreateSeatBlockDialog({
               </div>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            Click cells to toggle individual seats between seat (green) and aisle (gray).
-            <span className="hidden sm:inline"> Click column letters (A, B, C...) to toggle entire columns.</span>
-            Green cells represent seats, gray cells represent aisles or empty spaces.
-          </p>
         </div>
         <Button
           className="w-full sm:w-auto"

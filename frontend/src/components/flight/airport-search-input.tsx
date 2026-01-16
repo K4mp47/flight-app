@@ -31,21 +31,37 @@ export function AirportSearchInput({ value, onValueChange, onSelectAirport, plac
   const [query, setQuery] = React.useState(""); // The term typed into the CommandInput
   const [airports, setAirports] = React.useState<Airport[]>([]);
   const [loading, setLoading] = React.useState(false);
-  const debouncedQuery = useDebounce(query, 500); // Debounce search input
+  const [cache, setCache] = React.useState<Map<string, Airport[]>>(new Map());
+  const debouncedQuery = useDebounce(query, 300); // Debounce search input
 
   // Effect to fetch airports based on debounced query
   React.useEffect(() => {
     const fetchAirports = async () => {
-      if (!debouncedQuery) {
+      const trimmedQuery = debouncedQuery.trim();
+      
+      // Require at least 2 characters
+      if (trimmedQuery.length < 2) {
         setAirports([]);
+        setLoading(false);
+        return;
+      }
+
+      // Check cache first
+      const cacheKey = trimmedQuery.toLowerCase();
+      if (cache.has(cacheKey)) {
+        setAirports(cache.get(cacheKey)!);
         setLoading(false);
         return;
       }
 
       setLoading(true);
       try {
-        const response = await api.get<AirportSearchResponse>(`/airports/search?q=${debouncedQuery}`);
-        setAirports(response.airports || []);
+        const response = await api.get<AirportSearchResponse>(`/airports/search?q=${encodeURIComponent(trimmedQuery)}`);
+        const results = response.airports || [];
+        setAirports(results);
+        
+        // Cache the results
+        setCache(prev => new Map(prev).set(cacheKey, results));
       } catch (error) {
         console.error("Failed to fetch airports:", error);
         setAirports([]);
@@ -55,7 +71,7 @@ export function AirportSearchInput({ value, onValueChange, onSelectAirport, plac
     };
 
     fetchAirports();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, cache]);
 
   const handleSelect = (selectedIataCode: string) => {
     const selectedAirport = airports.find(airport => airport.iata_code === selectedIataCode);
@@ -95,9 +111,10 @@ export function AirportSearchInput({ value, onValueChange, onSelectAirport, plac
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <Command shouldFilter={false} className="bg-popover text-popover-foreground">
-          <CommandList>
+          <CommandList className="no-scrollbar">
             {loading && <CommandEmpty>Searching...</CommandEmpty>}
-            {!loading && airports.length === 0 && query && debouncedQuery && <CommandEmpty>No airport found.</CommandEmpty>}
+            {!loading && airports.length === 0 && query.trim().length < 2 && <CommandEmpty>Type at least 2 characters to search.</CommandEmpty>}
+            {!loading && airports.length === 0 && query.trim().length >= 2 && debouncedQuery && <CommandEmpty>No airport found.</CommandEmpty>}
             {!loading && airports.length === 0 && !query && <CommandEmpty>Start typing to search airports.</CommandEmpty>}
             <CommandGroup>
               {airports.map((airport) => (

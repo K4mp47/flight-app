@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { FlightSearchForm, FlightCard } from '@/components/flight';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MainNavBar } from '@/components/layout';
+import { WorldMap } from '@/components/ui/world-map';
+import { airportData } from '@/lib/airport-data';
 import { api } from '@/lib/api';
 import { format } from 'date-fns';
 import { useEffect } from 'react';
@@ -49,6 +51,7 @@ export default function SearchPage() {
     const [selectedReturn, setSelectedReturn] = useState<number | null>(null);
     const [adults, setAdults] = useState<number>(1);
     const [children, setChildren] = useState<number>(0);
+    const [searchPerformed, setSearchPerformed] = useState(false);
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -80,6 +83,7 @@ export default function SearchPage() {
         flightClass: number; // Added
         directFlights: boolean; // Added
     }) => {
+        setSearchPerformed(true);
         setLoading(true);
         setOutboundFlights([]);
         setReturnFlights([]);
@@ -95,10 +99,11 @@ export default function SearchPage() {
                 arrival_airport: params.destination,
                 round_trip_flight: params.tripType === 'round-trip',
                 direct_flights: params.directFlights,
-                departure_date_outbound: params.departureDate ? format(params.departureDate, 'yyyy-MM-dd') : undefined,
-                departure_date_return: params.returnDate ? format(params.returnDate, 'yyyy-MM-dd') : undefined,
+                departure_date_outbound: params.departureDate ? format(params.departureDate, 'yyyy-MM-dd') : null,
+                departure_date_return: params.returnDate ? format(params.returnDate, 'yyyy-MM-dd') : null,
                 id_class: params.flightClass,
             };
+            console.log('Search payload:', payload);
 
             const response = await api.post<FlightSearchResponse>('/flight/search', payload);
             
@@ -121,7 +126,7 @@ export default function SearchPage() {
             <MainNavBar companyuser={companyuser} />
             
             {/* Hero Section */}
-            <div className="relative h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] flex items-center justify-center shadow-2xl">
+            <div className="relative h-75 sm:h-87.5 md:h-100 lg:h-112.5 flex items-center justify-center shadow-2xl">
                 <Image
                     src="/banner.svg"
                     alt="Scenic landscape"
@@ -149,61 +154,121 @@ export default function SearchPage() {
                 <div className="max-w-7xl mx-auto md:mt-8 mt-40">
                 
                 {/* Outbound Flights */}
-                <div className="mb-8 sm:mb-12">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">{isRoundTrip ? 'Outbound Flights' : 'Available Flights'}</h2>
-                    <div className="space-y-3 sm:space-y-4">
-                        {loading ? (
-                            Array.from({ length: 4 }).map((_, i) => (
-                               <Card key={i} className="p-3 sm:p-4">
-                                   <div className="flex items-center space-x-3 sm:space-x-4">
-                                       <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex-shrink-0" />
-                                       <div className="space-y-2 flex-1 min-w-0">
-                                           <Skeleton className="h-4 w-3/4" />
-                                           <Skeleton className="h-3 w-1/2" />
+                {(searchPerformed || loading) && (
+                    <div className="mb-8 sm:mb-12">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">{isRoundTrip ? 'Outbound Flights' : 'Available Flights'}</h2>
+                        <div className="space-y-3 sm:space-y-4">
+                            {loading ? (
+                                Array.from({ length: 4 }).map((_, i) => (
+                                   <Card key={i} className="p-3 sm:p-4">
+                                       <div className="flex items-center space-x-3 sm:space-x-4">
+                                           <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full shrink-0" />
+                                           <div className="space-y-2 flex-1 min-w-0">
+                                               <Skeleton className="h-4 w-3/4" />
+                                               <Skeleton className="h-3 w-1/2" />
+                                           </div>
+                                           <Skeleton className="h-9 w-20 sm:h-10 sm:w-24 shrink-0" />
                                        </div>
-                                       <Skeleton className="h-9 w-20 sm:h-10 sm:w-24 flex-shrink-0" />
-                                   </div>
-                               </Card>
-                            ))
-                        ) : (
-                            outboundFlights.map((flight, idx) => (
-                                <div 
-                                    key={idx}
-                                >
-                                    <FlightCard 
-                                        flight={flight} 
-                                        selectedClass={selectedFlightClass}
-                                        onSelect={() => setSelectedOutbound(flight.id_flight)}
-                                        onDeselect={() => setSelectedOutbound(null)}
-                                        isSelected={selectedOutbound === flight.id_flight}
-                                        className={selectedOutbound === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
-                                    />
+                                   </Card>
+                                ))
+                            ) : searchPerformed && outboundFlights.length === 0 ? (
+                                <div className="text-center text-gray-500 py-8">
+                                    <p>No flights found for your search criteria.</p>
+                                    <p>Please try adjusting your filters or search again.</p>
                                 </div>
-                            ))
-                        )}
+                            ) : (
+                                outboundFlights.map((flight, idx) => (
+                                    <div 
+                                        key={idx}
+                                    >
+                                        <FlightCard 
+                                            flight={flight} 
+                                            selectedClass={selectedFlightClass}
+                                            onSelect={() => setSelectedOutbound(flight.id_flight)}
+                                            onDeselect={() => setSelectedOutbound(null)}
+                                            isSelected={selectedOutbound === flight.id_flight}
+                                            className={selectedOutbound === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
+                                        />
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Return Flights */}
-                {isRoundTrip && returnFlights.length > 0 && (
+                {isRoundTrip && searchPerformed && (
                     <div className="mb-8 sm:mb-12">
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">Return Flights</h2>
                         <div className="space-y-3 sm:space-y-4">
-                            {returnFlights.map((flight, idx) => (
-                                <div 
-                                    key={idx}
-                                >
-                                    <FlightCard 
-                                        flight={flight} 
-                                        selectedClass={selectedFlightClass}
-                                        onSelect={() => setSelectedReturn(flight.id_flight)}
-                                        onDeselect={() => setSelectedReturn(null)}
-                                        isSelected={selectedReturn === flight.id_flight}
-                                        className={selectedReturn === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
-                                    />
+                            {returnFlights.length === 0 ? (
+                                <div className="text-center text-gray-500 py-8">
+                                    <p>No return flights found for your selected outbound flight.</p>
+                                    <p>Please try adjusting your filters or search again.</p>
                                 </div>
-                            ))}
+                            ) : (
+                                returnFlights.map((flight, idx) => (
+                                    <div 
+                                        key={idx}
+                                    >
+                                        <FlightCard 
+                                            flight={flight} 
+                                            selectedClass={selectedFlightClass}
+                                            onSelect={() => setSelectedReturn(flight.id_flight)}
+                                            onDeselect={() => setSelectedReturn(null)}
+                                            isSelected={selectedReturn === flight.id_flight}
+                                            className={selectedReturn === flight.id_flight ? 'ring-2 ring-primary rounded-lg' : ''}
+                                        />
+                                    </div>
+                                ))
+                            )}
                         </div>
+                    </div>
+                )}
+
+                {/* World Map Section */}
+                {!searchPerformed && (
+                    <div className="mb-8 sm:mb-12 hidden md:block">
+                        <div className="text-center mb-6">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
+                                Global Connectivity
+                            </h2>
+                            <p className="text-muted-foreground text-sm sm:text-base">
+                                Discover our network of {airportData.length} airports worldwide
+                            </p>
+                        </div>
+                        <WorldMap 
+                            dots={[
+                                // Popular flight routes
+                                {
+                                    start: { lat: 45.5051, lng: 12.3388 }, // Venice
+                                    end: { lat: 41.8003, lng: 12.2389 }, // Rome
+                                },
+                                {
+                                    start: { lat: 40.6413, lng: -73.7781 }, // New York JFK
+                                    end: { lat: 51.4700, lng: -0.4543 }, // London Heathrow
+                                },
+                                {
+                                    start: { lat: 35.5494, lng: 139.7798 }, // Tokyo
+                                    end: { lat: 1.3644, lng: 103.9915 }, // Singapore
+                                },
+                                {
+                                    start: { lat: 25.2532, lng: 55.3657 }, // Dubai
+                                    end: { lat: -33.9399, lng: 18.6017 }, // Cape Town
+                                },
+                                {
+                                    start: { lat: 48.3538, lng: 14.1875 }, // Linz
+                                    end: { lat: 37.4693, lng: 15.0664 }, // Catania
+                                },
+                            ]}
+                            points={airportData.map(airport => ({
+                                lat: airport.lat,
+                                lng: airport.lng,
+                                label: airport.name
+                            }))}
+                            lineColor="#D0D0D0"
+                            dotColor="#D0D0D0"
+                        />
                     </div>
                 )}
 

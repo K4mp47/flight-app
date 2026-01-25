@@ -2,9 +2,13 @@
 
 import * as React from "react"
 import {
+  IconArmchair,
+  IconBriefcase,
   IconDashboard,
   IconListDetails,
-  IconPlaneInflight
+  IconPlaneInflight,
+  IconDropletDollar,
+  IconLuggage
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -18,6 +22,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { api } from "@/lib/api"
+import { title } from "process"
+import { url } from "inspector"
 
 
 const data = {
@@ -41,6 +47,26 @@ const data = {
       title: "Flights",
       url: "#",
       icon: IconPlaneInflight,
+    },
+    {
+      title: "Price Policy",
+      url: "#",
+      icon: IconDropletDollar,
+    },
+    {
+      title: "Baggage Rules",
+      url: "#",
+      icon: IconLuggage,
+    },
+    {
+      title: "Class Price Policy",
+      url: "#",
+      icon: IconArmchair,
+    },
+    {
+      title: "Class Baggage Policy",
+      url: "#",
+      icon: IconBriefcase,
     }
   ],
 }

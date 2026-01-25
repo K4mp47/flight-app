@@ -85,19 +85,31 @@ import {
 import { RouteCreationForm } from "./dashboard-form-routes";
 import { SeatmapCreationForm } from "./dashboard-form-seatmap";
 import FlightCreationForm from "./dashboard-form-flight";
+import PricePolicyCreationForm from "./dashboard-form-pricepolicy";
+import BaggageRuleCreationForm from "./dashboard-form-baggagerule";
+import ClassPricePolicyCreationForm from "./dashboard-form-classpricepolicy";
+import ClassBaggagePolicyCreationForm from "./dashboard-form-classbaggagepolicy";
 import { Input } from "./ui/input";
 
 export function DataTable({
   initialData,
   view,
 }: {
-  initialData?: (Aircraft | Route | Flight)[];
+  initialData?: (Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[];
   view: string;
 }) {
   const [isCopying, setIsCopying] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [selectedAircraft, setSelectedAircraft] = React.useState<Aircraft | null>(null);
   const [copyAircraftId, setCopyAircraftId] = React.useState<number | null>(null);
+  const [isEditingPricePolicy, setIsEditingPricePolicy] = React.useState(false);
+  const [selectedPricePolicy, setSelectedPricePolicy] = React.useState<PricePolicy | null>(null);
+  const [isEditingBaggageRule, setIsEditingBaggageRule] = React.useState(false);
+  const [selectedBaggageRule, setSelectedBaggageRule] = React.useState<BaggageRule | null>(null);
+  const [isEditingClassPricePolicy, setIsEditingClassPricePolicy] = React.useState(false);
+  const [selectedClassPricePolicy, setSelectedClassPricePolicy] = React.useState<ClassPricePolicy | null>(null);
+  const [isEditingClassBaggagePolicy, setIsEditingClassBaggagePolicy] = React.useState(false);
+  const [selectedClassBaggagePolicy, setSelectedClassBaggagePolicy] = React.useState<ClassBaggagePolicy | null>(null);
 
   // Fleet columns
   const fleetColumns: ColumnDef<Aircraft>[] = [
@@ -371,13 +383,297 @@ export function DataTable({
     },
   ];
 
-  const columnsByView: Record<string, ColumnDef<Aircraft | Route | Flight>[]> = {
-    Fleet: fleetColumns as ColumnDef<Aircraft | Route | Flight>[],
-    Routes: routeColumns as ColumnDef<Aircraft | Route | Flight>[],
-    Flights: flightColumns as ColumnDef<Aircraft | Route | Flight>[],
+  const pricePolicyColumns: ColumnDef<PricePolicy>[] = [
+    {
+      accessorKey: "fixed_markup",
+      header: "Fixed Markup",
+      cell: ({ row }) => (
+        <div className="font-medium">€{row.original.fixed_markup}</div>
+      ),
+      enableHiding: false,
+    },
+    {
+      accessorKey: "price_for_km",
+      header: "Price for KM",
+      cell: ({ row }) => <div>€{row.original.price_for_km}/km</div>
+    },
+    {
+      accessorKey: "fee_for_stopover",
+      header: "Fee for Stopover",
+      cell: ({ row }) => <div>€{row.original.fee_for_stopover}</div>
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem
+              onSelect={() => {
+                setSelectedPricePolicy(row.original);
+                setIsEditingPricePolicy(true);
+              }}
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() =>
+                toast.error(
+                  "Delete functionality not implemented - each airline can only have one price policy"
+                )
+              }
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  // Baggage Rules columns
+  const baggageRuleColumns: ColumnDef<BaggageRule>[] = [
+    {
+      accessorKey: "baggage.name",
+      header: "Baggage Type",
+      cell: ({ row }) => (
+        <div className="font-medium">{row.original.baggage?.name || "Unknown"}</div>
+      ),
+      enableHiding: false,
+    },
+    {
+      accessorKey: "max_weight_kg",
+      header: "Max Weight",
+      cell: ({ row }) => <div>{row.original.max_weight_kg ? `${row.original.max_weight_kg} kg` : "N/A"}</div>
+    },
+    {
+      accessorKey: "dimensions",
+      header: "Dimensions (L×W×H)",
+      cell: ({ row }) => (
+        <div>{row.original.max_length_cm}×{row.original.max_width_cm}×{row.original.max_height_cm} cm</div>
+      )
+    },
+    {
+      accessorKey: "max_linear_cm",
+      header: "Max Linear",
+      cell: ({ row }) => <div>{row.original.max_linear_cm ? `${row.original.max_linear_cm} cm` : "N/A"}</div>
+    },
+    {
+      accessorKey: "base_price",
+      header: "Base Price",
+      cell: ({ row }) => <div>€{row.original.base_price}</div>
+    },
+    {
+      accessorKey: "over_weight_fee",
+      header: "Overweight Fee",
+      cell: ({ row }) => <div>{row.original.over_weight_fee ? `€${row.original.over_weight_fee}` : "N/A"}</div>
+    },
+    {
+      accessorKey: "over_size_fee",
+      header: "Oversize Fee",
+      cell: ({ row }) => <div>€{row.original.over_size_fee}</div>
+    },
+    {
+      accessorKey: "allow_extra",
+      header: "Allow Extra",
+      cell: ({ row }) => (
+        <Badge variant={row.original.allow_extra ? "default" : "secondary"}>
+          {row.original.allow_extra ? "Yes" : "No"}
+        </Badge>
+      )
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem
+              onSelect={() => {
+                setSelectedBaggageRule(row.original);
+                setIsEditingBaggageRule(true);
+              }}
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() =>
+                toast.error("Delete functionality not implemented yet")
+              }
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  // Class Price Policy columns
+  const classPricePolicyColumns: ColumnDef<ClassPricePolicy>[] = [
+    {
+      accessorKey: "class_seat.name",
+      header: "Class Name",
+      cell: ({ row }) => (
+        <div className="font-medium">{row.original.class_seat?.name || "Unknown"}</div>
+      ),
+      enableHiding: false,
+    },
+    {
+      accessorKey: "class_seat.code",
+      header: "Class Code",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="text-muted-foreground px-1.5">
+          {row.original.class_seat?.code || "N/A"}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "price_multiplier",
+      header: "Price Multiplier (%)",
+      cell: ({ row }) => <div>{row.original.price_multiplier}%</div>
+    },
+    {
+      accessorKey: "fixed_markup",
+      header: "Fixed Markup (€)",
+      cell: ({ row }) => <div>€{row.original.fixed_markup}</div>
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem
+              onSelect={() => {
+                setSelectedClassPricePolicy(row.original);
+                setIsEditingClassPricePolicy(true);
+              }}
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() =>
+                toast.error("Delete functionality not implemented yet")
+              }
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  // Class Baggage Policy columns
+  const classBaggagePolicyColumns: ColumnDef<ClassBaggagePolicy>[] = [
+    {
+      accessorKey: "class_.name",
+      header: "Class",
+      cell: ({ row }) => (
+        <div className="font-medium">{row.original.class_?.name || "Unknown"}</div>
+      ),
+      enableHiding: false,
+    },
+    {
+      accessorKey: "class_.code",
+      header: "Class Code",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="text-muted-foreground px-1.5">
+          {row.original.class_?.code || "N/A"}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "baggage.name",
+      header: "Baggage Type",
+      cell: ({ row }) => <div>{row.original.baggage?.name || "Unknown"}</div>
+    },
+    {
+      accessorKey: "quantity_included",
+      header: "Quantity Included",
+      cell: ({ row }) => (
+        <Badge variant="secondary">{row.original.quantity_included}</Badge>
+      )
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem
+              onSelect={() => {
+                setSelectedClassBaggagePolicy(row.original);
+                setIsEditingClassBaggagePolicy(true);
+              }}
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() =>
+                toast.error("Delete functionality not implemented yet")
+              }
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  const columnsByView: Record<string, ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[]> = {
+    Fleet: fleetColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
+    Routes: routeColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
+    Flights: flightColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
+    "Price Policy": pricePolicyColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
+    "Baggage Rules": baggageRuleColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
+    "Class Price Policy": classPricePolicyColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
+    "Class Baggage Policy": classBaggagePolicyColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
   };
 
-  function RegularRow({ row }: { row: Row<Aircraft | Route | Flight> }) {
+  function RegularRow({ row }: { row: Row<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy> }) {
     return (
       <TableRow
         data-state={row.getIsSelected() && "selected"}
@@ -392,12 +688,12 @@ export function DataTable({
     );
   }
 
-  function DraggableRow({ row }: { row: Row<Aircraft | Route | Flight> }) {
+  function DraggableRow({ row }: { row: Row<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy> }) {
     return <RegularRow row={row} />;
   }
 
-  const [data, setData] = React.useState<(Aircraft | Route | Flight)[]>(
-    () => (initialData ?? []) as (Aircraft | Route | Flight)[]
+  const [data, setData] = React.useState<(Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[]>(
+    () => (initialData ?? []) as (Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[]
   );
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -423,6 +719,18 @@ export function DataTable({
       if ('route_code' in item) {
         return String((item as Route).route_code);
       }
+      if ('id_class_price_policy' in item) {
+        return String((item as ClassPricePolicy).id_class_price_policy);
+      }
+      if ('id_class_baggage_policy' in item) {
+        return String((item as ClassBaggagePolicy).id_class_baggage_policy);
+      }
+      if ('id_baggage_rules' in item) {
+        return String((item as BaggageRule).id_baggage_rules);
+      }
+      if ('fixed_markup' in item) {
+        return String((item as PricePolicy).fixed_markup);
+      }
       if ('id_flight' in item) {
         return String((item as Flight).id_flight);
       }
@@ -445,6 +753,18 @@ export function DataTable({
       }
       if ('route_code' in row) {
         return String((row as Route).route_code);
+      }
+      if ('id_class_price_policy' in row) {
+        return String((row as ClassPricePolicy).id_class_price_policy);
+      }
+      if ('id_class_baggage_policy' in row) {
+        return String((row as ClassBaggagePolicy).id_class_baggage_policy);
+      }
+      if ('id_baggage_rules' in row) {
+        return String((row as BaggageRule).id_baggage_rules);
+      }
+      if ('fixed_markup' in row) {
+        return String((row as PricePolicy).fixed_markup);
       }
       if ('id_flight' in row) {
         return String((row as Flight).id_flight);
@@ -551,7 +871,7 @@ export function DataTable({
   }
 
   React.useEffect(() => {
-    setData((initialData ?? []) as (Aircraft | Route | Flight)[]);
+    setData((initialData ?? []) as (Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[]);
   }, [initialData]);
 
   async function handleAddFlight() {
@@ -703,6 +1023,98 @@ export function DataTable({
                   </DialogHeader>
                   {/* Moved OUTSIDE of DialogDescription */}
                   <FlightCreationForm />
+                </DialogContent>
+              </Dialog>
+            )}
+            {view === "Price Policy" && (
+               <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="hidden lg:flex"
+                    variant="outline"
+                    size="sm"
+                  >
+                    <IconPlus />
+                    <span className="hidden lg:inline">Add Price Policy</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="min-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Add New Price Policy</DialogTitle>
+                    <DialogDescription>
+                      Configure pricing rules for your airline.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <PricePolicyCreationForm />
+                </DialogContent>
+              </Dialog>
+            )}
+            {view === "Baggage Rules" && (
+               <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="hidden lg:flex"
+                    variant="outline"
+                    size="sm"
+                  >
+                    <IconPlus />
+                    <span className="hidden lg:inline">Add Baggage Rule</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="min-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Add New Baggage Rule</DialogTitle>
+                    <DialogDescription>
+                      Configure baggage rules for your airline.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <BaggageRuleCreationForm />
+                </DialogContent>
+              </Dialog>
+            )}
+            {view === "Class Price Policy" && (
+               <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="hidden lg:flex"
+                    variant="outline"
+                    size="sm"
+                  >
+                    <IconPlus />
+                    <span className="hidden lg:inline">Add Class Price Policy</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="min-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Add New Class Price Policy</DialogTitle>
+                    <DialogDescription>
+                      Configure pricing for a seat class.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ClassPricePolicyCreationForm />
+                </DialogContent>
+              </Dialog>
+            )}
+            {view === "Class Baggage Policy" && (
+               <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="hidden lg:flex"
+                    variant="outline"
+                    size="sm"
+                  >
+                    <IconPlus />
+                    <span className="hidden lg:inline">Add Class Baggage Policy</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="min-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Add New Class Baggage Policy</DialogTitle>
+                    <DialogDescription>
+                      Configure included baggage for a seat class.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ClassBaggagePolicyCreationForm />
                 </DialogContent>
               </Dialog>
             )}
@@ -895,6 +1307,87 @@ export function DataTable({
               Confirm
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Price Policy Dialog */}
+      <Dialog open={isEditingPricePolicy} onOpenChange={setIsEditingPricePolicy}>
+        <DialogContent className="min-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Edit Price Policy</DialogTitle>
+            <DialogDescription>
+              Modify the pricing rules for your airline.
+            </DialogDescription>
+          </DialogHeader>
+          <PricePolicyCreationForm
+            initialData={selectedPricePolicy}
+            isEditMode={true}
+            onSuccess={() => {
+              setIsEditingPricePolicy(false);
+              // Trigger a refresh by updating the data
+              window.location.reload();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Baggage Rule Dialog */}
+      <Dialog open={isEditingBaggageRule} onOpenChange={setIsEditingBaggageRule}>
+        <DialogContent className="min-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Edit Baggage Rule</DialogTitle>
+            <DialogDescription>
+              Modify the baggage rules for {selectedBaggageRule?.baggage?.name || "this baggage type"}.
+            </DialogDescription>
+          </DialogHeader>
+          <BaggageRuleCreationForm
+            initialData={selectedBaggageRule}
+            isEditMode={true}
+            onSuccess={() => {
+              setIsEditingBaggageRule(false);
+              window.location.reload();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Class Price Policy Dialog */}
+      <Dialog open={isEditingClassPricePolicy} onOpenChange={setIsEditingClassPricePolicy}>
+        <DialogContent className="min-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Edit Class Price Policy</DialogTitle>
+            <DialogDescription>
+              Modify the pricing for {selectedClassPricePolicy?.class_seat?.name || "this class"}.
+            </DialogDescription>
+          </DialogHeader>
+          <ClassPricePolicyCreationForm
+            initialData={selectedClassPricePolicy}
+            isEditMode={true}
+            onSuccess={() => {
+              setIsEditingClassPricePolicy(false);
+              window.location.reload();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Class Baggage Policy Dialog */}
+      <Dialog open={isEditingClassBaggagePolicy} onOpenChange={setIsEditingClassBaggagePolicy}>
+        <DialogContent className="min-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Edit Class Baggage Policy</DialogTitle>
+            <DialogDescription>
+              Modify included baggage for {selectedClassBaggagePolicy?.class_?.name || "this class"}.
+            </DialogDescription>
+          </DialogHeader>
+          <ClassBaggagePolicyCreationForm
+            initialData={selectedClassBaggagePolicy}
+            isEditMode={true}
+            onSuccess={() => {
+              setIsEditingClassBaggagePolicy(false);
+              window.location.reload();
+            }}
+          />
         </DialogContent>
       </Dialog>
     </>

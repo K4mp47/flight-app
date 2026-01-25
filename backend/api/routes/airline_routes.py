@@ -1640,7 +1640,7 @@ def new_price_policy(airline_code: str):
         session.close()
         return jsonify({"message": str(e)}), 400
     controller = Airline_controller(session)
-    response, status = controller.insert_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_fro_stopover)
+    response, status = controller.insert_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_for_stopover)
     session.close()
     return jsonify(response), status
 
@@ -1721,7 +1721,7 @@ responses:
         session.close()
         return jsonify({"message": str(e)}), 400
     controller = Airline_controller(session)
-    response, status = controller.change_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_fro_stopover)
+    response, status = controller.change_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_for_stopover)
     session.close()
     return jsonify(response), status
 

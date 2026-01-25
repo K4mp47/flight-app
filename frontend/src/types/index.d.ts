@@ -133,6 +133,63 @@ interface Flight {
   origin: string
 }
 
+interface PricePolicy {
+  fixed_markup: number,
+  price_for_km: number,
+  fee_for_stopover: number
+}
+
+interface BaggageRule {
+  id_baggage_rules: number
+  airline: {
+    iata_code: string
+    name: string
+  }
+  baggage: {
+    id_baggage: number
+    name: string
+  }
+  allow_extra: boolean
+  base_price: number
+  max_weight_kg: number | null
+  max_length_cm: number
+  max_width_cm: number
+  max_height_cm: number
+  max_linear_cm: number | null
+  over_weight_fee: number | null
+  over_size_fee: number
+}
+
+interface ClassPricePolicy {
+  id_class_price_policy: number
+  airline_code: string
+  class_seat: {
+    id_class: number
+    code: string
+    name: string
+  }
+  price_multiplier: number
+  fixed_markup: number
+}
+
+interface ClassBaggagePolicy {
+  id_class_baggage_policy: number
+  airline: {
+    iata_code: string
+    name: string
+  }
+  baggage: {
+    id_baggage: number
+    name: string
+  }
+  class_: {
+    id_class: number
+    code: string
+    name: string
+  }
+  quantity_included: number
+}
+
 // interface Flight {
   // id: string;
   // company_id: string;

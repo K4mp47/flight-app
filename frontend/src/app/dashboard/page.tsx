@@ -14,7 +14,7 @@ import { api } from "@/lib/api"
 
 export default function Page() {
   const [view, setView] = React.useState<string>("Fleet")
-  const [tableData, setTableData] = React.useState<(Aircraft | Route | Flight)[]>([])
+  const [tableData, setTableData] = React.useState<(Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[]>([])
   const [, setLoading] = React.useState<boolean>(false)
 
   React.useEffect(() => {
@@ -26,13 +26,10 @@ export default function Page() {
         const user = await api.get<{ airline_code?: string }>("/users/me").catch(() => ({} as User))
         const code = user?.airline_code ?? ""
         if (view === "Fleet") {
-          // try to fetch user's airline fleet, fallback to bundled JSON  
           const res = await api.get<Aircraft[]>(`/airline/${encodeURIComponent(code)}/fleet`)
-          console.log(res)
           if (mounted) setTableData(res)
         } else if (view === "Routes") {
           const route_res = await api.get<Routes>(`/airline/${encodeURIComponent(code)}/route`)
-          console.log(route_res)
           if (mounted) setTableData(route_res.routes)
         } else if (view === "Flights") {
           const flight_res = await api.get<Flight[]>(`/airline/${encodeURIComponent(code)}/flight`)
@@ -43,6 +40,18 @@ export default function Page() {
             ? (flight_res as (Aircraft | Route | Flight)[])
             : (flight_res as unknown as { flights?: (Aircraft | Route | Flight)[] })?.flights ?? []
           if (mounted) setTableData(flights)
+        } else if (view === "Price Policy") {
+          const policy_res = await api.get<{ policies: PricePolicy[] }>(`/airline/${encodeURIComponent(code)}/price-policy/`)
+          if (mounted) setTableData(policy_res.policies ?? [])
+        } else if (view === "Baggage Rules") {
+          const baggage_res = await api.get<BaggageRule[]>(`/baggage/${encodeURIComponent(code)}/rules`)
+          if (mounted) setTableData(baggage_res ?? [])
+        } else if (view === "Class Price Policy") {
+          const class_policy_res = await api.get<{ policies: ClassPricePolicy[] }>(`/airline/${encodeURIComponent(code)}/class-price-policy/`)
+          if (mounted) setTableData(class_policy_res.policies ?? [])
+        } else if (view === "Class Baggage Policy") {
+          const class_baggage_res = await api.get<ClassBaggagePolicy[]>(`/baggage/${encodeURIComponent(code)}/class-policy`)
+          if (mounted) setTableData(class_baggage_res ?? [])
         } else {
           if (mounted) setTableData([])
         }

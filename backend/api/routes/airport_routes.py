@@ -184,12 +184,12 @@ parameters:
   - name: page
     in: query
     type: integer
-    description: Page number for pagination (default: 1)
+    description: "Page number for pagination (default: 1)"
     default: 1
   - name: per_page
     in: query
     type: integer
-    description: Number of items per page for pagination (default: 50)
+    description: "Number of items per page for pagination (default: 50)"
     default: 50
   - name: all
     in: query

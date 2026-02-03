@@ -94,24 +94,43 @@ export function DataTable({
   initialData,
   view,
 }: {
-  initialData?: (Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[];
+  initialData?: (
+    | Aircraft
+    | Route
+    | Flight
+    | PricePolicy
+    | BaggageRule
+    | ClassPricePolicy
+    | ClassBaggagePolicy
+  )[];
   view: string;
 }) {
   const [isCopying, setIsCopying] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isAddRouteOpen, setIsAddRouteOpen] = React.useState(false);
   const [isAddFlightOpen, setIsAddFlightOpen] = React.useState(false);
-  const [selectedAircraft, setSelectedAircraft] = React.useState<Aircraft | null>(null);
-  const [copyAircraftId, setCopyAircraftId] = React.useState<number | null>(null);
+  const [selectedAircraft, setSelectedAircraft] =
+    React.useState<Aircraft | null>(null);
+  const [copyAircraftId, setCopyAircraftId] = React.useState<number | null>(
+    null
+  );
   const [isEditingPricePolicy, setIsEditingPricePolicy] = React.useState(false);
-  const [selectedPricePolicy, setSelectedPricePolicy] = React.useState<PricePolicy | null>(null);
+  const [selectedPricePolicy, setSelectedPricePolicy] =
+    React.useState<PricePolicy | null>(null);
   const [isEditingBaggageRule, setIsEditingBaggageRule] = React.useState(false);
-  const [selectedBaggageRule, setSelectedBaggageRule] = React.useState<BaggageRule | null>(null);
-  const [isEditingClassPricePolicy, setIsEditingClassPricePolicy] = React.useState(false);
-  const [selectedClassPricePolicy, setSelectedClassPricePolicy] = React.useState<ClassPricePolicy | null>(null);
-  const [isEditingClassBaggagePolicy, setIsEditingClassBaggagePolicy] = React.useState(false);
-  const [selectedClassBaggagePolicy, setSelectedClassBaggagePolicy] = React.useState<ClassBaggagePolicy | null>(null);
-  const [aircraftList, setAircraftList] = React.useState<Aircraft[] | null>(null);
+  const [selectedBaggageRule, setSelectedBaggageRule] =
+    React.useState<BaggageRule | null>(null);
+  const [isEditingClassPricePolicy, setIsEditingClassPricePolicy] =
+    React.useState(false);
+  const [selectedClassPricePolicy, setSelectedClassPricePolicy] =
+    React.useState<ClassPricePolicy | null>(null);
+  const [isEditingClassBaggagePolicy, setIsEditingClassBaggagePolicy] =
+    React.useState(false);
+  const [selectedClassBaggagePolicy, setSelectedClassBaggagePolicy] =
+    React.useState<ClassBaggagePolicy | null>(null);
+  const [aircraftList, setAircraftList] = React.useState<
+    AircraftCatalog[] | null
+  >(null);
 
   // Fleet columns
   const fleetColumns: ColumnDef<Aircraft>[] = [
@@ -148,9 +167,9 @@ export function DataTable({
       header: () => <div className="w-full">Max Seats</div>,
       cell: ({ row }) => (
         <form
-          onSubmit={(e) => {
+          onSubmit={e => {
             e.preventDefault();
-            toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
+            toast.promise(new Promise(resolve => setTimeout(resolve, 1000)), {
               loading: `Saving ${row.original.current_position}`,
               success: "Done",
               error: "Error",
@@ -176,13 +195,10 @@ export function DataTable({
       accessorKey: "used_seats",
       header: "Used Seats",
       cell: ({ row }) => (
-        <Badge
-          variant="outline"
-          className="text-muted-foreground px-1.5 mr-2"
-        >
+        <Badge variant="outline" className="text-muted-foreground px-1.5 mr-2">
           {row.original?.used_seats || 0}
         </Badge>
-      )
+      ),
     },
     {
       accessorKey: "airline.name",
@@ -330,39 +346,37 @@ export function DataTable({
     {
       accessorKey: "route_code",
       header: "Route",
-      cell: ({ row }) => <div>{row.original.route_code}</div>
+      cell: ({ row }) => <div>{row.original.route_code}</div>,
     },
     {
       accessorKey: "origin",
       header: "Origin",
-      cell: ({ row }) => <div>{row.original.origin}</div>
+      cell: ({ row }) => <div>{row.original.origin}</div>,
     },
     {
       accessorKey: "destination",
       header: "Destination",
-      cell: ({ row }) => <div>{row.original.destination}</div>
+      cell: ({ row }) => <div>{row.original.destination}</div>,
     },
     {
       accessorKey: "departure_date",
       header: "Departure",
-      cell: ({ row }) => <div>{row.original.departure_day}</div>
+      cell: ({ row }) => <div>{row.original.departure_day}</div>,
     },
     {
       accessorKey: "arrival_date",
       header: "Arrival",
-      cell: ({ row }) => <div>{row.original.arrival_day}</div>
+      cell: ({ row }) => <div>{row.original.arrival_day}</div>,
     },
     {
       accessorKey: "duration",
       header: "Duration",
-      cell: ({ row }) => <div>{row.original.duration}</div>
+      cell: ({ row }) => <div>{row.original.duration}</div>,
     },
     {
       accessorKey: "base_price",
       header: "Base Price",
-      cell: ({ row }) => (
-        <div>{row.original.base_price || "N/A"}</div>
-      ),
+      cell: ({ row }) => <div>{row.original.base_price || "N/A"}</div>,
     },
     {
       id: "actions",
@@ -409,12 +423,12 @@ export function DataTable({
     {
       accessorKey: "price_for_km",
       header: "Price for KM",
-      cell: ({ row }) => <div>€{row.original.price_for_km}/km</div>
+      cell: ({ row }) => <div>€{row.original.price_for_km}/km</div>,
     },
     {
       accessorKey: "fee_for_stopover",
       header: "Fee for Stopover",
-      cell: ({ row }) => <div>€{row.original.fee_for_stopover}</div>
+      cell: ({ row }) => <div>€{row.original.fee_for_stopover}</div>,
     },
     {
       id: "actions",
@@ -461,41 +475,64 @@ export function DataTable({
       accessorKey: "baggage.name",
       header: "Baggage Type",
       cell: ({ row }) => (
-        <div className="font-medium">{row.original.baggage?.name || "Unknown"}</div>
+        <div className="font-medium">
+          {row.original.baggage?.name || "Unknown"}
+        </div>
       ),
       enableHiding: false,
     },
     {
       accessorKey: "max_weight_kg",
       header: "Max Weight",
-      cell: ({ row }) => <div>{row.original.max_weight_kg ? `${row.original.max_weight_kg} kg` : "N/A"}</div>
+      cell: ({ row }) => (
+        <div>
+          {row.original.max_weight_kg
+            ? `${row.original.max_weight_kg} kg`
+            : "N/A"}
+        </div>
+      ),
     },
     {
       accessorKey: "dimensions",
       header: "Dimensions (L×W×H)",
       cell: ({ row }) => (
-        <div>{row.original.max_length_cm}×{row.original.max_width_cm}×{row.original.max_height_cm} cm</div>
-      )
+        <div>
+          {row.original.max_length_cm}×{row.original.max_width_cm}×
+          {row.original.max_height_cm} cm
+        </div>
+      ),
     },
     {
       accessorKey: "max_linear_cm",
       header: "Max Linear",
-      cell: ({ row }) => <div>{row.original.max_linear_cm ? `${row.original.max_linear_cm} cm` : "N/A"}</div>
+      cell: ({ row }) => (
+        <div>
+          {row.original.max_linear_cm
+            ? `${row.original.max_linear_cm} cm`
+            : "N/A"}
+        </div>
+      ),
     },
     {
       accessorKey: "base_price",
       header: "Base Price",
-      cell: ({ row }) => <div>€{row.original.base_price}</div>
+      cell: ({ row }) => <div>€{row.original.base_price}</div>,
     },
     {
       accessorKey: "over_weight_fee",
       header: "Overweight Fee",
-      cell: ({ row }) => <div>{row.original.over_weight_fee ? `€${row.original.over_weight_fee}` : "N/A"}</div>
+      cell: ({ row }) => (
+        <div>
+          {row.original.over_weight_fee
+            ? `€${row.original.over_weight_fee}`
+            : "N/A"}
+        </div>
+      ),
     },
     {
       accessorKey: "over_size_fee",
       header: "Oversize Fee",
-      cell: ({ row }) => <div>€{row.original.over_size_fee}</div>
+      cell: ({ row }) => <div>€{row.original.over_size_fee}</div>,
     },
     {
       accessorKey: "allow_extra",
@@ -504,7 +541,7 @@ export function DataTable({
         <Badge variant={row.original.allow_extra ? "default" : "secondary"}>
           {row.original.allow_extra ? "Yes" : "No"}
         </Badge>
-      )
+      ),
     },
     {
       id: "actions",
@@ -549,7 +586,9 @@ export function DataTable({
       accessorKey: "class_seat.name",
       header: "Class Name",
       cell: ({ row }) => (
-        <div className="font-medium">{row.original.class_seat?.name || "Unknown"}</div>
+        <div className="font-medium">
+          {row.original.class_seat?.name || "Unknown"}
+        </div>
       ),
       enableHiding: false,
     },
@@ -565,12 +604,12 @@ export function DataTable({
     {
       accessorKey: "price_multiplier",
       header: "Price Multiplier (%)",
-      cell: ({ row }) => <div>{row.original.price_multiplier}%</div>
+      cell: ({ row }) => <div>{row.original.price_multiplier}%</div>,
     },
     {
       accessorKey: "fixed_markup",
       header: "Fixed Markup (€)",
-      cell: ({ row }) => <div>€{row.original.fixed_markup}</div>
+      cell: ({ row }) => <div>€{row.original.fixed_markup}</div>,
     },
     {
       id: "actions",
@@ -615,7 +654,9 @@ export function DataTable({
       accessorKey: "class_.name",
       header: "Class",
       cell: ({ row }) => (
-        <div className="font-medium">{row.original.class_?.name || "Unknown"}</div>
+        <div className="font-medium">
+          {row.original.class_?.name || "Unknown"}
+        </div>
       ),
       enableHiding: false,
     },
@@ -631,14 +672,14 @@ export function DataTable({
     {
       accessorKey: "baggage.name",
       header: "Baggage Type",
-      cell: ({ row }) => <div>{row.original.baggage?.name || "Unknown"}</div>
+      cell: ({ row }) => <div>{row.original.baggage?.name || "Unknown"}</div>,
     },
     {
       accessorKey: "quantity_included",
       header: "Quantity Included",
       cell: ({ row }) => (
         <Badge variant="secondary">{row.original.quantity_included}</Badge>
-      )
+      ),
     },
     {
       id: "actions",
@@ -677,23 +718,102 @@ export function DataTable({
     },
   ];
 
-  const columnsByView: Record<string, ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[]> = {
-    Fleet: fleetColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
-    Routes: routeColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
-    Flights: flightColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
-    "Price Policy": pricePolicyColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
-    "Baggage Rules": baggageRuleColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
-    "Class Price Policy": classPricePolicyColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
-    "Class Baggage Policy": classBaggagePolicyColumns as ColumnDef<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy>[],
+  const columnsByView: Record<
+    string,
+    ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[]
+  > = {
+    Fleet: fleetColumns as ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[],
+    Routes: routeColumns as ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[],
+    Flights: flightColumns as ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[],
+    "Price Policy": pricePolicyColumns as ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[],
+    "Baggage Rules": baggageRuleColumns as ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[],
+    "Class Price Policy": classPricePolicyColumns as ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[],
+    "Class Baggage Policy": classBaggagePolicyColumns as ColumnDef<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >[],
   };
 
-  function RegularRow({ row }: { row: Row<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy> }) {
+  function RegularRow({
+    row,
+  }: {
+    row: Row<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >;
+  }) {
     return (
       <TableRow
         data-state={row.getIsSelected() && "selected"}
         className="relative z-0"
       >
-        {row.getVisibleCells().map((cell) => (
+        {row.getVisibleCells().map(cell => (
           <TableCell key={cell.id}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </TableCell>
@@ -702,15 +822,49 @@ export function DataTable({
     );
   }
 
-  function DraggableRow({ row }: { row: Row<Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy> }) {
+  function DraggableRow({
+    row,
+  }: {
+    row: Row<
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    >;
+  }) {
     return <RegularRow row={row} />;
   }
 
-  const [data, setData] = React.useState<(Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[]>(
-    () => (initialData ?? []) as (Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[]
+  const [data, setData] = React.useState<
+    (
+      | Aircraft
+      | Route
+      | Flight
+      | PricePolicy
+      | BaggageRule
+      | ClassPricePolicy
+      | ClassBaggagePolicy
+    )[]
+  >(
+    () =>
+      (initialData ?? []) as (
+        | Aircraft
+        | Route
+        | Flight
+        | PricePolicy
+        | BaggageRule
+        | ClassPricePolicy
+        | ClassBaggagePolicy
+      )[]
   );
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -727,25 +881,25 @@ export function DataTable({
     if (!Array.isArray(data)) return [];
 
     return data.map((item, index) => {
-      if ('id_aircraft_airline' in item) {
+      if ("id_aircraft_airline" in item) {
         return String((item as Aircraft).id_aircraft_airline);
       }
-      if ('route_code' in item) {
+      if ("route_code" in item) {
         return String((item as Route).route_code);
       }
-      if ('id_class_price_policy' in item) {
+      if ("id_class_price_policy" in item) {
         return String((item as ClassPricePolicy).id_class_price_policy);
       }
-      if ('id_class_baggage_policy' in item) {
+      if ("id_class_baggage_policy" in item) {
         return String((item as ClassBaggagePolicy).id_class_baggage_policy);
       }
-      if ('id_baggage_rules' in item) {
+      if ("id_baggage_rules" in item) {
         return String((item as BaggageRule).id_baggage_rules);
       }
-      if ('fixed_markup' in item) {
+      if ("fixed_markup" in item) {
         return String((item as PricePolicy).fixed_markup);
       }
-      if ('id_flight' in item) {
+      if ("id_flight" in item) {
         return String((item as Flight).id_flight);
       }
       return String(index);
@@ -762,25 +916,25 @@ export function DataTable({
       pagination,
     },
     getRowId: (row, index) => {
-      if ('id_aircraft_airline' in row) {
+      if ("id_aircraft_airline" in row) {
         return String((row as Aircraft).id_aircraft_airline);
       }
-      if ('route_code' in row) {
+      if ("route_code" in row) {
         return String((row as Route).route_code);
       }
-      if ('id_class_price_policy' in row) {
+      if ("id_class_price_policy" in row) {
         return String((row as ClassPricePolicy).id_class_price_policy);
       }
-      if ('id_class_baggage_policy' in row) {
+      if ("id_class_baggage_policy" in row) {
         return String((row as ClassBaggagePolicy).id_class_baggage_policy);
       }
-      if ('id_baggage_rules' in row) {
+      if ("id_baggage_rules" in row) {
         return String((row as BaggageRule).id_baggage_rules);
       }
-      if ('fixed_markup' in row) {
+      if ("fixed_markup" in row) {
         return String((row as PricePolicy).fixed_markup);
       }
-      if ('id_flight' in row) {
+      if ("id_flight" in row) {
         return String((row as Flight).id_flight);
       }
       return String(index);
@@ -800,7 +954,7 @@ export function DataTable({
     if (!active || !over) return;
     if (view !== "Fleet") return;
     if (active && over && String(active.id) !== String(over.id)) {
-      setData((data) => {
+      setData(data => {
         const oldIndex = dataIds.indexOf(active.id);
         const newIndex = dataIds.indexOf(over.id);
         return arrayMove(data, oldIndex, newIndex);
@@ -809,7 +963,7 @@ export function DataTable({
   }
 
   function handleRemoveAircraft(row?: Aircraft): React.MouseEventHandler {
-    return async (e) => {
+    return async e => {
       e?.stopPropagation?.();
       if (!row || !row.id_aircraft_airline) return;
       try {
@@ -885,16 +1039,24 @@ export function DataTable({
   }
 
   React.useEffect(() => {
-    setData((initialData ?? []) as (Aircraft | Route | Flight | PricePolicy | BaggageRule | ClassPricePolicy | ClassBaggagePolicy)[]);
+    setData(
+      (initialData ?? []) as (
+        | Aircraft
+        | Route
+        | Flight
+        | PricePolicy
+        | BaggageRule
+        | ClassPricePolicy
+        | ClassBaggagePolicy
+      )[]
+    );
     // retrieve aircraft list for adding new aircraft
     const fetchAircraftList = async () => {
       try {
         const user = await api.get<{ airline_code?: string }>("/users/me");
         const userIataCode = user?.airline_code ?? null;
         if (userIataCode) {
-          const response = await api.get<Aircraft[]>(
-            `/airline/${userIataCode}/fleet`
-          );
+          const response = await api.get<AircraftCatalog[]>(`/aircraft/`);
           setAircraftList(response ?? []);
         }
       } catch (error) {
@@ -905,9 +1067,7 @@ export function DataTable({
   }, [initialData]);
 
   async function handleAddFlight() {
-    await api
-      .get<{ airline_code?: string }>("/users/me")
-      .catch(() => null);
+    await api.get<{ airline_code?: string }>("/users/me").catch(() => null);
     // const userIataCode = user?.airline_code ?? null;
   }
 
@@ -948,17 +1108,17 @@ export function DataTable({
                 {table
                   ?.getAllColumns()
                   .filter(
-                    (column) =>
+                    column =>
                       typeof column.accessorFn !== "undefined" &&
                       column.getCanHide()
                   )
-                  .map((column) => {
+                  .map(column => {
                     return (
                       <DropdownMenuCheckboxItem
                         key={column.id}
                         className="capitalize"
                         checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
+                        onCheckedChange={value =>
                           column.toggleVisibility(!!value)
                         }
                       >
@@ -982,18 +1142,14 @@ export function DataTable({
                   className="w-56 max-h-64 hide-scrollbar"
                 >
                   {Array.isArray(aircraftList) && aircraftList.length > 0 ? (
-                    aircraftList.map(
-                      (aircraft: Aircraft, i) => (
-                        <DropdownMenuItem
-                          key={i}
-                          onClick={() =>
-                            handleAddAircraft(aircraft.aircraft.id_aircraft)
-                          }
-                        >
-                          {aircraft.aircraft?.name || "Unknown Aircraft"}
-                        </DropdownMenuItem>
-                      )
-                    )
+                    aircraftList.map((aircraft: AircraftCatalog, i) => (
+                      <DropdownMenuItem
+                        key={i}
+                        onClick={() => handleAddAircraft(aircraft?.id_aircraft)}
+                      >
+                        {aircraft?.name || "Unknown Aircraft"}
+                      </DropdownMenuItem>
+                    ))
                   ) : (
                     <DropdownMenuItem disabled>
                       No aircraft available
@@ -1009,8 +1165,8 @@ export function DataTable({
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      handleAddRoute()
-                      setIsAddRouteOpen(true)
+                      handleAddRoute();
+                      setIsAddRouteOpen(true);
                     }}
                   >
                     <IconPlus className="h-4 w-4" />
@@ -1035,8 +1191,8 @@ export function DataTable({
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      handleAddFlight()
-                      setIsAddFlightOpen(true)
+                      handleAddFlight();
+                      setIsAddFlightOpen(true);
                     }}
                   >
                     <IconPlus className="h-4 w-4" />
@@ -1050,12 +1206,14 @@ export function DataTable({
                       Schedule a new flight.
                     </DialogDescription>
                   </DialogHeader>
-                  <FlightCreationForm onClose={() => setIsAddFlightOpen(false)} />
+                  <FlightCreationForm
+                    onClose={() => setIsAddFlightOpen(false)}
+                  />
                 </DialogContent>
               </Dialog>
             )}
             {view === "Price Policy" && (
-               <Dialog>
+              <Dialog>
                 <DialogTrigger asChild>
                   <Button
                     className="hidden lg:flex"
@@ -1078,7 +1236,7 @@ export function DataTable({
               </Dialog>
             )}
             {view === "Baggage Rules" && (
-               <Dialog>
+              <Dialog>
                 <DialogTrigger asChild>
                   <Button
                     className="hidden lg:flex"
@@ -1101,7 +1259,7 @@ export function DataTable({
               </Dialog>
             )}
             {view === "Class Price Policy" && (
-               <Dialog>
+              <Dialog>
                 <DialogTrigger asChild>
                   <Button
                     className="hidden lg:flex"
@@ -1109,7 +1267,9 @@ export function DataTable({
                     size="sm"
                   >
                     <IconPlus />
-                    <span className="hidden lg:inline">Add Class Price Policy</span>
+                    <span className="hidden lg:inline">
+                      Add Class Price Policy
+                    </span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-4xl">
@@ -1124,7 +1284,7 @@ export function DataTable({
               </Dialog>
             )}
             {view === "Class Baggage Policy" && (
-               <Dialog>
+              <Dialog>
                 <DialogTrigger asChild>
                   <Button
                     className="hidden lg:flex"
@@ -1132,7 +1292,9 @@ export function DataTable({
                     size="sm"
                   >
                     <IconPlus />
-                    <span className="hidden lg:inline">Add Class Baggage Policy</span>
+                    <span className="hidden lg:inline">
+                      Add Class Baggage Policy
+                    </span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-4xl">
@@ -1165,17 +1327,17 @@ export function DataTable({
               >
                 <Table>
                   <TableHeader className="bg-muted sticky top-0 z-10">
-                    {table.getHeaderGroups().map((headerGroup) => (
+                    {table.getHeaderGroups().map(headerGroup => (
                       <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => {
+                        {headerGroup.headers.map(header => {
                           return (
                             <TableHead key={header.id} colSpan={header.colSpan}>
                               {header.isPlaceholder
                                 ? null
                                 : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
                             </TableHead>
                           );
                         })}
@@ -1188,7 +1350,7 @@ export function DataTable({
                         items={dataIds}
                         strategy={verticalListSortingStrategy}
                       >
-                        {table.getRowModel().rows.map((row) => (
+                        {table.getRowModel().rows.map(row => (
                           <DraggableRow key={row.index} row={row} />
                         ))}
                       </SortableContext>
@@ -1218,7 +1380,7 @@ export function DataTable({
                 </Label>
                 <Select
                   value={String(table.getState().pagination?.pageSize ?? 10)}
-                  onValueChange={(value) => {
+                  onValueChange={value => {
                     table.setPageSize(Number(value));
                   }}
                 >
@@ -1230,7 +1392,7 @@ export function DataTable({
                     />
                   </SelectTrigger>
                   <SelectContent side="top">
-                    {[10, 20, 30, 40, 50].map((pageSize) => (
+                    {[10, 20, 30, 40, 50].map(pageSize => (
                       <SelectItem key={pageSize} value={String(pageSize)}>
                         {pageSize}
                       </SelectItem>
@@ -1318,7 +1480,7 @@ export function DataTable({
                 min="1"
                 max=""
                 placeholder="Enter aircraft ID"
-                onChange={(e) => setCopyAircraftId(Number(e.target.value))}
+                onChange={e => setCopyAircraftId(Number(e.target.value))}
               />
             </DialogDescription>
           </DialogHeader>
@@ -1342,7 +1504,10 @@ export function DataTable({
       </Dialog>
 
       {/* Edit Price Policy Dialog */}
-      <Dialog open={isEditingPricePolicy} onOpenChange={setIsEditingPricePolicy}>
+      <Dialog
+        open={isEditingPricePolicy}
+        onOpenChange={setIsEditingPricePolicy}
+      >
         <DialogContent className="min-w-4xl">
           <DialogHeader>
             <DialogTitle>Edit Price Policy</DialogTitle>
@@ -1363,12 +1528,16 @@ export function DataTable({
       </Dialog>
 
       {/* Edit Baggage Rule Dialog */}
-      <Dialog open={isEditingBaggageRule} onOpenChange={setIsEditingBaggageRule}>
+      <Dialog
+        open={isEditingBaggageRule}
+        onOpenChange={setIsEditingBaggageRule}
+      >
         <DialogContent className="min-w-4xl">
           <DialogHeader>
             <DialogTitle>Edit Baggage Rule</DialogTitle>
             <DialogDescription>
-              Modify the baggage rules for {selectedBaggageRule?.baggage?.name || "this baggage type"}.
+              Modify the baggage rules for{" "}
+              {selectedBaggageRule?.baggage?.name || "this baggage type"}.
             </DialogDescription>
           </DialogHeader>
           <BaggageRuleCreationForm
@@ -1383,12 +1552,16 @@ export function DataTable({
       </Dialog>
 
       {/* Edit Class Price Policy Dialog */}
-      <Dialog open={isEditingClassPricePolicy} onOpenChange={setIsEditingClassPricePolicy}>
+      <Dialog
+        open={isEditingClassPricePolicy}
+        onOpenChange={setIsEditingClassPricePolicy}
+      >
         <DialogContent className="min-w-4xl">
           <DialogHeader>
             <DialogTitle>Edit Class Price Policy</DialogTitle>
             <DialogDescription>
-              Modify the pricing for {selectedClassPricePolicy?.class_seat?.name || "this class"}.
+              Modify the pricing for{" "}
+              {selectedClassPricePolicy?.class_seat?.name || "this class"}.
             </DialogDescription>
           </DialogHeader>
           <ClassPricePolicyCreationForm
@@ -1403,12 +1576,16 @@ export function DataTable({
       </Dialog>
 
       {/* Edit Class Baggage Policy Dialog */}
-      <Dialog open={isEditingClassBaggagePolicy} onOpenChange={setIsEditingClassBaggagePolicy}>
+      <Dialog
+        open={isEditingClassBaggagePolicy}
+        onOpenChange={setIsEditingClassBaggagePolicy}
+      >
         <DialogContent className="min-w-4xl">
           <DialogHeader>
             <DialogTitle>Edit Class Baggage Policy</DialogTitle>
             <DialogDescription>
-              Modify included baggage for {selectedClassBaggagePolicy?.class_?.name || "this class"}.
+              Modify included baggage for{" "}
+              {selectedClassBaggagePolicy?.class_?.name || "this class"}.
             </DialogDescription>
           </DialogHeader>
           <ClassBaggagePolicyCreationForm

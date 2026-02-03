@@ -30,6 +30,18 @@ interface LogoutResponse {
   message?: string
 }
 
+/** interfaccia per il catalogo degli aerei disponibili */
+interface AircraftCatalog {
+  cabin_max_cols: number;
+  id_aircraft: number;
+  manufacturer: {
+    id_manufacturer: number;
+    name: string;
+  };
+  max_seats: number;
+  name: string;
+}
+
 /** interfaccia per lavorare con gli aerei fisici */
 interface Aircraft {
   aircraft: {

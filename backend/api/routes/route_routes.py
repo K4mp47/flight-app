@@ -5,6 +5,7 @@ from ..validations.route_validation import Route_schema
 from ..query.route_query import get_all_routes
 from pydantic import ValidationError
 from db import SessionLocal
+from api.utils.db_session import get_session
 
 route_bp = Blueprint("route_bp", __name__)
 
@@ -20,8 +21,8 @@ def get_routes():
             200:
                 description: Array of routes
         """
-        session = SessionLocal()
-        result = get_all_routes(session)
+        with get_session() as session:
+          result = get_all_routes(session)
         return jsonify(result), 200
 
 
@@ -92,14 +93,13 @@ def new_route():
           403:
             description: Access denied — Admin or Airline-Admin role required
         """
-        session = SessionLocal()
-        try:
-                data = Route_schema(**request.get_json())
-        except ValidationError as e:
-                return jsonify({"message": str(e)}), 400
-        controller = Route_controller(session)
-        response, status = controller.add_route(data.departure_airport, data.arrival_airport)
-        session.close()
+        with get_session() as session:
+          try:
+                  data = Route_schema(**request.get_json())
+          except ValidationError as e:
+                  return jsonify({"message": str(e)}), 400
+          controller = Route_controller(session)
+          response, status = controller.add_route(data.departure_airport, data.arrival_airport)
         return jsonify(response), status
 
 

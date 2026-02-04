@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 from pydantic import ValidationError
 from db import SessionLocal
+from api.utils.db_session import get_session
 
 from ..models import Route
 from ..models.aircraft_airlines import Aircraft_airline
@@ -50,9 +51,8 @@ def get_all_airlines():
           403:
             description: User does not have the required Admin role
         """
-        session = SessionLocal()
-        airlines = all_airline(session)
-        session.close()
+        with get_session() as session:
+          airlines = all_airline(session)
         return jsonify(airlines), 200
 
 @airline_bp.route("/new", methods=["POST"])
@@ -127,10 +127,9 @@ def new_airline():
         data = Airline_schema(**request.get_json())
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Airline_controller(session)
-    response, status = controller.insert_airline(data.iata_code, data.name)
-    session.close()
+    with get_session() as session:
+      controller = Airline_controller(session)
+      response, status = controller.insert_airline(data.iata_code, data.name)
     return jsonify(response), status
 
 @airline_bp.route("/add/aircraft/<int:id_aircraft>", methods=["POST"])
@@ -237,10 +236,9 @@ def new_aircraft(id_aircraft: int):
                 data = Airline_aircraft_schema(**request.get_json())
         except ValidationError as e:
                 return jsonify({"message": str(e)}), 400
-        session = SessionLocal()
-        controller = Airline_controller(session)
-        response, status = controller.insert_aircraft(data.airline_code,id_aircraft)
-        session.close()
+        with get_session() as session:
+          controller = Airline_controller(session)
+          response, status = controller.insert_aircraft(data.airline_code,id_aircraft)
         return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/fleet", methods=["GET"])
@@ -323,10 +321,9 @@ def get_fleet(airline_code: str):
           404:
             description: Airline not found
         """
-        session = SessionLocal()
-        controller = Airline_controller(session)
-        response, status = controller.get_airline_fleet(airline_code)
-        session.close()
+        with get_session() as session:
+          controller = Airline_controller(session)
+          response, status = controller.get_airline_fleet(airline_code)
         return jsonify(response), status
 
 @airline_bp.route("/delete/aircraft/<int:id_aircraft_airline>", methods=["DELETE"])
@@ -390,15 +387,14 @@ def delete_aircraft(id_aircraft_airline: int):
           404:
             description: Airline or aircraft not found
         """
-        session = SessionLocal()
-        if (session.get(Aircraft_airline, id_aircraft_airline) is None):
-                return jsonify({"message": "id_aircraft_airline not found"}), 404
-        else:
-                data = request.get_json()
-                controller = Airline_controller(session)
-                response, status = controller.dalete_fleet_aircraft(data.get("airline_code"), id_aircraft_airline)
-                session.close()
-                return jsonify(response), status
+        with get_session() as session:
+          if (session.get(Aircraft_airline, id_aircraft_airline) is None):
+                  return jsonify({"message": "id_aircraft_airline not found"}), 404
+          else:
+                  data = request.get_json()
+                  controller = Airline_controller(session)
+                  response, status = controller.dalete_fleet_aircraft(data.get("airline_code"), id_aircraft_airline)
+                  return jsonify(response), status
 
 
 
@@ -495,29 +491,26 @@ def new_block(id_aircraft_airline: int):
             description: Aircraft or airline not found
 
         """
-    session = SessionLocal()
-    if (session.get(Aircraft_airline, id_aircraft_airline) is None):
-        return jsonify({"message": "id_aircraft_airline not found"}), 404
-    else:
-        try:
-            data = Airline_aircraft_block_schema(**request.get_json())
-        except ValidationError as e:
-            session.close()
-            return jsonify({"message": str(e)}), 400
+    with get_session() as session:
+      if (session.get(Aircraft_airline, id_aircraft_airline) is None):
+          return jsonify({"message": "id_aircraft_airline not found"}), 404
+      else:
+          try:
+              data = Airline_aircraft_block_schema(**request.get_json())
+          except ValidationError as e:
+              return jsonify({"message": str(e)}), 400
 
-        try:
-            controller = Airline_controller(session)
-            response, status = controller.insert_block(
-                data.matrix,
-                data.id_class,
-                id_aircraft_airline
-            )
-            return jsonify(response), status
-        except Exception as e:
-            session.rollback()
-            return jsonify({"error": str(e)}), 500
-        finally:
-            session.close()
+          try:
+              controller = Airline_controller(session)
+              response, status = controller.insert_block(
+                  data.matrix,
+                  data.id_class,
+                  id_aircraft_airline
+              )
+              return jsonify(response), status
+          except Exception as e:
+              session.rollback()
+              return jsonify({"error": str(e)}), 500
 
 
 
@@ -630,16 +623,15 @@ def get_seat_map(airline_code: str, id_aircraft_airline: int):
             description: Aircraft or airline not found
 
         """
-    session = SessionLocal()
-    if (session.get(Aircraft_airline, id_aircraft_airline) is None):
-            return jsonify({"message": "id_aircraft_airline not found"}), 404
-    else:
-            seat_map = get_aircraft_seat_map_JSON(session, id_aircraft_airline)
-            seats_number = number_seat_aircraft(session, id_aircraft_airline)
-            seats_remaining = get_max_economy_seats(session, id_aircraft_airline) - seats_number
-            session.close()
-            return jsonify(
-                    {"additional_seats_remaining": seats_remaining, "seats_number": seats_number, "seat_map": seat_map}), 200
+    with get_session() as session:
+      if (session.get(Aircraft_airline, id_aircraft_airline) is None):
+              return jsonify({"message": "id_aircraft_airline not found"}), 404
+      else:
+              seat_map = get_aircraft_seat_map_JSON(session, id_aircraft_airline)
+              seats_number = number_seat_aircraft(session, id_aircraft_airline)
+              seats_remaining = get_max_economy_seats(session, id_aircraft_airline) - seats_number
+              return jsonify(
+                      {"additional_seats_remaining": seats_remaining, "seats_number": seats_number, "seat_map": seat_map}), 200
 
 
 @airline_bp.route("/aircraft/clone-seatmap", methods=["POST"])
@@ -714,21 +706,18 @@ def clone_seatmap():
         description: Source or target aircraft not found
 
     """
-    session = SessionLocal()
-    try:
-        data = Clone_aircraft_seat_map_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
-    try:
-        with session.begin():
-            controller = Airline_controller(session)
-            response, status = controller.clone_aircraft_seat_map(data.source_id, data.target_id)
-    except Exception as e:
-        response, status = {"message": str(e)}, 500
-    finally:
-        session.close()
-
+    with get_session() as session:
+      try:
+          data = Clone_aircraft_seat_map_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
+      try:
+          with session.begin():
+              controller = Airline_controller(session)
+              response, status = controller.clone_aircraft_seat_map(data.source_id, data.target_id)
+      except Exception as e:
+          response, status = {"message": str(e)}, 500
+    
     return jsonify(response), status
 
 @airline_bp.route("/add/route", methods=["POST"])
@@ -903,22 +892,18 @@ def add_route():
             }
           }
     """
-    session = SessionLocal()
-    try:
-        data = Route_airline_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
+    with get_session() as session:
+      try:
+          data = Route_airline_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
 
-    try:
-        with session.begin():
-            controller = Airline_controller(session)
-            response, status = controller.insert_new_route(data.airline_code, data.number_route, data.start_date,data.end_date, data.section, data.delta_for_return_route)
-    except Exception as e:
-        response, status = {"message": str(e)}, 500
-    finally:
-        session.close()
-
+      try:
+          with session.begin():
+              controller = Airline_controller(session)
+              response, status = controller.insert_new_route(data.airline_code, data.number_route, data.start_date,data.end_date, data.section, data.delta_for_return_route)
+      except Exception as e:
+          response, status = {"message": str(e)}, 500
     return jsonify(response), status
 
 @airline_bp.route("/route/<code>/change-deadline", methods=["PUT"])
@@ -997,16 +982,14 @@ def change_route_deadline(code: str):
           }
     
     """
-    session = SessionLocal()
-    try:
-            data = Route_deadline_schema(**request.get_json())
-    except ValidationError as e:
-            session.close()
-            return jsonify({"message": str(e)}), 400
+    with get_session() as session:
+      try:
+              data = Route_deadline_schema(**request.get_json())
+      except ValidationError as e:
+              return jsonify({"message": str(e)}), 400
 
-    controller = Airline_controller(session)
-    response, status = controller.change_deadline(code, data.end_date)
-    session.close()
+      controller = Airline_controller(session)
+      response, status = controller.change_deadline(code, data.end_date)
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/route", methods=["GET"])
@@ -1094,11 +1077,10 @@ def get_routes(airline_code: str):
 
     """
        
-        session = SessionLocal()
-        if session.get(Airline, airline_code) is None:
-                return jsonify({"message": "airline_code not found"}), 404
-        routes = get_all_route_airline(session, airline_code)
-        session.close()
+        with get_session() as session:
+          if session.get(Airline, airline_code) is None:
+                  return jsonify({"message": "airline_code not found"}), 404
+          routes = get_all_route_airline(session, airline_code)
         return jsonify({"routes": routes}), 200
 
 @airline_bp.route("/<airline_code>/route/<code>/info", methods=["GET"])
@@ -1183,11 +1165,10 @@ def get_route_info(airline_code: str,code: str):
           404:
             description: Route not found
         """
-        session = SessionLocal()
-        if session.get(Route, code) is None:
-                return jsonify({"message": "route not found"}), 404
-        route = get_route(session, code)
-        session.close()
+        with get_session() as session:
+          if session.get(Route, code) is None:
+                  return jsonify({"message": "route not found"}), 404
+          route = get_route(session, code)
         return jsonify({"routes": route}), 200
 
 @airline_bp.route("/route/<code>/add-flight", methods=["POST"])
@@ -1295,21 +1276,18 @@ responses:
 """
 
     
-    session = SessionLocal()
-    try:
-        data = Flight_schedule_request_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
+    with get_session() as session:
+      try:
+          data = Flight_schedule_request_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
 
-    try:
-        with session.begin():
-            controller = Airline_controller(session)
-            response, status = controller.insert_flight_schedule(code, data.aircraft_id, data.flight_schedule)
-    except Exception as e:
-        response, status = {"message": str(e)}, 500
-    finally:
-        session.close()
+      try:
+          with session.begin():
+              controller = Airline_controller(session)
+              response, status = controller.insert_flight_schedule(code, data.aircraft_id, data.flight_schedule)
+      except Exception as e:
+          response, status = {"message": str(e)}, 500
 
     return jsonify(response), status
 
@@ -1388,15 +1366,14 @@ responses:
     description: Policy for this class already exists
 """
 
-    session = SessionLocal()
-    try:
-        data = Class_price_policy_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
-    controller = Airline_controller(session)
-    response, status = controller.insert_class_price_policy(data.id_class, data.airline_code, data.price_multiplier, data.fixed_markup)
-    session.close()
+    with get_session() as session:
+      try:
+          data = Class_price_policy_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
+      controller = Airline_controller(session)
+      response, status = controller.insert_class_price_policy(data.id_class, data.airline_code, data.price_multiplier, data.fixed_markup)
+  
     return jsonify(response), status
 
 @airline_bp.route("/class-price-policy/<int:id_class_price_policy>/modify", methods=["PUT"])
@@ -1477,15 +1454,14 @@ responses:
     description: Class price policy not found
 """
 
-    session = SessionLocal()
-    try:
-        data = Class_price_policy_data_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
-    controller = Airline_controller(session)
-    response, status = controller.change_class_price_policy(id_class_price_policy, data.price_multiplier,data.fixed_markup)
-    session.close()
+    with get_session() as session:
+      try:
+          data = Class_price_policy_data_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
+      controller = Airline_controller(session)
+      response, status = controller.change_class_price_policy(id_class_price_policy, data.price_multiplier,data.fixed_markup)
+
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/class-price-policy/", methods=["GET"])
@@ -1555,12 +1531,12 @@ responses:
     description: Airline not found or no policies available
 """
 
-    session = SessionLocal()
-    airline = session.get(Airline, airline_code)
-    if airline is None:
-        return jsonify({"message": "airline not found"}), 404
-    policies = get_airline_class_price_policy(session, airline_code)
-    session.close()
+    with get_session() as session:
+      airline = session.get(Airline, airline_code)
+      if airline is None:
+          return jsonify({"message": "airline not found"}), 404
+      policies = get_airline_class_price_policy(session, airline_code)
+      
     return jsonify({"policies": policies}), 200
 
 @airline_bp.route("/<airline_code>/add/price-policy", methods=["POST"])
@@ -1631,15 +1607,14 @@ def new_price_policy(airline_code: str):
       404:
         description: Airline not found
     """
-    session = SessionLocal()
-    try:
-        data = Price_policy_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
-    controller = Airline_controller(session)
-    response, status = controller.insert_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_for_stopover)
-    session.close()
+    with get_session() as session:
+      try:
+          data = Price_policy_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
+      controller = Airline_controller(session)
+      response, status = controller.insert_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_for_stopover)
+
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/price-policy/modify", methods=["PUT"])
@@ -1712,15 +1687,14 @@ responses:
     description: Airline not found
 
     """
-    session = SessionLocal()
-    try:
-        data = Price_policy_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
-    controller = Airline_controller(session)
-    response, status = controller.change_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_for_stopover)
-    session.close()
+    with get_session() as session:
+      try:
+          data = Price_policy_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
+      controller = Airline_controller(session)
+      response, status = controller.change_price_policy(airline_code, data.fixed_markup, data.price_for_km, data.fee_for_stopover)
+
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/price-policy/", methods=["GET"])
@@ -1779,12 +1753,11 @@ responses:
     description: Airline not found
 
     """
-    session = SessionLocal()
-    airline = session.get(Airline, airline_code)
-    if airline is None:
-        return jsonify({"message": "airline not found"}), 404
-    policies = get_airline_price_policy(session, airline_code)
-    session.close()
+    with get_session() as session:
+      airline = session.get(Airline, airline_code)
+      if airline is None:
+          return jsonify({"message": "airline not found"}), 404
+      policies = get_airline_price_policy(session, airline_code)
     return jsonify({"policies": policies}), 200
 
 @airline_bp.route("/route/<code>/base_price/", methods=["PUT"])
@@ -1837,15 +1810,13 @@ def change_base_price(code: str):
       description: Route not found
 
     """
-    session = SessionLocal()
-    try:
-        data = Route_change_price_schema(**request.get_json())
-    except ValidationError as e:
-        session.close()
-        return jsonify({"message": str(e)}), 400
-    controller = Airline_controller(session)
-    response, status = controller.change_route_base_price(code, data.base_price)
-    session.close()
+    with get_session() as session:
+      try:
+          data = Route_change_price_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
+      controller = Airline_controller(session)
+      response, status = controller.change_route_base_price(code, data.base_price)
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/analytics/route/<code>", methods=["GET"])
@@ -1937,10 +1908,9 @@ def route_analytics(airline_code: str ,code: str):
         data = Route_analytics_schema(**query_params)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Airline_controller(session)
-    response, status = controller.get_route_analytics(airline_code, data.model_dump(),code)
-    session.close()
+    with get_session() as session:
+      controller = Airline_controller(session)
+      response, status = controller.get_route_analytics(airline_code, data.model_dump(),code)
     return jsonify(response), status
 
 
@@ -2023,10 +1993,9 @@ def flight_analytics(airline_code: str,id_flight: int):
         description: Flight not found
 
     """
-    session = SessionLocal()
-    controller = Airline_controller(session)
-    response, status = controller.get_flight_analytics(id_flight)
-    session.close()
+    with get_session() as session:
+      controller = Airline_controller(session)
+      response, status = controller.get_flight_analytics(id_flight)
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/analytics/routes", methods=["GET"])
@@ -2101,9 +2070,8 @@ def get_all_routes_analytics(airline_code: str):
         data = Routes_analytics_schema(**query_params)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    analytics = get_routes_analytics(session, airline_code, data.start_date)
-    session.close()
+    with get_session() as session:
+      analytics = get_routes_analytics(session, airline_code, data.start_date)
     return jsonify({"analytics": analytics}), 200
 
 @airline_bp.route("/<airline_code>/analytics/routes/total_revenue", methods=["GET"])
@@ -2167,9 +2135,8 @@ def get_routes_total_revenue(airline_code: str):
         data = Routes_analytics_schema(**query_params)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    analytics = get_total_revenue_by_airline_and_date(session, airline_code, data.start_date)
-    session.close()
+    with get_session() as session:
+      analytics = get_total_revenue_by_airline_and_date(session, airline_code, data.start_date)
     return jsonify({"total_revenue": analytics}), 200
 
 @airline_bp.route("/<airline_code>/flight", methods=["GET"])
@@ -2253,9 +2220,8 @@ def get_airline_flights(airline_code: str):
         description: Airline not found
 
     """
-    session = SessionLocal()
-    flights = get_flights_by_airline(session, airline_code)
-    session.close()
+    with get_session() as session:
+      flights = get_flights_by_airline(session, airline_code)
     return jsonify(flights), 200
 
 

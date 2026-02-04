@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, session
 from ..query.aircraft_query import all_aircraft, all_aircraft_by_manufacturer
 from ..utils.role_checking import role_required
 from db import SessionLocal
+from api.utils.db_session import get_session
 
 aircraft_bp = Blueprint("aircraft_bp", __name__)
 
@@ -60,8 +61,8 @@ def get_all_aircraft():
       403:
         description: User does not have the required role
     """
-    session = SessionLocal()
-    aircraft = all_aircraft(session)
+    with get_session() as session:
+      aircraft = all_aircraft(session)
     return jsonify(aircraft), 200
 
 
@@ -118,6 +119,6 @@ def get_all_aircraft_by_manufacturer(id_manufacturer):
       404:
         description: Manufacturer not found
     """
-    session = SessionLocal()
-    aircraft = all_aircraft_by_manufacturer(session, id_manufacturer)
+    with get_session() as session:
+      aircraft = all_aircraft_by_manufacturer(session, id_manufacturer)
     return jsonify(aircraft), 200

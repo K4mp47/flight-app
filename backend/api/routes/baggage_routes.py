@@ -1,4 +1,5 @@
 from db import SessionLocal
+from api.utils.db_session import get_session
 from flask import Blueprint, request, jsonify
 from pydantic import ValidationError
 
@@ -36,9 +37,8 @@ def get_baggage():
 
     
     """
-    session = SessionLocal()
-    result = get_all_baggage(session)
-    session.close()
+    with get_session() as session:
+      result = get_all_baggage(session)
     return jsonify(result), 200
 
 @baggage_bp.route("/rules", methods=["POST"])
@@ -119,10 +119,9 @@ def add_baggage_rules():
             data = Baggage_roles_validation(**request.get_json())
     except ValidationError as e:
             return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Baggage_controller(session)
-    result, status_code = controller.insert_baggage_role(data.model_dump())
-    session.close()
+    with get_session() as session:
+      controller = Baggage_controller(session)
+      result, status_code = controller.insert_baggage_role(data.model_dump())
     return jsonify(result), status_code
 
 @baggage_bp.route("/rules", methods=["PUT"])
@@ -216,9 +215,9 @@ def update_baggage_rules():
             data = Baggage_roles_validation_PUT(**request.get_json())
     except ValidationError as e:
             return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Baggage_controller(session)
-    result, status_code = controller.update_baggage_role(data.model_dump())
+    with get_session() as session:
+      controller = Baggage_controller(session)
+      result, status_code = controller.update_baggage_role(data.model_dump())
     return jsonify(result), status_code
 
 @baggage_bp.route("/<airline_code>/rules", methods=["GET"])
@@ -308,10 +307,9 @@ def get_baggage_rules(airline_code:str):
 
     
     """
-    session = SessionLocal()
-    controller = Baggage_controller(session)
-    result, status_code = controller.get_baggage_rule(airline_code)
-    session.close()
+    with get_session() as session:
+      controller = Baggage_controller(session)
+      result, status_code = controller.get_baggage_rule(airline_code)
     return jsonify(result), status_code
 
 @baggage_bp.route("/class-policy", methods=["POST"])
@@ -380,10 +378,9 @@ def add_baggage_class_policy():
             data = Baggage_class_policy_schema(**request.get_json())
     except ValidationError as e:
             return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Baggage_controller(session)
-    result, status_code = controller.insert_baggage_class_policy(data.airline_code,data.id_baggage_type, data.id_class, data.quantity_included)
-    session.close()
+    with get_session() as session:
+      controller = Baggage_controller(session)
+      result, status_code = controller.insert_baggage_class_policy(data.airline_code,data.id_baggage_type, data.id_class, data.quantity_included)
     return jsonify(result), status_code
 
 @baggage_bp.route("/class-policy", methods=["PUT"])
@@ -446,10 +443,9 @@ def update_baggage_class_policy():
             data = Baggage_class_policy_PUT_schema(**request.get_json())
     except ValidationError as e:
             return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = Baggage_controller(session)
-    result, status_code = controller.update_quantity_included(data.id_class_baggage_policy, data.airline_code, data.quantity_included)
-    session.close()
+    with get_session() as session:
+      controller = Baggage_controller(session)
+      result, status_code = controller.update_quantity_included(data.id_class_baggage_policy, data.airline_code, data.quantity_included)
     return jsonify(result), status_code
 
 @baggage_bp.route("/<airline_code>/class-policy", methods=["GET"])
@@ -531,10 +527,9 @@ def get_baggage_class_policy(airline_code: str):
       404:
         description: Airline not found
     """
-    session = SessionLocal()
-    controller = Baggage_controller(session)
-    result, status_code = controller.get_airline_class_policy(airline_code)
-    session.close()
+    with get_session() as session:
+      controller = Baggage_controller(session)
+      result, status_code = controller.get_airline_class_policy(airline_code)
     return jsonify(result), status_code
 
 

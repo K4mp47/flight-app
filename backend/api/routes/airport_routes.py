@@ -6,6 +6,7 @@ from ..validations.airport_validation import Airport_schema, Airport_modify_sche
 from ..utils.role_checking import role_required
 
 from db import SessionLocal
+from api.utils.db_session import get_session
 
 airport_bp = Blueprint("airports", __name__)
 
@@ -88,16 +89,14 @@ def create_airport():
 
     
     """
-    session = SessionLocal()
-    try:
-            data = Airport_schema(**request.get_json())
-    except ValidationError as e:
-            session.close()
+    with get_session() as session:
+      try:
+              data = Airport_schema(**request.get_json())
+      except ValidationError as e:
             return jsonify({"message": str(e)}), 400
 
-    controller = Airport_controller(session)
-    result, status_code = controller.create_airport(data.model_dump())
-    session.close()
+      controller = Airport_controller(session)
+      result, status_code = controller.create_airport(data.model_dump())
     return jsonify(result), status_code
 
 
@@ -160,10 +159,9 @@ responses:
     description: Airport not found
 
     """
-    session = SessionLocal()
-    controller = Airport_controller(session)
-    result, status_code = controller.get_airport(iata_code)
-    session.close()
+    with get_session() as session:
+      controller = Airport_controller(session)
+      result, status_code = controller.get_airport(iata_code)
     return jsonify(result), status_code
 
 
@@ -241,14 +239,13 @@ responses:
 
    
     """
-    session = SessionLocal()
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 50, type=int)
-    get_all = request.args.get('all', 'false').lower() == 'true'
+    with get_session() as session:
+      page = request.args.get('page', 1, type=int)
+      per_page = request.args.get('per_page', 50, type=int)
+      get_all = request.args.get('all', 'false').lower() == 'true'
 
-    controller = Airport_controller(session)
-    result, status_code = controller.get_all_airports(page, per_page, all=get_all)
-    session.close()
+      controller = Airport_controller(session)
+      result, status_code = controller.get_all_airports(page, per_page, all=get_all)
     return jsonify(result), status_code
 
 
@@ -310,10 +307,9 @@ def get_airports_by_city(city_id):
       description: Role not authorized
         
         """
-        session = SessionLocal()
-        controller = Airport_controller(session)
-        result, status_code = controller.get_airports_by_city(city_id)
-        session.close()
+        with get_session() as session:
+          controller = Airport_controller(session)
+          result, status_code = controller.get_airports_by_city(city_id)
         return jsonify(result), status_code
 
 @airport_bp.route("/<string:iata_code>", methods=["PUT"])
@@ -402,16 +398,14 @@ def update_airport(iata_code):
 
         
         """
-        session = SessionLocal()
-        try:
-                data = Airport_modify_schema(**request.get_json())
-        except ValidationError as e:
-                session.close()
-                return jsonify({"message": str(e)}), 400
+        with get_session() as session:
+          try:
+                  data = Airport_modify_schema(**request.get_json())
+          except ValidationError as e:
+                  return jsonify({"message": str(e)}), 400
 
-        controller = Airport_controller(session)
-        result, status_code = controller.update_airport(iata_code, data.model_dump())
-        session.close()
+          controller = Airport_controller(session)
+          result, status_code = controller.update_airport(iata_code, data.model_dump())
         return jsonify(result), status_code
 
 
@@ -453,10 +447,9 @@ def delete_airport(iata_code):
 
         
         """
-        session = SessionLocal()
-        controller = Airport_controller(session)
-        result, status_code = controller.delete_airport(iata_code)
-        session.close()
+        with get_session() as session:
+          controller = Airport_controller(session)
+          result, status_code = controller.delete_airport(iata_code)
         return jsonify(result), status_code
 
 
@@ -523,10 +516,9 @@ def search_airports():
         if not query:
                 return jsonify({"message": "Query parameter 'q' is required"}), 400
 
-        session = SessionLocal()
-        controller = Airport_controller(session)
-        result, status_code = controller.search_airports(query)
-        session.close()
+        with get_session() as session:
+          controller = Airport_controller(session)
+          result, status_code = controller.search_airports(query)
         return jsonify(result), status_code
 
 

@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify
 from pydantic import ValidationError
-from db import SessionLocal
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-
+from api.utils.db_session import get_session
 from ..controllers.airline_controller import Airline_controller
 from ..utils.blacklist import blacklisted_tokens
 from ..utils.role_checking import role_required
@@ -68,9 +67,8 @@ def get_all_users():
       403:
         description: User does not have the required Admin role
     """
-    session = SessionLocal()
-    users = all_users(session)
-    session.close()
+    with get_session() as session:
+      users = all_users(session)
     return jsonify(users), 200
 
 
@@ -115,10 +113,10 @@ def login():
             data = User_login_Schema(**request.get_json())
     except ValidationError as e:
             return jsonify({"error": str(e)}), 400
-    session = SessionLocal()
-    controller = User_controller(session)
-    response, status = controller.login_user(data.email, data.pwd)
-    session.close()
+    with get_session() as session:
+      controller = User_controller(session)
+      response, status = controller.login_user(data.email, data.pwd)
+      session.close()
     return jsonify(response), status
 
 
@@ -191,15 +189,14 @@ def register():
     except ValidationError as e:
             return jsonify({"message": str(e)}), 400
 
-    session = SessionLocal()
-    controller = User_controller(session)
-    response, status = controller.register_user({
-            'name': data.name,
-            'lastname': data.lastname,
-            'email': data.email,
-            'password': data.pwd,
-    })
-    session.close()
+    with get_session() as session:
+      controller = User_controller(session)
+      response, status = controller.register_user({
+              'name': data.name,
+              'lastname': data.lastname,
+              'email': data.email,
+              'password': data.pwd,
+      })
     return jsonify(response), status
 
 
@@ -236,11 +233,10 @@ def profile():
         description: User not found
     """
     id = get_jwt_identity()
-    session = SessionLocal()
-    controller = User_controller(session)
-    id = int(id)
-    response, status = controller.get_profile(id)
-    session.close()
+    with get_session() as session:
+      controller = User_controller(session)
+      id = int(id)
+      response, status = controller.get_profile(id)
     return jsonify(response), status
 
 
@@ -346,10 +342,9 @@ def change_role(user_id):
             data = User_new_role_Schema(**request.get_json())
     except ValidationError as e:
             return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    controller = User_controller(session)
-    response, status = controller.change_role(user_id, data.new_role)
-    session.close()
+    with get_session() as session:
+      controller = User_controller(session)
+      response, status = controller.change_role(user_id, data.new_role)
     return jsonify(response), status
 
 
@@ -413,15 +408,13 @@ responses:
     description: User not found
 """
 
-    session = SessionLocal()
-    try:
-            data = Airline_aircraft_schema(**request.get_json())
-    except ValidationError as e:
-            session.close()
+    with get_session() as session:
+      try:
+              data = Airline_aircraft_schema(**request.get_json())
+      except ValidationError as e:
             return jsonify({"message": str(e)}), 400
-    controller = User_controller(session)
-    response, status = controller.set_user_airline(user_id, data.airline_code)
-    session.close()
+      controller = User_controller(session)
+      response, status = controller.set_user_airline(user_id, data.airline_code)
     return jsonify(response), status
 
 
@@ -566,11 +559,10 @@ def get_flights():
       403:
         description: Unauthorized
     """
-    session = SessionLocal()
-    id = get_jwt_identity()
-    controller = User_controller(session)
-    response, status = controller.get_user_flights(id)
-    session.close()
+    with get_session() as session:
+      id = get_jwt_identity()
+      controller = User_controller(session)
+      response, status = controller.get_user_flights(id)
     return jsonify(response), status
 
 

@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from ..utils.role_checking import role_required
 from ..query.aircraft_query import all_manufacturer
 from db import SessionLocal
+from api.utils.db_session import get_session
 
 manufacturer_bp = Blueprint("manufacturer_bp", __name__)
 
@@ -44,6 +45,6 @@ def get_all_manufacturer():
           403:
             description: User does not have the required role
         """
-        session = SessionLocal()
-        manufacturer = all_manufacturer(session)
+        with get_session() as session:
+          manufacturer = all_manufacturer(session)
         return jsonify(manufacturer), 200

@@ -5,6 +5,7 @@ from ..controllers.flight_controller import Flight_controller
 from ..models.flight import Flight
 from ..query.flight_query import get_flight_seat_blocks, get_flight_seat_map
 from db import SessionLocal
+from api.utils.db_session import get_session
 
 
 flight_bp = Blueprint("flight_bp", __name__)
@@ -162,22 +163,21 @@ responses:
   404:
     description: No flights found for the given search parameters
 """    
-    session = SessionLocal()
-    try:
-        data = Flight_search_schema(**request.get_json())
-    except ValidationError as e:
-        return jsonify({"message": str(e)}), 400
-    controller = Flight_controller(session)
-    response, status = controller.get_flights(
-        data.departure_airport,
-        data.arrival_airport,
-        data.round_trip_flight,
-        data.direct_flights,
-        data.departure_date_outbound,
-        data.departure_date_return,
-        data.id_class,
-    )
-    session.close()
+    with get_session() as session:
+      try:
+          data = Flight_search_schema(**request.get_json())
+      except ValidationError as e:
+          return jsonify({"message": str(e)}), 400
+      controller = Flight_controller(session)
+      response, status = controller.get_flights(
+          data.departure_airport,
+          data.arrival_airport,
+          data.round_trip_flight,
+          data.direct_flights,
+          data.departure_date_outbound,
+          data.departure_date_return,
+          data.id_class,
+      )
     return jsonify(response), status
 
 
@@ -247,13 +247,12 @@ def flight_seats_occupied(id_flight: int):
         description: Flight not found
 
     """
-    session = SessionLocal()
-    flight = session.get(Flight, id_flight)
-    if flight is None:
-        return jsonify({"message": f"Flight {id_flight} not found"}), 404
+    with get_session() as session:
+      flight = session.get(Flight, id_flight)
+      if flight is None:
+          return jsonify({"message": f"Flight {id_flight} not found"}), 404
 
-    data = get_flight_seat_map(session, id_flight)
-    session.close()
+      data = get_flight_seat_map(session, id_flight)
     return jsonify(data), 200
 
 
@@ -314,14 +313,12 @@ def flight_seat_availability(id_flight: int):
         description: Flight not found
 
     """
-    session = SessionLocal()
-    flight = session.get(Flight, id_flight)
-    if flight is None:
-        session.close()
+    with get_session() as session:
+      flight = session.get(Flight, id_flight)
+      if flight is None:
         return jsonify({"message": f"Flight {id_flight} not found"}), 404
 
-    data = get_flight_seat_map(session, id_flight)
-    session.close()
+      data = get_flight_seat_map(session, id_flight)
     return jsonify(data), 200
 
 
@@ -444,17 +441,15 @@ def book_flight():
         data = Ticket_reservation_schema(**request.get_json())
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
-    session = SessionLocal()
-    try:
-        with session.begin():
-            controller = Flight_controller(session)
-            response, status = controller.book(data.id_buyer, data.tickets)
-    except ValueError as e:
-        response, status = {"message": str(e)}, 404
-    except Exception as e:
-        response, status = {"message": str(e)}, 500
-    finally:
-        session.close()
+    with get_session() as session:
+      try:
+          with session.begin():
+              controller = Flight_controller(session)
+              response, status = controller.book(data.id_buyer, data.tickets)
+      except ValueError as e:
+          response, status = {"message": str(e)}, 404
+      except Exception as e:
+          response, status = {"message": str(e)}, 500
 
     return jsonify(response), status
 

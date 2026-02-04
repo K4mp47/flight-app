@@ -42,7 +42,7 @@ def get_baggage():
     return jsonify(result), 200
 
 @baggage_bp.route("/rules", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def add_baggage_rules():
     """
     Add baggage rules
@@ -125,7 +125,7 @@ def add_baggage_rules():
     return jsonify(result), status_code
 
 @baggage_bp.route("/rules", methods=["PUT"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def update_baggage_rules():
     """
     Update baggage rules
@@ -221,7 +221,7 @@ def update_baggage_rules():
     return jsonify(result), status_code
 
 @baggage_bp.route("/<airline_code>/rules", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_baggage_rules(airline_code:str):
     """
     Get baggage rules for an airline
@@ -313,7 +313,7 @@ def get_baggage_rules(airline_code:str):
     return jsonify(result), status_code
 
 @baggage_bp.route("/class-policy", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def add_baggage_class_policy():
     """
     Add baggage class policy
@@ -384,7 +384,7 @@ def add_baggage_class_policy():
     return jsonify(result), status_code
 
 @baggage_bp.route("/class-policy", methods=["PUT"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def update_baggage_class_policy():
     """
     Update baggage class policy
@@ -449,7 +449,7 @@ def update_baggage_class_policy():
     return jsonify(result), status_code
 
 @baggage_bp.route("/<airline_code>/class-policy", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_baggage_class_policy(airline_code: str):
     """
     Get baggage class policies for an airline

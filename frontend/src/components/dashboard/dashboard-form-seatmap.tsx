@@ -155,9 +155,10 @@ export function CreateSeatBlockDialog({
             <SelectValue placeholder="Select seat class" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">Economy</SelectItem>
+            <SelectItem value="4">Economy</SelectItem>
             <SelectItem value="2">Business</SelectItem>
-            <SelectItem value="3">First Class</SelectItem>
+            <SelectItem value="3">Premium Economy</SelectItem>
+            <SelectItem value="1">First Class</SelectItem>
           </SelectContent>
         </Select>
       </div>

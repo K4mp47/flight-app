@@ -8,7 +8,7 @@ aircraft_bp = Blueprint("aircraft_bp", __name__)
 
 
 @aircraft_bp.route("/", methods=["GET"])
-#@role_required("Admin", "Airline-Admin")
+@role_required("Admin", "Airline-Admin")
 def get_all_aircraft():
     """
     Get All Aircraft
@@ -67,7 +67,7 @@ def get_all_aircraft():
 
 
 @aircraft_bp.route("/manufacturer/<int:id_manufacturer>", methods=["GET"])
-#@role_required("Admin", "Airline-Admin")
+@role_required("Admin", "Airline-Admin")
 def get_all_aircraft_by_manufacturer(id_manufacturer):
     """
     Get Aircraft by Manufacturer

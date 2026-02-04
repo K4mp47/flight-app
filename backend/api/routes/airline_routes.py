@@ -16,7 +16,7 @@ from ..controllers.airline_controller import Airline_controller
 airline_bp = Blueprint("airline_bp", __name__)
 
 @airline_bp.route("/", methods=["GET"])
-#@role_required("Admin")
+@role_required("Admin")
 def get_all_airlines():
         """
         Get All Airlines
@@ -56,7 +56,7 @@ def get_all_airlines():
         return jsonify(airlines), 200
 
 @airline_bp.route("/new", methods=["POST"])
-#@role_required("Admin")
+@role_required("Admin")
 def new_airline():
     """
     Insert New Airline
@@ -133,7 +133,7 @@ def new_airline():
     return jsonify(response), status
 
 @airline_bp.route("/add/aircraft/<int:id_aircraft>", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def new_aircraft(id_aircraft: int):
         """
         Add Aircraft to Airline Fleet
@@ -242,7 +242,7 @@ def new_aircraft(id_aircraft: int):
         return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/fleet", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_fleet(airline_code: str):
         """
         Get Airline Fleet
@@ -327,7 +327,7 @@ def get_fleet(airline_code: str):
         return jsonify(response), status
 
 @airline_bp.route("/delete/aircraft/<int:id_aircraft_airline>", methods=["DELETE"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def delete_aircraft(id_aircraft_airline: int):
         """
         Delete Aircraft from Airline Fleet
@@ -399,7 +399,7 @@ def delete_aircraft(id_aircraft_airline: int):
 
 
 @airline_bp.route("/add/block/aircraft/<int:id_aircraft_airline>", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def new_block(id_aircraft_airline: int):
     """
         Add Seat Block to Aircraft
@@ -515,7 +515,7 @@ def new_block(id_aircraft_airline: int):
 
 
 @airline_bp.route("/<airline_code>/aircraft/<int:id_aircraft_airline>/seat_map", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_seat_map(airline_code: str, id_aircraft_airline: int):
     """
         Get Seat Map of Aircraft
@@ -635,7 +635,7 @@ def get_seat_map(airline_code: str, id_aircraft_airline: int):
 
 
 @airline_bp.route("/aircraft/clone-seatmap", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def clone_seatmap():
     """
     Clone Seat Map from One Aircraft to Another
@@ -721,7 +721,7 @@ def clone_seatmap():
     return jsonify(response), status
 
 @airline_bp.route("/add/route", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def add_route():
     """
     Create Airline Route (Direct or Multi-Segment)
@@ -907,7 +907,7 @@ def add_route():
     return jsonify(response), status
 
 @airline_bp.route("/route/<code>/change-deadline", methods=["PUT"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def change_route_deadline(code: str):
     """
     Update Route Contract End Date
@@ -993,7 +993,7 @@ def change_route_deadline(code: str):
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/route", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_routes(airline_code: str):
         """
         Get All Routes of an Airline
@@ -1084,7 +1084,7 @@ def get_routes(airline_code: str):
         return jsonify({"routes": routes}), 200
 
 @airline_bp.route("/<airline_code>/route/<code>/info", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_route_info(airline_code: str,code: str):
         """
         Get Route Information
@@ -1172,7 +1172,7 @@ def get_route_info(airline_code: str,code: str):
         return jsonify({"routes": route}), 200
 
 @airline_bp.route("/route/<code>/add-flight", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def new_route_flight(code: str):
     """
 Add Flights to a Route
@@ -1292,7 +1292,7 @@ responses:
     return jsonify(response), status
 
 @airline_bp.route("/add-class-price-policy", methods=["POST"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def new_class_price_policy():
     """
 Add Class Price Policy
@@ -1377,7 +1377,7 @@ responses:
     return jsonify(response), status
 
 @airline_bp.route("/class-price-policy/<int:id_class_price_policy>/modify", methods=["PUT"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def modify_class_price_policy(id_class_price_policy: int):
     """
 Modify Class Price Policy
@@ -1465,7 +1465,7 @@ responses:
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/class-price-policy/", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_class_price_policies(airline_code: str):
     """
 Get Class Price Policies of an Airline
@@ -1540,7 +1540,7 @@ responses:
     return jsonify({"policies": policies}), 200
 
 @airline_bp.route("/<airline_code>/add/price-policy", methods=["POST"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def new_price_policy(airline_code: str):
     """
     Add Price Policy to an Airline
@@ -1618,7 +1618,7 @@ def new_price_policy(airline_code: str):
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/price-policy/modify", methods=["PUT"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def modify_price_policy(airline_code: str):
     """
 Modify price policy to an airline
@@ -1698,7 +1698,7 @@ responses:
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/price-policy/", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_price_policies(airline_code: str):
     """
 Get price policy to an airline
@@ -1761,7 +1761,7 @@ responses:
     return jsonify({"policies": policies}), 200
 
 @airline_bp.route("/route/<code>/base_price/", methods=["PUT"])
-#@airline_check_body("airline_code")
+@airline_check_body("airline_code")
 def change_base_price(code: str):
     """
   Put base price
@@ -1820,7 +1820,7 @@ def change_base_price(code: str):
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/analytics/route/<code>", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def route_analytics(airline_code: str ,code: str):
     """
     Airline route analytics
@@ -1915,7 +1915,7 @@ def route_analytics(airline_code: str ,code: str):
 
 
 @airline_bp.route("/<airline_code>/analytics/flight/<id_flight>", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def flight_analytics(airline_code: str,id_flight: int):
     """
     Airline flight analytics
@@ -1999,7 +1999,7 @@ def flight_analytics(airline_code: str,id_flight: int):
     return jsonify(response), status
 
 @airline_bp.route("/<airline_code>/analytics/routes", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_all_routes_analytics(airline_code: str):
     """
     Airline analytics routes
@@ -2075,7 +2075,7 @@ def get_all_routes_analytics(airline_code: str):
     return jsonify({"analytics": analytics}), 200
 
 @airline_bp.route("/<airline_code>/analytics/routes/total_revenue", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_routes_total_revenue(airline_code: str):
     """
     Airline total revenue
@@ -2140,7 +2140,7 @@ def get_routes_total_revenue(airline_code: str):
     return jsonify({"total_revenue": analytics}), 200
 
 @airline_bp.route("/<airline_code>/flight", methods=["GET"])
-#@airline_check_param("airline_code")
+@airline_check_param("airline_code")
 def get_airline_flights(airline_code: str):
     """
     Get all airline's flights

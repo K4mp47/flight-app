@@ -12,7 +12,7 @@ airport_bp = Blueprint("airports", __name__)
 
 
 @airport_bp.route("/", methods=["POST"])
-#@role_required("Admin")
+@role_required("Admin")
 def create_airport():
     """
   Create a new airport
@@ -313,7 +313,7 @@ def get_airports_by_city(city_id):
         return jsonify(result), status_code
 
 @airport_bp.route("/<string:iata_code>", methods=["PUT"])
-#@role_required("Admin")
+@role_required("Admin")
 def update_airport(iata_code):
         """
   Update airport
@@ -411,7 +411,7 @@ def update_airport(iata_code):
 
 
 @airport_bp.route("/<string:iata_code>", methods=["DELETE"])
-#@role_required("Admin")
+@role_required("Admin")
 def delete_airport(iata_code):
         """
   Delete airport
